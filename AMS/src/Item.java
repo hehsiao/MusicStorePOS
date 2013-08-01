@@ -263,43 +263,40 @@ public class Item implements ActionListener
 	  
 	try
 	{
-	  ps = con.prepareStatement("INSERT INTO branch VALUES (?,?,?,?,?)");
+	  ps = con.prepareStatement("INSERT INTO branch VALUES (?,?,?,?,?,?)");
 	
 	  System.out.print("\nUPC: ");
 	  upc = Integer.parseInt(in.readLine());
 	  ps.setInt(1, upc);
 
-	  System.out.print("\nBranch Name: ");
-	  bname = in.readLine();
-	  ps.setString(2, bname);
+	  System.out.print("\nTitle: ");
+	  title = in.readLine();
+	  ps.setString(2, title);
 
-	  System.out.print("\nBranch Address: ");
-	  baddr = in.readLine();
+	  if (title.length() == 0)
+      {
+      ps.setString(2, null);
+  }
+  else
+  {
+      ps.setString(2, title);
+  }
 	  
-	  if (baddr.length() == 0)
-          {
-	      ps.setString(3, null);
-	  }
-	  else
-	  {
-	      ps.setString(3, baddr);
-	  }
+	  System.out.print("\nType: ");
+	  type = in.readLine();
+	  ps.setString(3, type);
 	 
-	  System.out.print("\nBranch City: ");
-	  bcity = in.readLine();
-	  ps.setString(4, bcity);
+	  System.out.print("\nCategory: ");
+	  category = in.readLine();
+	  ps.setString(4, category);
 
-	  System.out.print("\nBranch Phone: ");
-	  String phoneTemp = in.readLine();
-	  if (phoneTemp.length() == 0)
-	  {
-	      ps.setNull(5, java.sql.Types.INTEGER);
-	  }
-	  else
-	  {
-	      bphone = Integer.parseInt(phoneTemp);
-	      ps.setInt(5, bphone);
-	  }
+	  System.out.print("\nCompany: ");
+	  company = in.readLine();
+	  ps.setString(5, company);
+	  
+	  System.out.print("\nYear: ");
+	  year = Integer.parseInt(in.readLine());
+	  ps.setInt(6, year);
 
 	  ps.executeUpdate();
 
