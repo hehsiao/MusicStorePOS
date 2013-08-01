@@ -14,7 +14,7 @@ import java.awt.event.*;
  * This class implements a graphical login window and a simple text
  * interface for interacting with the branch table 
  */ 
-public class branch implements ActionListener
+public class Item implements ActionListener
 {
     // command line reader 
     private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -33,7 +33,7 @@ public class branch implements ActionListener
     /*
      * constructs login window and loads JDBC driver
      */ 
-    public branch()
+    public Item()
     {
       mainFrame = new JFrame("User Login");
 
@@ -249,22 +249,25 @@ public class branch implements ActionListener
     /*
      * inserts a branch
      */ 
-    private void insertBranch()
+    private void insertItem()
     {
-	int                bid;
-	String             bname;
-	String             baddr;
-	String             bcity;
-	int                bphone;
-	PreparedStatement  ps;
+	int                upc;
+	String             title;
+	String             type;
+	String             category;
+	String             company;
+	int				   year;
+	int                price;
+	int                stock;
+	PreparedStatement   ps;
 	  
 	try
 	{
 	  ps = con.prepareStatement("INSERT INTO branch VALUES (?,?,?,?,?)");
 	
-	  System.out.print("\nBranch ID: ");
-	  bid = Integer.parseInt(in.readLine());
-	  ps.setInt(1, bid);
+	  System.out.print("\nUPC: ");
+	  upc = Integer.parseInt(in.readLine());
+	  ps.setInt(1, upc);
 
 	  System.out.print("\nBranch Name: ");
 	  bname = in.readLine();
@@ -513,7 +516,7 @@ public class branch implements ActionListener
  
     public static void main(String args[])
     {
-      branch b = new branch();
+      Item b = new Item();
     }
 }
 
