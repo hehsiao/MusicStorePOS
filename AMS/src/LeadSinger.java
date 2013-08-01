@@ -1,4 +1,4 @@
-
-public class LeadSinger {
+public class LeadSinger 
+{
 
 }

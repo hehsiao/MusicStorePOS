@@ -1,4 +1,4 @@
-
-public class Purchase {
+public class Purchase 
+{
 
 }

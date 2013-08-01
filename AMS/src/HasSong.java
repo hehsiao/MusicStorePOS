@@ -1,4 +1,4 @@
-
-public class HasSong {
+public class HasSong 
+{
 
 }
