@@ -99,7 +99,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			GridBagConstraints c = new GridBagConstraints();
 			inputPane.setLayout(gb);
 
-			/** CUSTOMER ID **/
 			// create and place customer id label
 			JLabel label = new JLabel("Customer ID: ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
@@ -115,7 +114,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			gb.setConstraints(customerID, c);
 			inputPane.add(customerID);
 
-			/** CUSTOMER PASSWORD **/
 			// create and place customer password label
 			label = new JLabel("Password: ", SwingConstants.RIGHT);
 			c.gridwidth = GridBagConstraints.RELATIVE;
@@ -131,7 +129,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			gb.setConstraints(customerPW, c);
 			inputPane.add(customerPW);
 
-			/** CUSTOMER NAME **/
 			// create and place customer name label
 			label = new JLabel("Name: ", SwingConstants.RIGHT);
 			c.gridwidth = GridBagConstraints.RELATIVE;
