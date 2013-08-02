@@ -30,7 +30,7 @@ create table Purchase
 	expectedDate integer,
 	deliveredDate integer,
     PRIMARY KEY (receiptId),
-    Foreign Key (cid) REFERENCES Customer));
+    Foreign Key (cid) REFERENCES Customer);
 
 create table PurchaseItem
 	(receiptId integer not null,
