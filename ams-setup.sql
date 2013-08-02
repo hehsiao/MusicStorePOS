@@ -1,33 +1,35 @@
 create table Item
-	(upc integer not null PRIMARY KEY,
+	(upc integer not null,
 	title varchar(20),
 	type varchar(10),
 	category varchar(10),
 	company varchar(20),
 	year integer,
 	price integer,
-	stock integer);
+	stock integer,
+    PRIMARY KEY (upc));
 
 create table LeadSinger
 	(upc integer not null,
 	name varchar(20) not null,
     PRIMARY KEY (upc, name),
-	Foreign Key (upc) REFERENCES Item);
+	Foreign Key (upc) REFERENCES Item(upc));
 
 create table HasSong
 	(upc integer not null,
 	title varchar(15) not null,
 	PRIMARY KEY (upc, title),
-	Foreign Key (upc) references Item);
+	Foreign Key (upc) references Item(upc));
 
 create table Purchase
-	(receiptId integer not null PRIMARY KEY,
+	(receiptId integer not null,
 	pdate integer,
 	cid integer ,
 	cardnum integer,
 	expiryDate integer,
 	expectedDate integer,
 	deliveredDate integer,
+    PRIMARY KEY (receiptId),
     Foreign Key (cid) REFERENCES Customer));
 
 create table PurchaseItem
