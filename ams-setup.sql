@@ -1,3 +1,4 @@
+drop table Item;
 
 create table Item
 	(upc integer not null PRIMARY KEY,
@@ -9,17 +10,22 @@ create table Item
 	price integer,
 	stock integer);
 
+drop table LeadSinger;
+
 create table LeadSinger
 	(upc integer not null PRIMARY KEY,
 	name varchar2(20) not null PRIMARY KEY,
 	Foreign Key (LeadSinger_upc) REFERENCES Item);
 
+drop table HasSong;
 
 create table HasSong
 	(upc integer not null PRIMARY KEY,
 	title varchar2(15) PRIMARY KEY
 	PRIMARY KEY (upc, title),
 	Foreign Key (upc) references Item);
+
+drop table Purchase;
 
 create table Purchase
 	(receiptId integer not null PRIMARY KEY,
@@ -30,12 +36,16 @@ create table Purchase
 	expectedDate integer,
 	deliveredDate integer);
 
+drop table PurchaseItem;
+
 create table PurchaseItem
 	(receiptId integer not null PRIMARY KEY,
 	upc integer not null PRIMARY KEY,
 	quantity integer
 	Foreign Key (receiptId) REFERENCES Purchase
 	Foreign Key (upc) REFERENCES Item);
+
+drop table Customer;
 
 create table Customer
 	(cid integer not null,
@@ -45,6 +55,7 @@ create table Customer
 	phone integer,
 	PRIMARY KEY (cid));
 
+drop table Return;
 
 create table Return
 	(retid integer not null,
@@ -52,6 +63,8 @@ create table Return
 	receiptId integer,
 	Primary Key (retid),
 	Foreign Key (receiptId) REFERENCES Purchase);
+
+drop table ReturnItem;
 
 create table ReturnItem
 	(retid integer not null,
