@@ -21,6 +21,14 @@ create table HasSong
 	PRIMARY KEY (upc, title),
 	Foreign Key (upc) references Item(upc));
 
+create table Customer
+	(cid integer not null,
+	password varchar(8),
+	name varchar(20),
+	address varchar(20),
+	phone integer,
+	PRIMARY KEY (cid));
+
 create table Purchase
 	(receiptId integer not null,
 	pdate integer,
@@ -39,14 +47,6 @@ create table PurchaseItem
     PRIMARY KEY (receiptId, upc),
 	Foreign Key (receiptId) REFERENCES Purchase,
 	Foreign Key (upc) REFERENCES Item);
-
-create table Customer
-	(cid integer not null,
-	password varchar(8),
-	name varchar(20),
-	address varchar(20),
-	phone integer,
-	PRIMARY KEY (cid));
 
 create table Return
 	(retid integer not null,
