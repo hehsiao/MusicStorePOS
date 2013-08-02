@@ -1,5 +1,3 @@
-// File: ExceptionListener.java
-
 import java.util.EventListener;
 
 /*

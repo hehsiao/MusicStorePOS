@@ -1,5 +1,3 @@
-// File: ExceptionEvent.java
-
 import java.util.EventObject;
 
 

@@ -1,15 +1,10 @@
-// File: AMSView.java
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 
 /*
- * AMSView allows a user to view and manipulate the branch table.
- * Additional functionality may be added in the future, such as
- * viewing and manipulating the driver, license, and exam tables.
+ * AMSView allows a user to view and manipulate the database system
  */ 
 public class AMSView extends JFrame
 {
@@ -26,8 +21,14 @@ public class AMSView extends JFrame
 	// the scrollpane that will hold the table of database data
 	private JScrollPane tableScrPane = new JScrollPane();
 
-	// the branch admin menu
-	private JMenu branchAdmin;
+	// the manager menu
+	private JMenu manager;
+
+	// the clerk menu
+	private JMenu clerk;
+
+	// the customer menu
+	private JMenu customer;
 
 
 	/*
@@ -54,21 +55,10 @@ public class AMSView extends JFrame
 		// indent first menu
 		menuBar.add(Box.createRigidArea(new Dimension(10,0)));
 
-		// sets up the branch administration menu and adds it to the 
-		// menu bar
-		setupBranchAdminMenu(menuBar);
-
-		// Setup some other menus. You may be asked to add functionality
-		// to these menus in an assignment. 
-		JMenu menu = new JMenu("Driver Admin");
-		menu.setMnemonic(KeyEvent.VK_D);
-		menuBar.add(menu);
-		menu = new JMenu("License Admin");
-		menu.setMnemonic(KeyEvent.VK_L);
-		menuBar.add(menu);
-		menu = new JMenu("Exam Admin");
-		menu.setMnemonic(KeyEvent.VK_E);
-		menuBar.add(menu);
+		// sets up the manager, clerk, and customer menu and adds it to the menu bar
+		setupManagerMenu(menuBar);
+		setupClerkMenu(menuBar);
+		setupCustomerMenu(menuBar);
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -103,36 +93,70 @@ public class AMSView extends JFrame
 
 
 	/*
-	 * Adds menu items to the Branch Admin menu and then
+	 * Adds menu items to the Manager menu and then
 	 * adds the menu to the menubar
 	 */ 
-	private void setupBranchAdminMenu(JMenuBar mb)
+	private void setupManagerMenu(JMenuBar mb)
 	{
-		branchAdmin = new JMenu("Branch Admin");
+		manager = new JMenu("Manager Admin");
 
-		// when alt-b is pressed on the keyboard, the menu will appear
-		branchAdmin.setMnemonic(KeyEvent.VK_B);
+		// when alt-a is pressed on the keyboard, the menu will appear
+		manager.setMnemonic(KeyEvent.VK_A);
 
-		createMenuItem(branchAdmin, "Insert Branch...", 
-				KeyEvent.VK_I, "Insert Branch");
+		createMenuItem(manager, "Add Items", 
+				KeyEvent.VK_A, "Add Items");
 
-		createMenuItem(branchAdmin, "Update Branch Name...", 
-				KeyEvent.VK_U, "Update Branch");
+		createMenuItem(manager, "Process Delivery", 
+				KeyEvent.VK_P, "Process Delivery");
 
-		createMenuItem(branchAdmin, "Delete Branch...", 
-				KeyEvent.VK_D, "Delete Branch");
+		createMenuItem(manager, "View Daily Sales Report", 
+				KeyEvent.VK_D, "View Daily Sales Report");
 
-		JMenuItem menuItem = createMenuItem(branchAdmin, "Show All Branches", 
-				KeyEvent.VK_S, "Show Branch");
-		// setup a short cut key for this menu item
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK));
+		createMenuItem(manager, "View Top Selling Items", 
+				KeyEvent.VK_T, "View Top Selling Items");
 
-		createMenuItem(branchAdmin, "Edit All Branches", 
-				KeyEvent.VK_E, "Edit Branch");
-
-		mb.add(branchAdmin);
+		mb.add(manager);
 	}
 
+	/*
+	 * Adds menu items to the Clerk menu and then
+	 * adds the menu to the menubar
+	 */ 
+	private void setupClerkMenu(JMenuBar mb)
+	{
+		clerk = new JMenu("Clerk Menu");
+
+		// when alt-e is pressed on the keyboard, the menu will appear
+		clerk.setMnemonic(KeyEvent.VK_E);
+
+		createMenuItem(clerk, "Process Purchase", 
+				KeyEvent.VK_P, "Process Purchase");
+
+		createMenuItem(clerk, "Process Return", 
+				KeyEvent.VK_R, "Process Return");
+
+		mb.add(clerk);
+	}
+
+	/*
+	 * Adds menu items to the Customer menu and then
+	 * adds the menu to the menubar
+	 */ 
+	private void setupCustomerMenu(JMenuBar mb)
+	{
+		customer = new JMenu("Customer Menu");
+
+		// when alt-c is pressed on the keyboard, the menu will appear
+		customer.setMnemonic(KeyEvent.VK_C);
+
+		createMenuItem(customer, "Register Account", 
+				KeyEvent.VK_R, "Register Account");
+
+		createMenuItem(customer, "Purchase Items", 
+				KeyEvent.VK_P, "Purchase Items");
+
+		mb.add(customer);
+	}
 
 	/*
 	 * Creates a menu item and adds it to the given menu.  If the menu item 
@@ -202,16 +226,39 @@ public class AMSView extends JFrame
 	 */ 
 	public void registerControllers()
 	{
+		/* TO DO: EACH CONTROLLER NEEDS CODE FOR THIS PART TO WORK. LOOK AT EACH RESPECTIVE
+		 * JAVA FILE
+
 		JMenuItem menuItem; 
 
-		// BranchController handles events on the branch admin menu items (i.e. when they are clicked)
-		BranchController bc = new BranchController(this);
+		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
+		ManagerController managerControl = ManagerController(this);
 
-		for (int i = 0; i < branchAdmin.getItemCount(); i++)
+		for (int i = 0; i < manager.getItemCount(); i++)
 		{
-			menuItem = branchAdmin.getItem(i);
-			menuItem.addActionListener(bc);
+			menuItem = manager.getItem(i);
+			menuItem.addActionListener(managerControl);
 		}
+
+		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
+		ClerkController clerkControl = ClerkController(this);
+
+		for (int i = 0; i < clerk.getItemCount(); i++)
+		{
+			menuItem = clerk.getItem(i);
+			menuItem.addActionListener(clerkControl);
+		}
+
+		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
+		CustomerController customerControl = CustomerController(this);
+
+		for (int i = 0; i < customer.getItemCount(); i++)
+		{
+			menuItem = customer.getItem(i);
+			menuItem.addActionListener(customerControl);
+		}
+
+		 */
 	}
 
 

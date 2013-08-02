@@ -1,5 +1,3 @@
-// File: BranchController.java
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

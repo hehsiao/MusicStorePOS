@@ -1,5 +1,3 @@
-// File: AMSOracleConnection.java
-
 import java.sql.*; 
 
 
