@@ -24,14 +24,17 @@ public class DebugModel
 	 * scroll insensitive and read only. If there is an error, null
 	 * is returned.
 	 */ 
-	public ResultSet showItem()
+	public ResultSet showTable(String table)
 	{
 		try
 		{	 
-			ps = con.prepareStatement("SELECT i.* FROM item i", 
+			System.out.println(table);
+			ps = con.prepareStatement("SELECT * FROM ?", 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
 
+			ps.setString(1, table);
+			
 			ResultSet rs = ps.executeQuery();
 
 			return rs; 

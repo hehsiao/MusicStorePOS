@@ -32,9 +32,59 @@ public class DebugController implements ActionListener, ExceptionListener
 	{
 		String actionCommand = e.getActionCommand();
 
-		if (actionCommand.equals("Show Items"))
+		if (actionCommand.equals("Item"))
 		{
-			showAllItems();
+			AMS.updateStatusBar("Displaying Item Table");
+			showTables("Item");
+			return; 
+		}
+		
+		else if (actionCommand.equals("LeadSinger"))
+		{
+			AMS.updateStatusBar("Displaying Lead Singer Table");
+			showTables("LeadSinger");
+			return; 
+		}
+		
+		else if (actionCommand.equals("HasSong"))
+		{
+			AMS.updateStatusBar("Displaying HasSong Table");
+			showTables("HasSong");
+			return; 
+		}
+		
+		else if (actionCommand.equals("Purchase"))
+		{			
+			AMS.updateStatusBar("Displaying Purchase Table");
+			showTables("Purchase");
+			return; 
+		}
+		
+		else if (actionCommand.equals("PurchaseItem"))
+		{
+			AMS.updateStatusBar("Displaying Purchase Item Table");
+			showTables("PurchaseItem");
+			return; 
+		}
+		
+		else if (actionCommand.equals("Customer"))
+		{
+			AMS.updateStatusBar("Displaying Customer Table");
+			showTables("Customer");
+			return; 
+		}
+		
+		else if (actionCommand.equals("Return"))
+		{
+			AMS.updateStatusBar("Displaying Return Table");
+			showTables("Return");
+			return; 
+		}
+		
+		else if (actionCommand.equals("ReturnItem"))
+		{
+			AMS.updateStatusBar("Displaying Return Item Table");
+			showTables("ReturnItem");
 			return; 
 		}
 	}
@@ -64,9 +114,10 @@ public class DebugController implements ActionListener, ExceptionListener
 	/*
 	 * This method displays all Items in a non-editable JTable
 	 */
-	private void showAllItems()
+	private void showTables(String table_name)
 	{
-		ResultSet rs = debug.showItem();
+		System.out.println(table_name);
+		ResultSet rs = debug.showTable(table_name);
 
 		// CustomTableModel maintains the result set's data, e.g., if  
 		// the result set is updatable, it will update the database
