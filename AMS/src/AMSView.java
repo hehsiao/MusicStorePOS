@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
+import javax.swing.border.*;
 
 /*
  * AMSView allows a user to view and manipulate the database system
@@ -29,7 +29,6 @@ public class AMSView extends JFrame
 
 	// the customer menu
 	private JMenu customer;
-
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -90,7 +89,6 @@ public class AMSView extends JFrame
 			}
 		});	
 	}
-
 
 	/*
 	 * Adds menu items to the Manager menu and then
@@ -184,7 +182,6 @@ public class AMSView extends JFrame
 		return menuItem;
 	}
 
-
 	/*
 	 * Places the given window approximately at the center of the screen
 	 */ 
@@ -194,7 +191,6 @@ public class AMSView extends JFrame
 		w.setLocation(framePositionX + (frameBounds.width - winBounds.width)/2, 
 				framePositionY + (frameBounds.height - winBounds.height)/2);
 	}
-
 
 	/*
 	 * This method adds the given string to the status text area 
@@ -210,7 +206,6 @@ public class AMSView extends JFrame
 		statusField.revalidate();
 	}
 
-
 	/*
 	 * This method adds the given JTable into tableScrPane
 	 */
@@ -219,48 +214,44 @@ public class AMSView extends JFrame
 		tableScrPane.setViewportView(data);
 	}
 
-
 	/*
 	 * This method registers the controllers for all items in each menu. This
 	 * method should only be executed once.
 	 */ 
 	public void registerControllers()
 	{
-		/* TO DO: EACH CONTROLLER NEEDS CODE FOR THIS PART TO WORK. LOOK AT EACH RESPECTIVE
-		 * JAVA FILE
-
 		JMenuItem menuItem; 
 
-		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
-		ManagerController managerControl = ManagerController(this);
-
-		for (int i = 0; i < manager.getItemCount(); i++)
-		{
-			menuItem = manager.getItem(i);
-			menuItem.addActionListener(managerControl);
-		}
-
-		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
-		ClerkController clerkControl = ClerkController(this);
-
-		for (int i = 0; i < clerk.getItemCount(); i++)
-		{
-			menuItem = clerk.getItem(i);
-			menuItem.addActionListener(clerkControl);
-		}
+		//		TO DO: EACH CONTROLLER NEEDS CODE FOR THIS PART TO WORK. LOOK AT EACH RESPECTIVE
+		//		JAVA FILE
+		//		
+		//		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
+		//		ManagerController managerControl = new ManagerController(this);
+		//
+		//		for (int i = 0; i < manager.getItemCount(); i++)
+		//		{
+		//			menuItem = manager.getItem(i);
+		//			menuItem.addActionListener(managerControl);
+		//		}
+		//
+		//		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
+		//		ClerkController clerkControl = new ClerkController(this);
+		//
+		//		for (int i = 0; i < clerk.getItemCount(); i++)
+		//		{
+		//			menuItem = clerk.getItem(i);
+		//			menuItem.addActionListener(clerkControl);
+		//		}
 
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
-		CustomerController customerControl = CustomerController(this);
+		CustomerController customerControl = new CustomerController(this);
 
 		for (int i = 0; i < customer.getItemCount(); i++)
 		{
 			menuItem = customer.getItem(i);
 			menuItem.addActionListener(customerControl);
 		}
-
-		 */
 	}
-
 
 	public static void main(String[] args) 
 	{
@@ -284,7 +275,6 @@ public class AMSView extends JFrame
 		lw.setVisible(true); 
 	}
 }
-
 
 /*
  * Event handler for login window. After the user logs in (after login
