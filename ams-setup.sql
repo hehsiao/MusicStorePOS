@@ -35,9 +35,9 @@ create table Purchase
 create table PurchaseItem
 	(receiptId integer not null,
 	upc integer not null,
-	quantity integer
+	quantity integer,
     PRIMARY KEY (receiptId, upc),
-	Foreign Key (receiptId) REFERENCES Purchase
+	Foreign Key (receiptId) REFERENCES Purchase,
 	Foreign Key (upc) REFERENCES Item);
 
 create table Customer
