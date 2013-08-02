@@ -29,6 +29,9 @@ public class AMSView extends JFrame
 
 	// the customer menu
 	private JMenu customer;
+	
+	// the debug menu
+	private JMenu debug;
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -58,6 +61,7 @@ public class AMSView extends JFrame
 		setupManagerMenu(menuBar);
 		setupClerkMenu(menuBar);
 		setupCustomerMenu(menuBar);
+		setupDebugMenu(menuBar);
 
 		// the scrollpane for the status text field
 		JScrollPane statusScrPane = new JScrollPane(statusField);
@@ -96,19 +100,19 @@ public class AMSView extends JFrame
 	 */ 
 	private void setupManagerMenu(JMenuBar mb)
 	{
-		manager = new JMenu("Manager Admin");
+		manager = new JMenu("Manager");
 
 		// when alt-a is pressed on the keyboard, the menu will appear
-		manager.setMnemonic(KeyEvent.VK_A);
+		manager.setMnemonic(KeyEvent.VK_M);
 
 		createMenuItem(manager, "Add Items", 
-				KeyEvent.VK_A, "Add Items");
+				KeyEvent.VK_I, "Add Items");
 
 		createMenuItem(manager, "Process Delivery", 
-				KeyEvent.VK_P, "Process Delivery");
+				KeyEvent.VK_D, "Process Delivery");
 
 		createMenuItem(manager, "View Daily Sales Report", 
-				KeyEvent.VK_D, "View Daily Sales Report");
+				KeyEvent.VK_S, "View Daily Sales Report");
 
 		createMenuItem(manager, "View Top Selling Items", 
 				KeyEvent.VK_T, "View Top Selling Items");
@@ -122,7 +126,7 @@ public class AMSView extends JFrame
 	 */ 
 	private void setupClerkMenu(JMenuBar mb)
 	{
-		clerk = new JMenu("Clerk Menu");
+		clerk = new JMenu("Clerk");
 
 		// when alt-e is pressed on the keyboard, the menu will appear
 		clerk.setMnemonic(KeyEvent.VK_E);
@@ -142,18 +146,57 @@ public class AMSView extends JFrame
 	 */ 
 	private void setupCustomerMenu(JMenuBar mb)
 	{
-		customer = new JMenu("Customer Menu");
+		customer = new JMenu("Customer");
 
 		// when alt-c is pressed on the keyboard, the menu will appear
 		customer.setMnemonic(KeyEvent.VK_C);
 
 		createMenuItem(customer, "Register Account", 
-				KeyEvent.VK_R, "Register Account");
+				KeyEvent.VK_N, "Register Account");
 
 		createMenuItem(customer, "Purchase Items", 
-				KeyEvent.VK_P, "Purchase Items");
+				KeyEvent.VK_I, "Purchase Items");
 
 		mb.add(customer);
+	}
+	
+	/*
+	 * Adds menu items to the Debug menu and then
+	 * adds the menu to the menubar
+	 */ 
+	private void setupDebugMenu(JMenuBar mb)
+	{
+		debug = new JMenu("Debug");
+
+		// when alt-a is pressed on the keyboard, the menu will appear
+		manager.setMnemonic(KeyEvent.VK_D);
+
+		createMenuItem(debug, "Item Table", 
+				-1, "Item Table");
+
+		createMenuItem(debug, "Lead Singer Table", 
+				-1, "Lead Singer Table");
+
+		createMenuItem(debug, "Has Song Table", 
+				-1, "Has Song Table");
+
+		createMenuItem(debug, "Purchase Table", 
+				-1, "Purchase Table");
+
+		createMenuItem(debug, "Purchase Item Table", 
+				-1, "Purchase Item Table");
+
+		createMenuItem(debug, "Customer Table", 
+				-1, "Customer Table");
+
+		createMenuItem(debug, "Return Table", 
+				-1, "Return Table");
+
+		createMenuItem(debug, "Return Item Table", 
+				-1, "Return Item Table");
+
+		
+		mb.add(debug);
 	}
 
 	/*
