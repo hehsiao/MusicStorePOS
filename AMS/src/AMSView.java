@@ -169,31 +169,31 @@ public class AMSView extends JFrame
 		debug = new JMenu("Debug");
 
 		// when alt-a is pressed on the keyboard, the menu will appear
-		manager.setMnemonic(KeyEvent.VK_D);
+		debug.setMnemonic(KeyEvent.VK_D);
 
-		createMenuItem(debug, "Item Table", 
-				-1, "Item Table");
+		createMenuItem(debug, "Show Items", 
+				-1, "Item");
 
-		createMenuItem(debug, "Lead Singer Table", 
-				-1, "Lead Singer Table");
+		createMenuItem(debug, "Show Lead Singer", 
+				-1, "LeadSinger");
 
-		createMenuItem(debug, "Has Song Table", 
-				-1, "Has Song Table");
+		createMenuItem(debug, "Show Songs", 
+				-1, "HasSong");
 
-		createMenuItem(debug, "Purchase Table", 
-				-1, "Purchase Table");
+		createMenuItem(debug, "Show Purchases", 
+				-1, "Purchase");
 
-		createMenuItem(debug, "Purchase Item Table", 
-				-1, "Purchase Item Table");
+		createMenuItem(debug, "Show Purchase Items", 
+				-1, "PurchaseItem");
 
-		createMenuItem(debug, "Customer Table", 
-				-1, "Customer Table");
+		createMenuItem(debug, "Show Customer", 
+				-1, "Customer");
 
-		createMenuItem(debug, "Return Table", 
-				-1, "Return Table");
+		createMenuItem(debug, "Show Return", 
+				-1, "Return");
 
-		createMenuItem(debug, "Return Item Table", 
-				-1, "Return Item Table");
+		createMenuItem(debug, "Show Return Item", 
+				-1, "ReturnItem");
 
 		
 		mb.add(debug);
@@ -293,6 +293,14 @@ public class AMSView extends JFrame
 		{
 			menuItem = customer.getItem(i);
 			menuItem.addActionListener(customerControl);
+		}
+		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
+		DebugController debugControl = new DebugController(this);
+
+		for (int i = 0; i < debug.getItemCount(); i++)
+		{
+			menuItem = debug.getItem(i);
+			menuItem.addActionListener(debugControl);
 		}
 	}
 
