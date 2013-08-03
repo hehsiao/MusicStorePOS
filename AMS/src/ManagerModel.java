@@ -31,9 +31,9 @@ public class ManagerModel
 			{	
 			
 				ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
-				//ps = con.prepareStatement("UPDATE Item SET price = ?, stock =?  WHERE upc=?");
+				
 			
-			  ps.setInt(1,price);
+			    ps.setInt(1,price);
 			
 			
 
@@ -65,12 +65,7 @@ public class ManagerModel
 				}
 			}
 			
-			
-		
 	
-		
-	
-		
 	}
 
 
