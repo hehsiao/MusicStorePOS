@@ -49,6 +49,15 @@ public class ManagerController implements ActionListener, ExceptionListener
 			iDialog.setVisible(true);
 			return; 
 		}
+
+		if (actionCommand.equals("View Daily Sales Report"))
+		{
+			DailySalesReportDialog iDialog = new DailySalesReportDialog(AMS);
+			iDialog.pack();
+			AMS.centerWindow(iDialog);
+			iDialog.setVisible(true);
+			return; 
+		}
 	}
 
 	/*
@@ -672,4 +681,229 @@ public class ManagerController implements ActionListener, ExceptionListener
 		//			}
 		//		}
 	}	// end ProcessDeliveryDialog
+
+	/*
+	 * This class creates a dialog box for viewing a daily sales report.
+	 */
+	class DailySalesReportDialog extends JDialog implements ActionListener
+	{
+		private JTextField purchaseDate = new JTextField(10);
+
+		// Given the purchase date this field automatically retrieves all the information for the sales report
+		private JTextArea dailySalesReport = new JTextArea(25, 50);
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public DailySalesReportDialog(JFrame parent)
+		{
+			super(parent, "View Daily Sales Report", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "View Daily Sales Report"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			// create and place purchase date label
+			JLabel label = new JLabel("Sales Date: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place purchase date field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(purchaseDate, c);
+			inputPane.add(purchaseDate);
+
+			// create and place daily sales report label
+			label = new JLabel("Daily Sales Report: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place daily sales report field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			dailySalesReport.setBackground(Color.lightGray);
+			dailySalesReport.setEditable(false);
+			gb.setConstraints(dailySalesReport, c);
+			inputPane.add(dailySalesReport);
+
+			// when the return key is pressed in the last field
+			// of this form, the action performed by the OK button
+			// is executed
+			purchaseDate.addActionListener(this);
+			purchaseDate.setActionCommand("OK");
+
+			// panel for the OK and cancel buttons
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton OKButton = new JButton("OK");
+			JButton cancelButton = new JButton("Cancel");
+			OKButton.addActionListener(this);
+			OKButton.setActionCommand("OK");
+			cancelButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					dispose();
+				}
+			});
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(OKButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(cancelButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+		/*
+		 * Event handler for the OK button in AddItemsDialog
+		 */ 
+		public void actionPerformed(ActionEvent e)
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("OK"))
+			{
+				//				if (validateInsert() != VALIDATIONERROR)
+				//				{
+				//					dispose();
+				//				}
+				//				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		}
+
+		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
+		//		/*
+		//		 * Validates the text fields in AddItemsDialog and then
+		//		 * calls manager.addItem() if the fields are valid.
+		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		//		 * OPERATIONFAILED, VALIDATIONERROR.
+		//		 */ 
+		//		private int validateInsert()
+		//		{
+		//			try
+		//			{
+		//				Integer cid;
+		//				String password;
+		//				String name;
+		//				String address;
+		//				Integer phone;
+		//
+		//				if (itemUPC.getText().trim().length() != 0)
+		//				{
+		//					cid = Integer.valueOf(itemUPC.getText().trim());
+		//
+		//					// check for duplicates
+		//					if (manager.findItem(cid.intValue()))
+		//					{
+		//						Toolkit.getDefaultToolkit().beep();
+		//						AMS.updateStatusBar("Manager " + cid.toString() + " already exists!");
+		//						return OPERATIONFAILED; 
+		//					}
+		//				}
+		//				else
+		//				{
+		//					return VALIDATIONERROR; 
+		//				}
+		//
+		//				if (itemTitle.getText().trim().length() != 0)
+		//				{
+		//					password = itemTitle.getText().trim();
+		//				}
+		//				else
+		//				{
+		//					return VALIDATIONERROR; 
+		//				}
+		//
+		//				if (itemType.getText().trim().length() != 0)
+		//				{
+		//					name = itemType.getText().trim();
+		//				}
+		//				else
+		//				{
+		//					return VALIDATIONERROR; 
+		//				}
+		//
+		//				if (itemCategory.getText().trim().length() != 0)
+		//				{
+		//					address = itemCategory.getText().trim();
+		//				}
+		//				else
+		//				{
+		//					address = null; 
+		//				}
+		//
+		//				if (itemCompany.getText().trim().length() != 0)
+		//				{
+		//					phone = Integer.valueOf(itemCompany.getText().trim());
+		//				}
+		//				else
+		//				{
+		//					phone = null; 
+		//				}
+		//
+		//				AMS.updateStatusBar("Creating Account...");
+		//
+		//				if (manager.addItem(cid, password, name, address, phone))
+		//				{
+		//					AMS.updateStatusBar("Operation successful.");
+		//					return OPERATIONSUCCESS; 
+		//				}
+		//				else
+		//				{
+		//					Toolkit.getDefaultToolkit().beep();
+		//					AMS.updateStatusBar("Operation failed.");
+		//					return OPERATIONFAILED; 
+		//				}
+		//			}
+		//			catch (NumberFormatException ex)
+		//			{
+		//				// this exception is thrown when a string 
+		//				// cannot be converted to a number
+		//				return VALIDATIONERROR; 
+		//			}
+		//		}
+	}	// end DailySalesReportDialog
 }
