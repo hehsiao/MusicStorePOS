@@ -30,8 +30,8 @@ public class ManagerModel
 			try
 			{	
 			
-				ps = con.prepareStatement("UPDATE branch SET price = price+? AND stock =stock+?  WHERE upc= ?");
-
+				ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
+				//ps = con.prepareStatement("UPDATE Item SET price = ?, stock =?  WHERE upc=?");
 			
 			  ps.setInt(1,price);
 			
@@ -76,16 +76,16 @@ public class ManagerModel
 
 
 	/*
-	 * Returns true if the manager exists; false
+	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public boolean findItem(int cid)
+	public boolean findItem(int upc)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT cid FROM manager WHERE cid = ?");
+			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
 
-			ps.setInt(1, cid);
+			ps.setInt(1, upc);
 
 			ResultSet rs = ps.executeQuery();
 
