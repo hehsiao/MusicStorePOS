@@ -29,7 +29,7 @@ public class AMSView extends JFrame
 
 	// the customer menu
 	private JMenu customer;
-	
+
 	// the debug menu
 	private JMenu debug;
 
@@ -159,7 +159,7 @@ public class AMSView extends JFrame
 
 		mb.add(customer);
 	}
-	
+
 	/*
 	 * Adds menu items to the Debug menu and then
 	 * adds the menu to the menubar
@@ -195,7 +195,7 @@ public class AMSView extends JFrame
 		createMenuItem(debug, "Show Return Item", 
 				-1, "ReturnItem");
 
-		
+
 		mb.add(debug);
 	}
 
@@ -267,15 +267,15 @@ public class AMSView extends JFrame
 
 		//		TO DO: EACH CONTROLLER NEEDS CODE FOR THIS PART TO WORK. LOOK AT EACH RESPECTIVE
 		//		JAVA FILE
-		//		
-		//		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
-		//		ManagerController managerControl = new ManagerController(this);
-		//
-		//		for (int i = 0; i < manager.getItemCount(); i++)
-		//		{
-		//			menuItem = manager.getItem(i);
-		//			menuItem.addActionListener(managerControl);
-		//		}
+
+		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
+		ManagerController managerControl = new ManagerController(this);
+
+		for (int i = 0; i < manager.getItemCount(); i++)
+		{
+			menuItem = manager.getItem(i);
+			menuItem.addActionListener(managerControl);
+		}
 		//
 		//		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
 		//		ClerkController clerkControl = new ClerkController(this);
