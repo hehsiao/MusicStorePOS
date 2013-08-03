@@ -19,60 +19,61 @@ public class ManagerModel
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 
-	public boolean addItem(Integer cid, String password, String name, String address, Integer phone)
+	/*
+	 * Inserts a tuple into the items table. 
+	 * price can be null
+	 */ 
+	public boolean insertItem(Integer upc, Integer price, Integer quantity)
 	{
-		try
-		{	   
-			ps = con.prepareStatement("INSERT INTO manager VALUES (?,?,?,?,?)");
-
-			ps.setInt(1, cid.intValue());
-
-			ps.setString(2, password);
-
-			ps.setString(3, name);
-
-			if (address != null)
-			{
-				ps.setString(4, address);
-			}
-			else
-			{
-				ps.setString(4, null);
-			}
-
-			if (phone != null)
-			{
-				ps.setInt(5, phone.intValue());
-			}
-			else
-			{
-				ps.setNull(5, Types.INTEGER);
-			}
-
-			ps.executeUpdate();
-
-			con.commit();
-
-			return true; 
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
+	  if (upc==null|| quantity==null) return false;
+			
 			try
-			{
-				con.rollback();
-				return false; 
+			{	
+			
+				ps = con.prepareStatement("UPDATE branch SET price = price+? AND stock =stock+?  WHERE upc= ?");
+
+			
+			  ps.setInt(1,price);
+			
+			
+
+				ps.setInt(2, quantity);
+
+				ps.setInt(3, upc);
+
+				ps.executeUpdate();
+
+				con.commit();
+
+				return true; 
 			}
-			catch (SQLException ex2)
+			catch (SQLException ex)
 			{
-				event = new ExceptionEvent(this, ex2.getMessage());
+				ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 				fireExceptionGenerated(event);
-				return false; 
+
+				try
+				{
+					con.rollback();
+					return false; 
+				}
+				catch (SQLException ex2)
+				{
+					event = new ExceptionEvent(this, ex2.getMessage());
+					fireExceptionGenerated(event);
+					return false; 
+				}
 			}
-		}
+			
+			
+		
+	
+		
+	
+		
 	}
+
+
 
 	/*
 	 * Returns true if the manager exists; false
