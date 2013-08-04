@@ -270,11 +270,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (manager.findItem(upc.intValue()))
+					if (!manager.findItem(upc.intValue()))
 					{
-						//Toolkit.getDefaultToolkit().beep();
-						//AMS.updateStatusBar("Item " + upc.toString() + " doesn't exist!");
-						//return OPERATIONFAILED; 
+						return OPERATIONFAILED; 
 					}
 				}
 				else

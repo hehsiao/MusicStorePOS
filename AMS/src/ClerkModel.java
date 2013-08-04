@@ -214,7 +214,7 @@ Foreign Key (upc) REFERENCES Item);
 	 * scroll insensitive and read only. If there is an error, null
 	 * is returned.
 	 */ 
-	public ResultSet showBranch()
+	public ResultSet showPurchases()
 	{
 		try
 		{	 
@@ -263,18 +263,17 @@ Foreign Key (upc) REFERENCES Item);
 		}
 	}
 
-
 	/*
-	 * Returns true if the branch exists; false
+	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public boolean findBranch(int bid)
+	public boolean findItem(int upc)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT branch_id FROM branch where branch_id = ?");
+			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
 
-			ps.setInt(1, bid);
+			ps.setInt(1, upc);
 
 			ResultSet rs = ps.executeQuery();
 
