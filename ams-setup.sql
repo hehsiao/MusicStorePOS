@@ -75,38 +75,43 @@ create table ReturnItem
 	quantity number(4),	
 	PRIMARY KEY (retid, upc),
 	FOREIGN KEY (upc) REFERENCES Item,
-	FOREIGN KEY (retid REFERENCES Return));
+	FOREIGN KEY (retid) REFERENCES Return);
 	
 	
-CREATE SEQUENCE test_sequence
+CREATE SEQUENCE test_sequence1
 START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TRIGGER test_trigger
+CREATE OR REPLACE TRIGGER test_trigger1
 BEFORE INSERT
 ON Return
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence.nextval INTO :NEW.RETID FROM dual;
+SELECT test_sequence1.nextval INTO :NEW.RETID FROM dual;
 END;	
 
-CREATE OR REPLACE TRIGGER test_trigger
+CREATE SEQUENCE test_sequence2
+START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER test_trigger2
 BEFORE INSERT
 ON Purchase
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence.nextval INTO :NEW.RECEIPTID FROM dual;
+SELECT test_sequence2.nextval INTO :NEW.RECEIPTID FROM dual;
 END;	
 
+CREATE SEQUENCE test_sequence3
+START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TRIGGER test_trigger
+CREATE OR REPLACE TRIGGER test_trigger3
 BEFORE INSERT
 ON Customer
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence.nextval INTO :NEW.CID FROM dual;
+SELECT test_sequence3.nextval INTO :NEW.CID FROM dual;
 END;	
 
 
