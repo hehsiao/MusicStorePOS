@@ -43,7 +43,7 @@ create table Customer
 	PRIMARY KEY (cid));
 
 create table Purchase
-	(receiptId integer not null, 
+	(receiptId integer, 
 	pdate DATE default(sysdate),
 	cid number(10), 
 	cardnum varchar(16),
@@ -54,7 +54,7 @@ create table Purchase
     Foreign Key (cid) REFERENCES Customer);
 
 create table PurchaseItem
-	(receiptId number(15) not null, 
+	(receiptId number(15),
 	upc number(10) not null,
 	quantity number(4), 
 	PRIMARY KEY (receiptId, upc),
@@ -63,14 +63,14 @@ create table PurchaseItem
 );
 
 create table Return
-	(retid number(15) not null, 
+	(retid number(15),
 	retdate DATE default (sysdate),
 	receiptId number(15), 
 	Primary Key (retid),
 	Foreign Key (receiptId) REFERENCES Purchase);
 
 create table ReturnItem
-	(retid number(15) not null,	
+	(retid number(15) ,
 	upc number(10) not null,
 	quantity number(4),	
 	PRIMARY KEY (retid, upc),
@@ -78,6 +78,17 @@ create table ReturnItem
 	FOREIGN KEY (retid) REFERENCES Return);
 	
 	
+
+-- DUMMY DATA 
+INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
+INSERT into LeadSinger values (1, ' Avicii');
+INSERT into HasSong values (1, 'Levels (original version)');
+INSERT into Customer values (1, '1234', 'Matthew', '100 Hastings', '6045551234' );
+INSERT into Customer values (2, '2345', 'Risa', '100 Main', '6045551235' );
+INSERT into Customer values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
+INSERT into Customer values (4, '2234', 'Shanifer', '100 Burnaby', '604555444' );
+
+
 CREATE SEQUENCE test_sequence1
 START WITH 1 INCREMENT BY 1;
 
@@ -90,8 +101,6 @@ BEGIN
 SELECT test_sequence1.nextval INTO :NEW.RETID FROM dual;
 END;	
 
-CREATE SEQUENCE test_sequence2
-START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TRIGGER test_trigger2
 BEFORE INSERT
@@ -99,28 +108,34 @@ ON Purchase
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence2.nextval INTO :NEW.RECEIPTID FROM dual;
+SELECT test_sequence1.nextval INTO :NEW.RECEIPTID FROM dual;
 END;	
 
-CREATE SEQUENCE test_sequence3
-START WITH 1 INCREMENT BY 1;
-
 CREATE OR REPLACE TRIGGER test_trigger3
+BEFORE INSERT
+ON PurchaseItem
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT test_sequence1.nextval INTO :NEW.RECEIPTID FROM dual;
+END;	
+
+
+
+CREATE OR REPLACE TRIGGER test_trigger4
 BEFORE INSERT
 ON Customer
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence3.nextval INTO :NEW.CID FROM dual;
+SELECT test_sequence1.nextval INTO :NEW.CID FROM dual;
 END;	
 
-
--- DUMMY DATA 
-INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
-INSERT into LeadSinger values (1, ' Avicii');
-INSERT into HasSong values (1, 'Levels (original version)');
-INSERT into Customer values (1, '1234', 'Matthew', '100 Hastings', '6045551234' );
-INSERT into Customer values (2, '2345', 'Risa', '100 Main', '6045551235' );
-INSERT into Customer values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
-INSERT into Customer values (4, '2234', 'Shanifer', '100 Burnaby', '604555444' );
-
+CREATE OR REPLACE TRIGGER test_trigger5
+BEFORE INSERT
+ON ReturnITEM
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT test_sequence1.nextval INTO :NEW.RECEIPTID FROM dual;
+END;	

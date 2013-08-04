@@ -84,10 +84,13 @@ Foreign Key (upc) REFERENCES Item);
 			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
 			con.commit();
+			
 			System.out.println("1");
-			ps = con.prepareStatement("INSERT INTO Purchase(date) values(SYSDATE)");
-		
+			//ps = con.prepareStatement("INSERT INTO Purchase(date) values(SYSDATE)");
+			ps = con.prepareStatement("INSERT INTO Item(upc,price,stock) values(2,3,5)");
+			System.out.println("Hello");
 			ps.executeUpdate();
+			System.out.println("YO");
 			con.commit();
 			System.out.println("2");
 			ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
