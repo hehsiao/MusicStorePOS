@@ -30,17 +30,27 @@ public class ManagerModel
 			try
 			{	
 			
-				ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
+				if (price==0){
 				
+			ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
 			
-			    ps.setInt(1,price);
 			
+			}
+			else {
+				ps = con.prepareStatement("UPDATE Item SET price = ?, stock =(stock+?)  WHERE upc= ?");
+			System.out.println("HelloWORLD");
+			}
+			    ps.setInt(1,price.intValue());
+				
+				
+				//ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
+				//ps = con.prepareStatement("UPDATE Item SET stock =100  WHERE upc= 2");
+					
 			
-
-				ps.setInt(2, quantity);
-
-				ps.setInt(3, upc);
-
+			ps.setInt(1,price.intValue());
+			ps.setInt(2, quantity.intValue());
+		    ps.setInt(3, upc.intValue());
+				
 				ps.executeUpdate();
 
 				con.commit();
