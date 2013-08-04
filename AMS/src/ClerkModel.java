@@ -78,7 +78,8 @@ Foreign Key (upc) REFERENCES Item);
 		{	   
 		
 		if (upc==null) return false;	
-			
+		//TODO: If stock < 0, stay 0	
+		
 			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
 			ps.setInt(1, quantity.intValue());
 			ps.setInt(2, upc.intValue());
@@ -86,14 +87,11 @@ Foreign Key (upc) REFERENCES Item);
 			con.commit();
 			
 			System.out.println("1");
-			//ps = con.prepareStatement("INSERT INTO Purchase(date) values(SYSDATE)");
-			ps = con.prepareStatement("INSERT INTO Item(upc,price,stock) values(2,3,5)");
-			System.out.println("Hello");
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
 			ps.executeUpdate();
-			System.out.println("YO");
 			con.commit();
-			System.out.println("2");
-			ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
+			//missing parent key
+			//ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
 			ps.setInt(1, upc.intValue());
 			ps.setInt(2, quantity.intValue());
 			ps.executeUpdate();
