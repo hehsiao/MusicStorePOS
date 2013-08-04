@@ -37,3 +37,5 @@
 
 .metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml
 AMS/bin
+
+*.zip
