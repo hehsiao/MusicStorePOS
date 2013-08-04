@@ -484,8 +484,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		 * calls customer.insertCustomer() if the fields are valid.
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
-		 * 
-		 * Verifies that customer exists, and that the password entered is correct.
 		 */ 
 		private int validateInsert()
 		{
@@ -501,7 +499,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 					if(!customer.findCustomer(cid.intValue())){
 						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
-						return OPERATIONFAILED;
 					}
 					else {
 						// check for account

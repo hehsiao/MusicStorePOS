@@ -107,39 +107,6 @@ public class CustomerModel
 	}
 
 	/*
-	 * Returns true if the customer/password combination is correct; false
-	 * otherwise.
-	 */ 
-	public boolean authenticateCustomer(int cid, String pwd)
-	{
-		try
-		{	
-			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ? AND password = ?");
-
-			ps.setInt(1, cid);
-			ps.setString(2, pwd);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				return true; 
-			}
-			else
-			{
-				return false; 
-			}
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return false; 
-		}
-	}
-
-	/*
 	 * Returns the database connection used by this customer model
 	 */
 	public Connection getConnection()

@@ -484,8 +484,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		 * calls customer.insertCustomer() if the fields are valid.
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
-		 * 
-		 * Verifies that customer exists, and that the password entered is correct.
 		 */ 
 		private int validateInsert()
 		{
@@ -499,22 +497,17 @@ public class CustomerController implements ActionListener, ExceptionListener
 					cid = Integer.valueOf(customerID.getText().trim());
 					password = customerPW.getText().trim();
 
-					if(!customer.findCustomer(cid.intValue())){
-						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
-						return OPERATIONFAILED;
+					// check for account
+					if (customer.authenticateCustomer(cid.intValue(), password))
+					{
+						Toolkit.getDefaultToolkit().beep();
+						AMS.updateStatusBar("Customer " + cid.toString() + " login successfully!");
+						return OPERATIONSUCCESS;
 					}
 					else {
-						// check for account
-						if (customer.authenticateCustomer(cid.intValue(), password))
-						{
-							AMS.updateStatusBar("Customer " + cid.toString() + " login successfully!");
-							return OPERATIONSUCCESS;
-						}
-						else {
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
-							return OPERATIONFAILED; 
-						}
+						Toolkit.getDefaultToolkit().beep();
+						AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
+						return OPERATIONFAILED; 
 					}
 				}
 				else
@@ -522,6 +515,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
+			
 			}
 			catch (NumberFormatException ex)
 			{

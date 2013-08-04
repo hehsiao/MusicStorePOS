@@ -107,17 +107,16 @@ public class CustomerModel
 	}
 
 	/*
-	 * Returns true if the customer/password combination is correct; false
+	 * Returns true if the customer exists; false
 	 * otherwise.
 	 */ 
 	public boolean authenticateCustomer(int cid, String pwd)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ? AND password = ?");
+			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ?");
 
 			ps.setInt(1, cid);
-			ps.setString(2, pwd);
 
 			ResultSet rs = ps.executeQuery();
 

@@ -43,7 +43,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		
 		if (actionCommand.equals("Purchase Items"))
 		{
-			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
+			PurchaseItemsDialog iDialog = new PurchaseItemsDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
@@ -351,16 +351,20 @@ public class CustomerController implements ActionListener, ExceptionListener
 	/*
 	 * This class creates a dialog box for registering a customer account.
 	 */
-	class CustomerLoginDialog extends JDialog implements ActionListener
+	class PurchaseItemsDialog extends JDialog implements ActionListener
 	{
 		private JTextField customerID = new JTextField(4);
 		private JPasswordField customerPW = new JPasswordField(15);
+		private JTextField customerName = new JTextField(10);
+		private JTextField customerAddress = new JTextField(15);
+		private JTextField customerPhone = new JTextField(10);
+
 		/*
 		 * Constructor. Creates the dialog's GUI.
 		 */
-		public CustomerLoginDialog(JFrame parent)
+		public PurchaseItemsDialog(JFrame parent)
 		{
-			super(parent, "Login to purchase items", true);
+			super(parent, "Purchase Items", true);
 			setResizable(false);
 
 			JPanel contentPane = new JPanel(new BorderLayout());
@@ -370,7 +374,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			// this panel will contain the text field labels and the text fields.
 			JPanel inputPane = new JPanel();
 			inputPane.setBorder(BorderFactory.createCompoundBorder(
-					new TitledBorder(new EtchedBorder(), "Purchase Online"), 
+					new TitledBorder(new EtchedBorder(), "Customer Account Registration"), 
 					new EmptyBorder(5, 5, 5, 5)));
 
 			// add the text field labels and text fields to inputPane
@@ -412,22 +416,69 @@ public class CustomerController implements ActionListener, ExceptionListener
 			gb.setConstraints(customerPW, c);
 			inputPane.add(customerPW);
 
+			/** CUSTOMER NAME **/
+			// create and place customer name label
+			label = new JLabel("Name: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place customer name field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(customerName, c);
+			inputPane.add(customerName);
 			
+			/** CUSTOMER ADDRESS **/
+			// create and place customer address label
+			label = new JLabel("Address: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place customer address field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(customerAddress, c);
+			inputPane.add(customerAddress);
+
+			/** CUSTOMER PHONE **/
+			// create and place customer phone label
+			label = new JLabel("Phone Number: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place customer phone field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(customerPhone, c);
+			inputPane.add(customerPhone);
+
 			// when the return key is pressed in the last field
 			// of this form, the action performed by the OK button
 			// is executed
-			customerPW.addActionListener(this);
-			customerPW.setActionCommand("OK");
+			customerPhone.addActionListener(this);
+			customerPhone.setActionCommand("OK");
 
 			// panel for the OK and cancel buttons
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-			JButton OKButton = new JButton("Login");
+			JButton OKButton = new JButton("OK");
 			JButton cancelButton = new JButton("Cancel");
 			OKButton.addActionListener(this);
-			OKButton.setActionCommand("Login");
+			OKButton.setActionCommand("OK");
 			cancelButton.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -484,8 +535,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		 * calls customer.insertCustomer() if the fields are valid.
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
-		 * 
-		 * Verifies that customer exists, and that the password entered is correct.
 		 */ 
 		private int validateInsert()
 		{
@@ -493,28 +542,20 @@ public class CustomerController implements ActionListener, ExceptionListener
 			{
 				Integer cid;
 				String password;
+				String name;
+				String address;
+				Integer phone;
 
-				if (customerID.getText().trim().length() != 0 && customerPW.getText().trim().length() != 0)
+				if (customerID.getText().trim().length() != 0)
 				{
 					cid = Integer.valueOf(customerID.getText().trim());
-					password = customerPW.getText().trim();
 
-					if(!customer.findCustomer(cid.intValue())){
-						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
-						return OPERATIONFAILED;
-					}
-					else {
-						// check for account
-						if (customer.authenticateCustomer(cid.intValue(), password))
-						{
-							AMS.updateStatusBar("Customer " + cid.toString() + " login successfully!");
-							return OPERATIONSUCCESS;
-						}
-						else {
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
-							return OPERATIONFAILED; 
-						}
+					// check for duplicates
+					if (customer.findCustomer(cid.intValue()))
+					{
+						Toolkit.getDefaultToolkit().beep();
+						AMS.updateStatusBar("Customer " + cid.toString() + " already exists!");
+						return OPERATIONFAILED; 
 					}
 				}
 				else
@@ -522,6 +563,55 @@ public class CustomerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
+				if (customerPW.getText().trim().length() != 0)
+				{
+					password = customerPW.getText().trim();
+				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				if (customerName.getText().trim().length() != 0)
+				{
+					name = customerName.getText().trim();
+				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				if (customerAddress.getText().trim().length() != 0)
+				{
+					address = customerAddress.getText().trim();
+				}
+				else
+				{
+					address = null; 
+				}
+
+				if (customerPhone.getText().trim().length() != 0)
+				{
+					phone = Integer.valueOf(customerPhone.getText().trim());
+				}
+				else
+				{
+					phone = null; 
+				}
+
+				AMS.updateStatusBar("Creating Account...");
+
+				if (customer.insertCustomer(cid, password, name, address, phone))
+				{
+					AMS.updateStatusBar("Operation successful.");
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
 			}
 			catch (NumberFormatException ex)
 			{

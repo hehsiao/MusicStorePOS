@@ -484,8 +484,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		 * calls customer.insertCustomer() if the fields are valid.
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
-		 * 
-		 * Verifies that customer exists, and that the password entered is correct.
 		 */ 
 		private int validateInsert()
 		{
