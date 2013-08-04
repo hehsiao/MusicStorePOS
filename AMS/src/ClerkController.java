@@ -34,8 +34,6 @@ public class ClerkController implements ActionListener, ExceptionListener
 	public static final int OPERATIONFAILED = 1;
 	public static final int VALIDATIONERROR = 2; 
 	
-	private Integer receiptID=0;
-
 	public ClerkController(AMSView AMS)
 	{
 		this.AMS = AMS;
@@ -326,10 +324,11 @@ public class ClerkController implements ActionListener, ExceptionListener
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (!clerk.findItem(upc.intValue())){
-					return OPERATIONFAILED; 
+					if (clerk.findItem(upc.intValue())){
+									
+					}
 				}
-				}
+				
 				else
 				{
 					return VALIDATIONERROR; 
@@ -346,14 +345,14 @@ public class ClerkController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 					}
 				
-
+				
 				AMS.updateStatusBar("Processing Cash Purchase...");
 
-				if (clerk.processCash(receiptID,upc, quantity))
+				if (clerk.processCash(upc, quantity))
 				{
 					AMS.updateStatusBar("Operation successful.");
 					showAllPurchases();
-					receiptID++;
+				
 					return OPERATIONSUCCESS; 
 				}
 				else

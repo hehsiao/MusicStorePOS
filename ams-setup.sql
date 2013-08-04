@@ -1,13 +1,14 @@
 -- -- UNCOMMENT TO DELETE ALL TABLES
--- drop table ITEM cascade constraints;
--- drop table LEADSINGER cascade constraints;
--- drop table HASSONG cascade constraints;
--- drop table CUSTOMER cascade constraints;
--- drop table PURCHASE cascade constraints;
--- drop table PURCHASEITEM cascade constraints;
--- drop table RETURN cascade constraints;
--- drop table RETURNITEM cascade constraints;
+drop table ITEM cascade constraints;
+drop table LEADSINGER cascade constraints;
+drop table HASSONG cascade constraints;
+drop table CUSTOMER cascade constraints;
+drop table PURCHASE cascade constraints;
+drop table PURCHASEITEM cascade constraints;
+drop table RETURN cascade constraints;
+drop table RETURNITEM cascade constraints;
 -- -- DELETE TABLE CODE ENDS 
+
 
 -- CREATE Tables
 create table Item
@@ -58,7 +59,8 @@ create table PurchaseItem
 	quantity number(4), 
 	PRIMARY KEY (receiptId, upc),
 	Foreign Key (receiptId) REFERENCES Purchase,
-	Foreign Key (upc) REFERENCES Item);
+	Foreign Key (upc) REFERENCES Item
+);
 
 create table Return
 	(retid number(15) not null, 
@@ -72,7 +74,41 @@ create table ReturnItem
 	upc number(10) not null,
 	quantity number(4),	
 	PRIMARY KEY (retid, upc),
-	FOREIGN KEY (upc) REFERENCES Item);
+	FOREIGN KEY (upc) REFERENCES Item,
+	FOREIGN KEY (retid REFERENCES Return);
+	
+	
+CREATE SEQUENCE test_sequence
+START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER test_trigger
+BEFORE INSERT
+ON Return
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT test_sequence.nextval INTO :NEW.RETID FROM dual;
+END;	
+
+CREATE OR REPLACE TRIGGER test_trigger
+BEFORE INSERT
+ON Purchase
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT test_sequence.nextval INTO :NEW.RECEIPTID FROM dual;
+END;	
+
+
+CREATE OR REPLACE TRIGGER test_trigger
+BEFORE INSERT
+ON Customer
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT test_sequence.nextval INTO :NEW.CID FROM dual;
+END;	
+
 
 -- DUMMY DATA 
 INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');

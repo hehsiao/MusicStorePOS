@@ -72,32 +72,31 @@ Foreign Key (receiptId) REFERENCES Purchase
 Foreign Key (upc) REFERENCES Item);
  
 	 */ 
-	public boolean processCash(Integer rID,Integer upc, Integer quantity)
+	public boolean processCash(Integer upc, Integer quantity)
 	{
 		try
 		{	   
 		
-		if (rID==null||upc==null) return false;	
+		if (upc==null) return false;	
 			
 			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
 			ps.setInt(1, quantity.intValue());
 			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
 			con.commit();
-
-			ps = con.prepareStatement("INSERT INTO Purchase(receiptID,date) values(?,CONVERT(VARCHAR(10),GETDATE(),110)");
-			ps.setInt(1, rID.intValue());
-			ps.executeUpdate();
-			con.commit();
-
-			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID,upc,quantity) values(?,?,?)");
-			ps.setInt(1, rID.intValue());
-			ps.setInt(2, upc.intValue());
-			ps.setInt(3, quantity.intValue());
-			ps.executeUpdate();
-			con.commit();
-
+			System.out.println("1");
+			ps = con.prepareStatement("INSERT INTO Purchase(date) values(SYSDATE)");
 		
+			ps.executeUpdate();
+			con.commit();
+			System.out.println("2");
+			ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
+			ps.setInt(1, upc.intValue());
+			ps.setInt(2, quantity.intValue());
+			ps.executeUpdate();
+			con.commit();
+
+			System.out.println("3");
 
 			return true; 
 		}
