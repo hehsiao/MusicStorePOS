@@ -1,3 +1,15 @@
+-- -- UNCOMMENT TO DELETE ALL TABLES
+-- drop table ITEM cascade constraints;
+-- drop table LEADSINGER cascade constraints;
+-- drop table HASSONG cascade constraints;
+-- drop table CUSTOMER cascade constraints;
+-- drop table PURCHASE cascade constraints;
+-- drop table PURCHASEITEM cascade constraints;
+-- drop table RETURN cascade constraints;
+-- drop table RETURNITEM cascade constraints;
+-- -- DELETE TABLE CODE ENDS 
+
+-- CREATE Tables
 create table Item
 	(upc number(10) not null, 
 	title varchar(30),
@@ -62,6 +74,7 @@ create table ReturnItem
 	PRIMARY KEY (retid, upc),
 	FOREIGN KEY (upc) REFERENCES Item);
 
+-- DUMMY DATA 
 INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
 INSERT into LeadSinger values (1, ' Avicii');
 INSERT into HasSong values (1, 'Levels (original version)');

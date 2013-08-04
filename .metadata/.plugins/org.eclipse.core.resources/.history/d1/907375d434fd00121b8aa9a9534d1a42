@@ -50,14 +50,14 @@ public class DebugModel
 	}
 	
 	/*
-	 * Same as editTable() except that an updatable result set
+	 * Same as showTable() except that an updatable result set
 	 * is returned.
 	 */ 
-	public ResultSet editTable(String table)
+	public ResultSet showTable(String table)
 	{
 		try
 		{	 
-			System.out.println("EDIT");
+
 			query = "SELECT * FROM " + table;
 			ps = con.prepareStatement(query, 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,

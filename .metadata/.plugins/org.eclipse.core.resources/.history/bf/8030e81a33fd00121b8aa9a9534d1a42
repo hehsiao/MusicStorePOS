@@ -8,7 +8,6 @@ public class DebugModel
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
-	private String query;
 
 	/*
 	 * Default constructor
@@ -30,10 +29,12 @@ public class DebugModel
 		try
 		{	 
 			System.out.println(table);
-			query = "SELECT * FROM " + table;
+			String query = "SELECT * FROM "+ table;
 			ps = con.prepareStatement(query, 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
+
+			ps.setString(1, table.toLowerCase());
 			
 			ResultSet rs = ps.executeQuery();
 
@@ -50,18 +51,18 @@ public class DebugModel
 	}
 	
 	/*
-	 * Same as editTable() except that an updatable result set
+	 * Same as showTable() except that an updatable result set
 	 * is returned.
 	 */ 
 	public ResultSet editTable(String table)
 	{
 		try
 		{	 
-			System.out.println("EDIT");
-			query = "SELECT * FROM " + table;
-			ps = con.prepareStatement(query, 
+			ps = con.prepareStatement("SELECT * FROM ?", 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
+
+			ps.setString(1, table.toLowerCase());
 			
 			ResultSet rs = ps.executeQuery();
 

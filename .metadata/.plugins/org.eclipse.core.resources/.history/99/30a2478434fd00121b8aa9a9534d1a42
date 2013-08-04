@@ -35,7 +35,7 @@ public class DebugController implements ActionListener, ExceptionListener
 		if (actionCommand.equals("Item"))
 		{
 			AMS.updateStatusBar("Displaying Item Table");
-			editTables("Item");
+			showTables("Item");
 			return; 
 		}
 		
@@ -116,6 +116,7 @@ public class DebugController implements ActionListener, ExceptionListener
 	 */
 	private void showTables(String table_name)
 	{
+		System.out.println(table_name);
 		ResultSet rs = debug.showTable(table_name);
 
 		// CustomTableModel maintains the result set's data, e.g., if  
@@ -130,22 +131,6 @@ public class DebugController implements ActionListener, ExceptionListener
 
 		// Adds the table to the scrollpane.
 		// By default, a JTable does not have scroll bars.
-		AMS.addTable(data);
-	}
-
-	/*
-	 * This method displays all branches in an editable JTable
-	 */
-	private void editTables(String table_name)
-	{
-		ResultSet rs = debug.editTable(table_name);
-
-		CustomTableModel model = new CustomTableModel(debug.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
 		AMS.addTable(data);
 	}
 

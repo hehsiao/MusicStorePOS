@@ -35,7 +35,7 @@ public class DebugController implements ActionListener, ExceptionListener
 		if (actionCommand.equals("Item"))
 		{
 			AMS.updateStatusBar("Displaying Item Table");
-			editTables("Item");
+			showTables("Item");
 			return; 
 		}
 		
