@@ -1,63 +1,63 @@
 create table Item
-	(upc integer not null,
-	title varchar(20),
+	(upc number(10) not null,
+	title varchar(20) not null,
 	type varchar(10),
 	category varchar(10),
 	company varchar(20),
 	year integer,
-	price integer,
-	stock integer,
+	price number(7,2),
+	stock number(4),
     PRIMARY KEY (upc));
 
 create table LeadSinger
-	(upc integer not null,
+	(upc number(10) not null,
 	name varchar(20) not null,
     PRIMARY KEY (upc, name),
 	Foreign Key (upc) REFERENCES Item(upc));
 
 create table HasSong
-	(upc integer not null,
+	(upc number(10) not null,
 	title varchar(15) not null,
 	PRIMARY KEY (upc, title),
 	Foreign Key (upc) references Item(upc));
 
 create table Customer
-	(cid integer not null,
+	(cid number(10) not null,
 	password varchar(8),
 	name varchar(20),
 	address varchar(20),
-	phone integer,
+	phone varchar(10),
 	PRIMARY KEY (cid));
 
 create table Purchase
 	(receiptId integer not null,
-	pdate integer,
-	cid integer ,
-	cardnum integer,
-	expiryDate integer,
-	expectedDate integer,
-	deliveredDate integer,
+	pdate DATE default(sysdate),
+	cid number(10) ,
+	cardnum varchar(16),
+	expiryDate varchar(5),
+	expectedDate DATE,
+	deliveredDate DATE,
     PRIMARY KEY (receiptId),
     Foreign Key (cid) REFERENCES Customer);
 
 create table PurchaseItem
-	(receiptId integer not null,
-	upc integer not null,
-	quantity integer,
+	(receiptId number(15) not null,
+	upc number(10) not null,
+	quantity number(4),
     PRIMARY KEY (receiptId, upc),
 	Foreign Key (receiptId) REFERENCES Purchase,
 	Foreign Key (upc) REFERENCES Item);
 
 create table Return
-	(retid integer not null,
-	retdate integer,
-	receiptId integer,
+	(retid number(15) not null,
+	retdate DATE default (sysdate),
+	receiptId number(15),
 	Primary Key (retid),
 	Foreign Key (receiptId) REFERENCES Purchase);
 
 create table ReturnItem
-	(retid integer not null,
-	upc integer not null,
-	quantity integer,
+	(retid number(15) not null,
+	upc number(10) not null,
+	quantity number(4),
 	PRIMARY KEY (retid, upc),
 	FOREIGN KEY (upc) REFERENCES Item);
