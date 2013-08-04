@@ -75,7 +75,7 @@ create table ReturnItem
 	quantity number(4),	
 	PRIMARY KEY (retid, upc),
 	FOREIGN KEY (upc) REFERENCES Item,
-	FOREIGN KEY (retid REFERENCES Return);
+	FOREIGN KEY (retid REFERENCES Return));
 	
 	
 CREATE SEQUENCE test_sequence
