@@ -1,7 +1,10 @@
 // File: BranchModel.java
 
 import java.sql.*; 
+
 import javax.swing.event.EventListenerList;
+
+import oracle.sql.DATE;
 
 
 /*
@@ -48,48 +51,53 @@ public class ClerkModel
 
 
 	/*
-	 * Inserts a tuple into the branch table. The object wrapper for the int datatype 
-	 * is used so that null can be inserted, e.g., to insert null
-	 * into the branch_phone column, set the bphone argument to null. If a 10 digit phone 
-	 * number is used, change the data type for the phone number from Integer to Long.
-	 * Returns true if the insert is successful; false otherwise.
-	 *
-	 * Only baddr and bphone can be null.
+	 * stock--,
+	 * daily sales report**
+	 * 
+	 * 
+create table Purchase
+(receiptId integer not null PRIMARY KEY,
+date date,
+cid integer FOREIGN KEY REFERENCES Customer,
+cardnum integer,
+expiryDate integer,
+expectedDate integer,
+deliveredDate integer);
+
+create table PurchaseItem
+(receiptId integer not null PRIMARY KEY,
+upc integer not null PRIMARY KEY,
+quantity integer
+Foreign Key (receiptId) REFERENCES Purchase
+Foreign Key (upc) REFERENCES Item);
+ 
 	 */ 
-	public boolean insertBranch(Integer bid, String bname, String baddr, String bcity,
-			Integer bphone)
+	public boolean processCash(Integer rID,Integer upc, Integer quantity)
 	{
 		try
 		{	   
-			ps = con.prepareStatement("INSERT INTO branch VALUES (?,?,?,?,?)");
-
-			ps.setInt(1, bid.intValue());
-
-			ps.setString(2, bname);
-
-			if (baddr != null)
-			{
-				ps.setString(3, baddr);
-			}
-			else
-			{
-				ps.setString(3, null);
-			}
-
-			ps.setString(4, bcity);
-
-			if (bphone != null)
-			{
-				ps.setInt(5, bphone.intValue());
-			}
-			else
-			{
-				ps.setNull(5, Types.INTEGER);
-			}
-
+		
+		if (rID==null||upc==null) return false;	
+			
+			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
+			ps.setInt(1, quantity.intValue());
+			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
-
 			con.commit();
+
+			ps = con.prepareStatement("INSERT INTO Purchase(receiptID,date) values(?,CONVERT(VARCHAR(10),GETDATE(),110)");
+			ps.setInt(1, rID.intValue());
+			ps.executeUpdate();
+			con.commit();
+
+			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID,upc,quantity) values(?,?,?)");
+			ps.setInt(1, rID.intValue());
+			ps.setInt(2, upc.intValue());
+			ps.setInt(3, quantity.intValue());
+			ps.executeUpdate();
+			con.commit();
+
+		
 
 			return true; 
 		}
@@ -111,6 +119,7 @@ public class ClerkModel
 			}
 		}
 	}
+
 
 
 	/*

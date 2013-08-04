@@ -38,7 +38,7 @@ public class ManagerModel
 			}
 			else {
 				ps = con.prepareStatement("UPDATE Item SET price = ?, stock =(stock+?)  WHERE upc= ?");
-			System.out.println("HelloWORLD");
+		
 			}
 			    ps.setInt(1,price.intValue());
 				

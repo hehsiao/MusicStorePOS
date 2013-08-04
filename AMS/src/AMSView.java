@@ -276,15 +276,15 @@ public class AMSView extends JFrame
 			menuItem = manager.getItem(i);
 			menuItem.addActionListener(managerControl);
 		}
-		//
-		//		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
-		//		ClerkController clerkControl = new ClerkController(this);
-		//
-		//		for (int i = 0; i < clerk.getItemCount(); i++)
-		//		{
-		//			menuItem = clerk.getItem(i);
-		//			menuItem.addActionListener(clerkControl);
-		//		}
+		
+				// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
+				ClerkController clerkControl = new ClerkController(this);
+		
+				for (int i = 0; i < clerk.getItemCount(); i++)
+				{
+					menuItem = clerk.getItem(i);
+					menuItem.addActionListener(clerkControl);
+				}
 
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
 		CustomerController customerControl = new CustomerController(this);
