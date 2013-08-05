@@ -92,10 +92,10 @@ Foreign Key (upc) REFERENCES Item);
 			con.commit();
 			//missing parent key
 			//ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
-//			ps.setInt(1, upc.intValue());
-//			ps.setInt(2, quantity.intValue());
-//			ps.executeUpdate();
-//			con.commit();
+			ps.setInt(1, upc.intValue());
+			ps.setInt(2, quantity.intValue());
+			ps.executeUpdate();
+			con.commit();
 
 			System.out.println("3");
 
