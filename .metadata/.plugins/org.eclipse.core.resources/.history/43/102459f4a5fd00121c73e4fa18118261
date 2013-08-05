@@ -23,7 +23,7 @@ public class PurchaseModel
 	public Integer nextPurchaseID(){
 		try
 		{	
-			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = ( SELECT MAX(receiptID) from purchase)");
+			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = ( SELECT MAX(receiptID from purchase)");
 
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())

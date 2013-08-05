@@ -350,9 +350,8 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 				if (clerk.processCash(upc, quantity))
 				{
-					
 					AMS.updateStatusBar("Operation successful.");
-//					showAllPurchases();
+					showAllPurchases();
 
 					return OPERATIONSUCCESS; 
 				}
@@ -372,27 +371,27 @@ public class ClerkController implements ActionListener, ExceptionListener
 		}
 	}
 
-//	/*
-//	 * This method displays all purchases in a non-editable JTable
-//	 */
-//	private void showAllPurchases()
-//	{
-//		ResultSet rs = clerk.showPurchases();
-//
-//		// CustomTableModel maintains the result set's data, e.g., if  
-//		// the result set is updatable, it will update the database
-//		// when the table's data is modified.  
-//		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
-//		CustomTable data = new CustomTable(model);
-//
-//		// register to be notified of any exceptions that occur in the model and table
-//		model.addExceptionListener(this);
-//		data.addExceptionListener(this);
-//
-//		// Adds the table to the scrollpane.
-//		// By default, a JTable does not have scroll bars.
-//		AMS.addTable(data);
-//	}
+	/*
+	 * This method displays all purchases in a non-editable JTable
+	 */
+	private void showAllPurchases()
+	{
+		ResultSet rs = clerk.showPurchases();
+
+		// CustomTableModel maintains the result set's data, e.g., if  
+		// the result set is updatable, it will update the database
+		// when the table's data is modified.  
+		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		// register to be notified of any exceptions that occur in the model and table
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		// Adds the table to the scrollpane.
+		// By default, a JTable does not have scroll bars.
+		AMS.addTable(data);
+	}
 
 
 }
