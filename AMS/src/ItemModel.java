@@ -142,6 +142,69 @@ public class ItemModel
 		}
 	}
 
+	/**
+	 * return stock level of upc
+	 * @param upc
+	 * @return stock level of requested stock
+	 */
+	public Integer checkStock(int upc)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT stock FROM item WHERE upc = ?");
+			ps.setInt(1, upc);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()){
+				return rs.getInt(1); 
+			}
+			else {
+				return -1; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return null; 
+		}
+	}
+	
+	/**
+	 * sellItem decrement the stock level of the UPC product by quantity amount
+	 * @param upc
+	 * @param quantity
+	 * @return true if successfuly, false if failed.
+	 */
+	public boolean sellItem(int upc, int quantity){
+		try
+		{	  
+			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
+			ps.setInt(1, quantity);
+			ps.setInt(2, upc);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	
 	/*
 	 * Returns the database connection used by this item model
 	 */

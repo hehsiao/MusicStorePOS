@@ -9,7 +9,7 @@ public class PurchaseModel
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
-
+	private ItemModel item = new ItemModel();
 	/*
 	 * Default constructor
 	 * Precondition: The Connection object in AMSOracleConnection must be
@@ -20,20 +20,21 @@ public class PurchaseModel
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 	
-	public Integer nextPurchaseID(){
+	/**
+	 * Checks and return the last ReceiptID in the Purchase table.
+	 * Returns -1 if error.
+	 * @return last receiptID in purchases table.
+	 */
+	public Integer lastPurchaseID(){
 		try
 		{	
-			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = ( SELECT MAX(receiptID) from purchase)");
-
+			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
 			{
-				return rs.getInt(1)+1;
+				return rs.getInt(1);
 			}
-			else
-			{
-				return 0; 
-			}
+			return -1; // return negative number if error
 		}
 		catch (SQLException ex)
 		{
@@ -44,6 +45,73 @@ public class PurchaseModel
 		}
 	}
 
+	/**
+	 * creates a new purchase Order for online purchases purchases
+	 * @return true if successful
+	 */
+	public boolean createPurchaseOrder(int cid, String cardNumber, String expiryDate){
+		try
+		{	  
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid, cardnum, expiryDate) values(SYSDATE, ?, ?, ?)");
+			ps.setInt(1, cid);
+			ps.setString(2, cardNumber);
+			ps.setString(3, expiryDate);
+			ps.executeUpdate();
+			con.commit();
+			
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	
+	/**
+	 * creates a new purchase Order
+	 * @return true if successful
+	 */
+	public boolean createPurchaseOrder(){
+		try
+		{	  
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
+			ps.executeUpdate();
+			con.commit();
+			
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	
 	/*
 	 * Returns the database connection used by this purchase model
 	 */
