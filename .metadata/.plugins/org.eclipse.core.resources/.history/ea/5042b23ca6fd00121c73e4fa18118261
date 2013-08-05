@@ -76,7 +76,7 @@ Foreign Key (upc) REFERENCES Item);
 	{
 		try
 		{	   
-			Integer receiptID = null;
+			Integer receiptID;
 			if (upc==null) return false;	
 			//TODO: If stock < 0, stay 0	
 
@@ -95,11 +95,11 @@ Foreign Key (upc) REFERENCES Item);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
 			{
-				receiptID = rs.getInt(1);
+				receiptID = rs.getInt(1));
 			}
 			
 			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
-			ps.setInt(1, receiptID);
+			ps.setInt(1, rs.getInt(1));
 			ps.setInt(2, upc.intValue());
 			ps.setInt(3, quantity.intValue());
 			ps.executeUpdate();

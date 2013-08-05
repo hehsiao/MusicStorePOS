@@ -76,7 +76,7 @@ Foreign Key (upc) REFERENCES Item);
 	{
 		try
 		{	   
-			Integer receiptID = null;
+
 			if (upc==null) return false;	
 			//TODO: If stock < 0, stay 0	
 
@@ -91,19 +91,17 @@ Foreign Key (upc) REFERENCES Item);
 			ps.executeUpdate();
 			con.commit();
 			
-			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
+			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID from purchase)");
 			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-			{
-				receiptID = rs.getInt(1);
-			}
+			System.out.println(rs.getInt(1));
 			
-			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
-			ps.setInt(1, receiptID);
-			ps.setInt(2, upc.intValue());
-			ps.setInt(3, quantity.intValue());
-			ps.executeUpdate();
-			con.commit();
+//			//missing parent key
+//			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
+//			ps.setInt(1, rs.getInt(1));
+//			ps.setInt(2, upc.intValue());
+//			ps.setInt(3, quantity.intValue());
+//			ps.executeUpdate();
+//			con.commit();
 
 			System.out.println("3");
 

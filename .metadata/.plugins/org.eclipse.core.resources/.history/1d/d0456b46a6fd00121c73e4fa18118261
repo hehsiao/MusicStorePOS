@@ -76,7 +76,7 @@ Foreign Key (upc) REFERENCES Item);
 	{
 		try
 		{	   
-			Integer receiptID = null;
+			Integer receiptID;
 			if (upc==null) return false;	
 			//TODO: If stock < 0, stay 0	
 
