@@ -66,7 +66,7 @@ create table Purchase
     Foreign Key (cid) REFERENCES Customer);
 
 create table PurchaseItem
-	(receiptId number(15),
+	(receiptId integer,
 	upc number(10) not null,
 	quantity number(4), 
 	PRIMARY KEY (receiptId, upc),
