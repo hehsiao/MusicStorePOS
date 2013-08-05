@@ -329,7 +329,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 	 
 	class ProcessDeliveryDialog extends JDialog implements ActionListener
 	{
-		String[] receiptID = {"Risa", "is", "racist"};	// Use SQL to pull receiptIDs that currently don't have a delivered date.
+		String[] receiptID = manager.RIDwithoutDD();	// Use SQL to pull receiptIDs that currently don't have a delivered date.
 		private JComboBox purchaseReceiptID = new JComboBox(receiptID);
 
 		private JTextField purchaseDeliveredDate = new JTextField(10);
