@@ -41,3 +41,5 @@ AMS/bin
 *.zip
 
 *.snap
+
+.metadata/.mylyn/tasks.xml.zip
