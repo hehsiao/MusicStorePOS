@@ -687,7 +687,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 				String text = "Searching for item that";
 				if(upc != null){
-					searchCriteria.add("i.upc = " + upc.toString());
+					searchCriteria.add("upc = " + upc.toString());
 					text += " has UPC " + upc.toString();
 				}
 				if(title.length() != 0){
