@@ -70,32 +70,36 @@ upc integer not null PRIMARY KEY,
 quantity integer
 Foreign Key (receiptId) REFERENCES Purchase
 Foreign Key (upc) REFERENCES Item);
-
+ 
 	 */ 
 	public boolean processCash(Integer upc, Integer quantity)
 	{
 		try
 		{	   
-
-			if (upc==null) return false;	
-			//TODO: If stock < 0, stay 0	
-
+		
+		if (upc==null) return false;	
+		//TODO: If stock < 0, stay 0	
+		
 			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
 			ps.setInt(1, quantity.intValue());
 			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
-			con.commit();
-
+		    con.commit();
 			System.out.println("1");
 			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
 			ps.executeUpdate();
 			con.commit();
-			//missing parent key
-			//ps = con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
-//			ps.setInt(1, upc.intValue());
-//			ps.setInt(2, quantity.intValue());
-//			ps.executeUpdate();
-//			con.commit();
+			System.out.println("5");
+//
+			//ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID,upc,quantity) values (Select (receiptID) from Purchase,?,?) ");
+			//ps.executeUpdate();
+			//con.commit();
+			System.out.println("2");
+			ps =  con.prepareStatement("INSERT INTO PurchaseItem(upc,quantity) values(?,?)");
+			ps.setInt(1, upc.intValue());
+			ps.setInt(2, quantity.intValue());
+			ps.executeUpdate();
+			con.commit();
 
 			System.out.println("3");
 
