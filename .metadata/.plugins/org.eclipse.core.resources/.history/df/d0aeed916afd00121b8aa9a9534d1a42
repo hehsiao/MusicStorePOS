@@ -750,9 +750,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		AMS.addTable(data);
 	}
 	
-	/*
-	 * This method adds the item upc and quantity into the virtualcart
-	 */
 	public void addToCart(Integer upc, Integer quantity){
 		CartItem item = new CartItem();
 		item.upc = upc;

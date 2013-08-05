@@ -14,7 +14,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	
 	// Virtual Cart
 	private class CartItem{
-		int upc;
+		String upc;
 		int quantity;
 	}
 	private ArrayList<CartItem> vCart = new ArrayList<CartItem>();
@@ -750,16 +750,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 		AMS.addTable(data);
 	}
 	
-	/*
-	 * This method adds the item upc and quantity into the virtualcart
-	 */
 	public void addToCart(Integer upc, Integer quantity){
-		CartItem item = new CartItem();
-		item.upc = upc;
-		item.quantity = quantity;
 		
-		vCart.add(item);
-		AMS.updateStatusBar(quantity + " of Item " + upc + " is added to the cart.");
 	}
 	
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,

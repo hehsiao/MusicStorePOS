@@ -121,7 +121,7 @@ public class ItemModel
 	{
 		try
 		{	
-			String query = "SELECT * FROM item i, leadsinger s WHERE s.upc = i.upc AND " + queryBuilder(description, " AND ");
+			String query = "SELECT * FROM item WHERE " + queryBuilder(description, " AND ");
 			System.out.println(query);
 			ps = con.prepareStatement(query);
 
@@ -202,13 +202,6 @@ public class ItemModel
 		}
 	}
 
-	/**
-	 * Setup Query for WHERE clause.
-	 * concatenate a list of criteria with separators in between
-	 * @param list of criteria
-	 * @param separator
-	 * @return
-	 */
 	public static String queryBuilder(List<String> strings, String separator)
 	{
 		StringBuilder sb = new StringBuilder();

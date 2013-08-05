@@ -158,8 +158,12 @@ END;
 
 -- DUMMY DATA 
 INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
-INSERT into LeadSinger values (1, ' Avicii');
+INSERT into LeadSinger values (1, 'Avicii');
 INSERT into HasSong values (1, 'Levels (original version)');
+INSERT into Item values (2, 'Random Access Memories', 'CD', 'Electric', 'Daft Life', 2012, '19.99', '10');
+INSERT into LeadSinger values (2, 'Daft Punk');
+INSERT into HasSong values (2, 'Get Lucky');
+INSERT into HasSong values (2, 'One More Time');
 INSERT into Customer(password,name,address,phone) values ('1234', 'Matthew', '100 Hastings', '6045551234' );
 INSERT into Customer(password,name,address,phone) values ( '2345', 'Risa', '100 Main', '6045551235' );
 INSERT into Customer(password,name,address,phone) values ( '1334', 'Henry', '100 Vancouver', '6045551254' );
