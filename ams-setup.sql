@@ -55,7 +55,7 @@ create table Customer
 	PRIMARY KEY (cid));
 
 create table Purchase
-	(receiptId integer, 
+	(receiptId number(15), 
 	pdate DATE default(sysdate),
 	cid number(10), 
 	cardnum varchar(16),
