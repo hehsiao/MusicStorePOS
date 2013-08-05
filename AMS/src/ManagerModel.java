@@ -1,5 +1,8 @@
 
 import java.sql.*; 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
@@ -116,7 +119,7 @@ public class ManagerModel
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT receiptID FROM Item WHERE receiptID = ?");
+			ps = con.prepareStatement("SELECT receiptID FROM Purchase WHERE receiptID = ?");
 
 			ps.setInt(1, rid);
 
@@ -169,18 +172,24 @@ public class ManagerModel
 	{
 		try
 		{	 
-		  String[] rids ={};
-			ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where deliveredDate==Null");
+		  List<String> ridList = new ArrayList<String>();
+		  
+			ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
 
 			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()){
 		
-			while (rs.next()) {
-			    String em = rs.getString("receiptID");
-			    rids = em.split(",");
-  
-		}
-			return rids;
+			    String em = rs.getString("receiptID");  
+			    System.out.println(em);
+			  ridList.add(em);
+				}
 			
+			String[] rids = new String[ridList.size()];
+			ridList.toArray(rids);
+			
+			
+			return rids;
 		}
 		catch (SQLException ex)
 		{
