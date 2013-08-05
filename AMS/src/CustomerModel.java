@@ -110,11 +110,11 @@ public class CustomerModel
 	 * Returns true if the customer/password combination is correct; false
 	 * otherwise.
 	 */ 
-	public boolean authenticateCustomer(int cid, String pwd)
+	public String authenticateCustomer(int cid, String pwd)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ? AND password = ?");
+			ps = con.prepareStatement("SELECT name FROM customer WHERE cid = ? AND password = ?");
 
 			ps.setInt(1, cid);
 			ps.setString(2, pwd);
@@ -123,11 +123,11 @@ public class CustomerModel
 
 			if (rs.next())
 			{
-				return true; 
+				return rs.getString(1); 
 			}
 			else
 			{
-				return false; 
+				return null; 
 			}
 		}
 		catch (SQLException ex)
@@ -135,7 +135,7 @@ public class CustomerModel
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
 
-			return false; 
+			return null; 
 		}
 	}
 

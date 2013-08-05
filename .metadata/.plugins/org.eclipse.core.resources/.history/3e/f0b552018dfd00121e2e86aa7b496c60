@@ -492,11 +492,11 @@ public class CustomerController implements ActionListener, ExceptionListener
 						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
 						return OPERATIONFAILED;
 					}
-					String cname;
+
 					// check for account 
-					if ((cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
+					if ((String cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
 					{
-						AMS.updateStatusBar("Welcome " + cname + "! What would you like today?");
+						AMS.updateStatusBar("Welcome " + cname + " !");
 						// calls describe item dialog
 						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
 						iDialog.pack();

@@ -1,10 +1,9 @@
 
 import java.sql.*; 
-import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
-public class ItemModel 
+public class CustomerModel 
 {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
@@ -15,52 +14,40 @@ public class ItemModel
 	 * Precondition: The Connection object in AMSOracleConnection must be
 	 * a valid database connection.
 	 */ 
-	public ItemModel()
+	public CustomerModel()
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 
-	public boolean insertItem(Integer upc, String title, String type, String category, String company, Integer year, double price, Integer stock)
+	public boolean insertCustomer(Integer cid, String password, String name, String address, Integer phone)
 	{
 		try
 		{	   
-			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
 
-			ps.setInt(1, upc.intValue());
+			ps.setInt(1, cid.intValue());
 
-			ps.setString(2, title);
+			ps.setString(2, password);
 
-			ps.setString(3, type);
+			ps.setString(3, name);
 
-			if (category != null)
+			if (address != null)
 			{
-				ps.setString(4, category);
+				ps.setString(4, address);
 			}
 			else
 			{
 				ps.setString(4, null);
 			}
 
-			if (company != null)
+			if (phone != null)
 			{
-				ps.setString(5, company);
+				ps.setInt(5, phone.intValue());
 			}
 			else
 			{
-				ps.setString(5, null);
+				ps.setNull(5, Types.INTEGER);
 			}
-
-			if (year != null)
-			{
-				ps.setInt(6, year.intValue());
-			}
-			else {
-				ps.setNull(6, Types.INTEGER);
-			}
-
-			ps.setDouble(7, price);
-
-			ps.setInt(8, stock.intValue());
 
 			ps.executeUpdate();
 
@@ -88,50 +75,60 @@ public class ItemModel
 	}
 
 	/*
-	 * Returns true if the item exists; false
+	 * Returns true if the customer exists; false
 	 * otherwise.
 	 */ 
-	public ResultSet findItemByUPC(int upc)
+	public boolean findCustomer(int cid)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT * FROM item WHERE upc = ?");
+			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ?");
 
-			ps.setInt(1, upc);
+			ps.setInt(1, cid);
 
 			ResultSet rs = ps.executeQuery();
 
-			return rs; 
-
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return null; 
-		}
-	}
-
-	/*
-	 * Returns true if the item exists; false
-	 * otherwise.
-	 */ 
-	public ResultSet findItemByDescription(List<String> description)
-	{
-		try
-		{	
-			String query = "SELECT i.upc, i.title, s.name, i.type, i.category, i.year, i.price, i.stock FROM item i, leadsinger s WHERE s.upc = i.upc";
-			if(!description.isEmpty()){
-				query += " AND " + queryBuilder(description, " AND ");
+			if (rs.next())
+			{
+				return true; 
 			}
-			System.out.println(query);
-			ps = con.prepareStatement(query);
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
+	}
+
+	/*
+	 * Returns true if the customer/password combination is correct; false
+	 * otherwise.
+	 */ 
+	public String authenticateCustomer(int cid, String pwd)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT name FROM customer WHERE cid = ? AND password = ?");
+
+			ps.setInt(1, cid);
+			ps.setString(2, pwd);
 
 			ResultSet rs = ps.executeQuery();
 
-			return rs; 
-
+			if (rs.next())
+			{
+				return rs.getString(0); 
+			}
+			else
+			{
+				return null; 
+			}
 		}
 		catch (SQLException ex)
 		{
@@ -143,7 +140,7 @@ public class ItemModel
 	}
 
 	/*
-	 * Returns the database connection used by this item model
+	 * Returns the database connection used by this customer model
 	 */
 	public Connection getConnection()
 	{
@@ -168,7 +165,7 @@ public class ItemModel
 	/******************************************************************************
 	 * Below are the methods to add and remove ExceptionListeners.
 	 * 
-	 * Whenever an exception occurs in ItemModel, an exception event
+	 * Whenever an exception occurs in CustomerModel, an exception event
 	 * is sent to all registered ExceptionListeners.
 	 ******************************************************************************/ 
 
@@ -203,24 +200,5 @@ public class ItemModel
 				((ExceptionListener)listeners[i+1]).exceptionGenerated(ex);
 			}
 		}
-	}
-
-	/**
-	 * Setup Query for WHERE clause.
-	 * concatenate a list of criteria with separators in between
-	 * @param list of criteria
-	 * @param separator
-	 * @return
-	 */
-	public static String queryBuilder(List<String> strings, String separator)
-	{
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < strings.size(); i++)
-		{
-			sb.append(strings.get(i));
-			if(i < strings.size() - 1)
-				sb.append(separator);
-		}
-		return sb.toString();				
 	}
 }

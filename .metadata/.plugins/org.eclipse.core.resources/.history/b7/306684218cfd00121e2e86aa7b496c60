@@ -121,7 +121,7 @@ public class ItemModel
 	{
 		try
 		{	
-			String query = "SELECT i.upc, i.title, s.name, i.type, i.category, i.year, i.price, i.stock FROM item i, leadsinger s WHERE s.upc = i.upc";
+			String query = "SELECT upc, title, name, type, category, year, price, stock FROM item i, leadsinger s WHERE s.upc = i.upc";
 			if(!description.isEmpty()){
 				query += " AND " + queryBuilder(description, " AND ");
 			}

@@ -55,7 +55,7 @@ create table Customer
 	PRIMARY KEY (cid));
 
 create table Purchase
-	(receiptId integer, 
+	(receiptId number(15), 
 	pdate DATE default(sysdate),
 	cid number(10), 
 	cardnum varchar(16),
@@ -142,18 +142,18 @@ SELECT test_sequence4.nextval INTO :NEW.retID FROM dual;
 END;	
 /
 
-CREATE SEQUENCE test_sequence5
-START WITH 1 INCREMENT BY 1;
+-- CREATE SEQUENCE test_sequence5
+-- START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TRIGGER test_trigger5
-BEFORE INSERT
-ON PurchaseItem
-REFERENCING NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT test_sequence5.nextval INTO :NEW.receiptID FROM dual;
-END;	
-/
+-- CREATE OR REPLACE TRIGGER test_trigger5
+-- BEFORE INSERT
+-- ON PurchaseItem
+-- REFERENCING NEW AS NEW
+-- FOR EACH ROW
+-- BEGIN
+-- SELECT test_sequence5.nextval INTO :NEW.receiptID FROM dual;
+-- END;	
+-- /
 
 
 -- DUMMY DATA 

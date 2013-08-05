@@ -496,7 +496,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					// check for account 
 					if ((cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
 					{
-						AMS.updateStatusBar("Welcome " + cname + "! What would you like today?");
+						AMS.updateStatusBar("Welcome " + cname + " !");
 						// calls describe item dialog
 						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
 						iDialog.pack();

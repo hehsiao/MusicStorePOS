@@ -11,7 +11,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private AMSView AMS = null;
 	private CustomerModel customer = null;
 	private ItemModel item = null;
-
+	
 	// Virtual Cart
 	private class CartItem{
 		int upc;
@@ -492,11 +492,11 @@ public class CustomerController implements ActionListener, ExceptionListener
 						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
 						return OPERATIONFAILED;
 					}
-					String cname;
+
 					// check for account 
-					if ((cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
+					if (customer.authenticateCustomer(cid.intValue(), password))
 					{
-						AMS.updateStatusBar("Welcome " + cname + "! What would you like today?");
+						AMS.updateStatusBar("Customer " + cid.toString() + " login successfully!");
 						// calls describe item dialog
 						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
 						iDialog.pack();
@@ -534,7 +534,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		private JTextField itemUPC = new JTextField(4);
 		private JTextField itemTitle = new JTextField(20);
-
+		
 		// CHANGE THE CATEGORY AND SINGER TO A LIST LATER?
 		private JTextField categoryName = new JTextField(20);
 		private JTextField singerName = new JTextField(20);
@@ -567,7 +567,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			// search for Item UPC
 			JLabel label = null;
 			labelTextField("UPC", itemUPC, label, inputPane, gb, c);
-
+			
 			// this panel will contain the text field labels and the text fields.
 			JPanel inputPane2 = new JPanel();
 			inputPane2.setBorder(BorderFactory.createCompoundBorder(
@@ -676,15 +676,20 @@ public class CustomerController implements ActionListener, ExceptionListener
 			{
 				Integer upc = null;
 				if(itemUPC.getText().trim().length() != 0){
-					upc = Integer.valueOf(itemUPC.getText().trim());
+					 upc = Integer.valueOf(itemUPC.getText().trim());
 				}
-
+				
 				String title = itemTitle.getText().trim();
 				String singer = singerName.getText().trim();
 				String category = categoryName.getText().trim();
-
+				
 				ArrayList<String> searchCriteria = new ArrayList<String>();
-
+				// If all fields were empty, show all product.
+				if (upc == null && title.length() == 0
+						&& singer.length() == 0 && category.length() == 0){
+					return VALIDATIONERROR;
+				}
+				
 				String text = "Searching for item that";
 				if(upc != null){
 					searchCriteria.add("upc = " + upc.toString());
@@ -692,27 +697,24 @@ public class CustomerController implements ActionListener, ExceptionListener
 				}
 				if(title.length() != 0){
 					searchCriteria.add("title = \'" + title + "\'");
-
+					
 					text += " the title is " + title;
 				}
 				if(singer.trim().length() != 0){
-					searchCriteria.add("name = \'" + singer +"\'");
+					searchCriteria.add("singer = \'" + singer +"\'");
 					text += " sang by " + singer;
 				}
 				if(category.length() != 0){
 					searchCriteria.add("category = \'" + category +"\'");
 					text += " in the " + category + " category";
 				}
-				if(searchCriteria.isEmpty()){
-					text = "Showing all Items";
-				}
 				AMS.updateStatusBar(text);
-
-
+				
+				
 
 				// PROCESS QUERY AND LIST RESULTS 
 				searchResults(searchCriteria);
-
+				
 				return OPERATIONSUCCESS;
 
 
@@ -738,20 +740,16 @@ public class CustomerController implements ActionListener, ExceptionListener
 	public void searchResults(ArrayList<String> description)
 	{
 		ResultSet rs = item.findItemByDescription(description);
-		if(rs != null){
-			CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
-			CustomTable data = new CustomTable(model);
 
-			model.addExceptionListener(this);
-			data.addExceptionListener(this);
+		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
 
-			AMS.addTable(data);
-		}
-		else {
-			AMS.updateStatusBar("Unable to find item by Descriptions. Please try other terms, or leave all criteria empty.");
-		}
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		AMS.addTable(data);
 	}
-
+	
 	/*
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
@@ -759,11 +757,11 @@ public class CustomerController implements ActionListener, ExceptionListener
 		CartItem item = new CartItem();
 		item.upc = upc;
 		item.quantity = quantity;
-
+		
 		vCart.add(item);
 		AMS.updateStatusBar(quantity + " of Item " + upc + " is added to the cart.");
 	}
-
+	
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,
 			GridBagConstraints c) {
 		label = new JLabel(labelName + ": ", SwingConstants.RIGHT);	    

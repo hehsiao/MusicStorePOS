@@ -4,11 +4,20 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class CustomerController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
 	private CustomerModel customer = null;
+	private ItemModel item = null;
+	
+	// Virtual Cart
+	private class CartItem{
+		int upc;
+		int quantity;
+	}
+	private ArrayList<CartItem> vCart = new ArrayList<CartItem>();
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -19,6 +28,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		this.AMS = AMS;
 		customer = new CustomerModel();
+		item = new ItemModel();
 
 		// register to receive exception events from branch
 		customer.addExceptionListener(this);
@@ -543,7 +553,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			// this panel will contain the text field labels and the text fields.
 			JPanel inputPane = new JPanel();
 			inputPane.setBorder(BorderFactory.createCompoundBorder(
-					new TitledBorder(new EtchedBorder(), "Product Search"), 
+					new TitledBorder(new EtchedBorder(), "Product Search by UPC"), 
 					new EmptyBorder(5, 5, 5, 5)));
 
 			// add the text field labels and text fields to inputPane
@@ -557,18 +567,32 @@ public class CustomerController implements ActionListener, ExceptionListener
 			// search for Item UPC
 			JLabel label = null;
 			labelTextField("UPC", itemUPC, label, inputPane, gb, c);
+			
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane2 = new JPanel();
+			inputPane2.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Product Search by Description"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb2 = new GridBagLayout();
+			GridBagConstraints c2 = new GridBagConstraints();
+			inputPane2.setLayout(gb2);
+
 
 			/** Item Title **/
 			// search for Item Name
-			labelTextField("Title", itemTitle, label, inputPane, gb, c);
+			labelTextField("Title", itemTitle, label, inputPane2, gb2, c2);
 
 			/** Item Category **/
 			// search for Item Name
-			labelTextField("Category", categoryName, label, inputPane, gb, c);
+			labelTextField("Category", categoryName, label, inputPane2, gb2, c2);
 
 			/** Item Title **/
 			// search for Item Name
-			labelTextField("Lead Singer", singerName, label, inputPane, gb, c);
+			labelTextField("Lead Singer", singerName, label, inputPane2, gb2, c2);
 
 			// when the return key is pressed in the last field
 			// of this form, the action performed by the OK button
@@ -581,10 +605,10 @@ public class CustomerController implements ActionListener, ExceptionListener
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-			JButton LoginButton = new JButton("Search");
+			JButton SearchButton = new JButton("Search");
 			JButton cancelButton = new JButton("Cancel");
-			LoginButton.addActionListener(this);
-			LoginButton.setActionCommand("Search");
+			SearchButton.addActionListener(this);
+			SearchButton.setActionCommand("Search");
 			cancelButton.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
@@ -595,11 +619,12 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			// add the buttons to buttonPane
 			buttonPane.add(Box.createHorizontalGlue());
-			buttonPane.add(LoginButton);
+			buttonPane.add(SearchButton);
 			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
 			buttonPane.add(cancelButton);
 
-			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(inputPane, BorderLayout.NORTH);
+			contentPane.add(inputPane2, BorderLayout.CENTER);
 			contentPane.add(buttonPane, BorderLayout.SOUTH);
 
 			addWindowListener(new WindowAdapter() 
@@ -649,40 +674,45 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				Integer upc;
-				String title;
-				String singer;
-				String category;
-//				providing the category, or the title, or the leading singer
-				
-				// If all fields were empty, show all product.
-				if (itemUPC.toString().trim().length() == 0 && itemName.getText().trim().length() == 0){
-
-					return VALIDATIONERROR;
+				Integer upc = null;
+				if(itemUPC.getText().trim().length() != 0){
+					 upc = Integer.valueOf(itemUPC.getText().trim());
 				}
+				
+				String title = itemTitle.getText().trim();
+				String singer = singerName.getText().trim();
+				String category = categoryName.getText().trim();
+				
+				ArrayList<String> searchCriteria = new ArrayList<String>();
+				
+				String text = "Searching for item that";
+				if(upc != null){
+					searchCriteria.add("upc = " + upc.toString());
+					text += " has UPC " + upc.toString();
+				}
+				if(title.length() != 0){
+					searchCriteria.add("title = \'" + title + "\'");
+					
+					text += " the title is " + title;
+				}
+				if(singer.trim().length() != 0){
+					searchCriteria.add("name = \'" + singer +"\'");
+					text += " sang by " + singer;
+				}
+				if(category.length() != 0){
+					searchCriteria.add("category = \'" + category +"\'");
+					text += " in the " + category + " category";
+				}
+				if(searchCriteria.isEmpty()){
+					text = "Showing all Items";
+				}
+				AMS.updateStatusBar(text);
+				
+				
 
-				//					cid = Integer.valueOf(customerID.getText().trim());
-				//					password = customerPW.getText().trim();
-				//					
-				//					if(!customer.findCustomer(cid.intValue())){
-				//						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
-				//						return OPERATIONFAILED;
-				//					}
-				//					
-				//					// check for account 
-				//					if (customer.authenticateCustomer(cid.intValue(), password))
-				//					{
-				//						AMS.updateStatusBar("Customer " + cid.toString() + " login successfully!");
-				//						itemSelections();
-				//						return OPERATIONSUCCESS;
-				//					}
-				//					else {
-				//						Toolkit.getDefaultToolkit().beep();
-				//						AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
-				//						return OPERATIONFAILED; 
-
-
-				System.out.println();
+				// PROCESS QUERY AND LIST RESULTS 
+				searchResults(searchCriteria);
+				
 				return OPERATIONSUCCESS;
 
 
@@ -698,8 +728,40 @@ public class CustomerController implements ActionListener, ExceptionListener
 		}
 
 
+
+
 	}
 
+	/*
+	 * This method displays all branches in an editable JTable
+	 */
+	public void searchResults(ArrayList<String> description)
+	{
+		ResultSet rs = item.findItemByDescription(description);
+		if(rs != null){
+		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		AMS.addTable(data);
+		}
+		AMS.updateStatusBar("Unable to find item by Descriptions");
+	}
+	
+	/*
+	 * This method adds the item upc and quantity into the virtualcart
+	 */
+	public void addToCart(Integer upc, Integer quantity){
+		CartItem item = new CartItem();
+		item.upc = upc;
+		item.quantity = quantity;
+		
+		vCart.add(item);
+		AMS.updateStatusBar(quantity + " of Item " + upc + " is added to the cart.");
+	}
+	
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,
 			GridBagConstraints c) {
 		label = new JLabel(labelName + ": ", SwingConstants.RIGHT);	    
@@ -715,11 +777,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(fieldName, c);
 		inputPane.add(fieldName);
-	}
-
-	public void itemSelections() {
-		// TODO Auto-generated method stub
-
 	}
 
 
