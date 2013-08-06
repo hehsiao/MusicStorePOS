@@ -737,9 +737,9 @@ errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_M
 							//frickk doesn't work
 							//date=DATE.fromText(arg0, arg1, arg2);
 							
-							SimpleDateFormat format = new SimpleDateFormat("yymmdd");
-							Date parsed = format.parse(pd);
-							date = new java.sql.Date(parsed.getTime());
+							SimpleDateFormat sdf = new SimpleDateFormat("yy-mm-dd");
+							String parsed = sdf.format(pd);
+							date = (java.sql.Date)sdf.parse(parsed);
 							
 							System.out.println("HELLO");
 							// check for duplicates
