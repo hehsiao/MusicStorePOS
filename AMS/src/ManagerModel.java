@@ -168,28 +168,73 @@ public class ManagerModel
 		}
 	}
 	
-	public String[] RIDwithoutDD()
+	public String findInfo(Integer rID, String info)
 	{
 		try
 		{	 
-		  List<String> ridList = new ArrayList<String>();
-		  
-			ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()){
-		
-			    String em = rs.getString("receiptID");  
-			    System.out.println(em);
-			  ridList.add(em);
+			if (info.equals("dop")){
+				ps = con.prepareStatement("SELECT p.pdate FROM Purchase p WHERE p.receiptID=?");
+				ps.setInt(1, rID);
+				
+				ResultSet rs = ps.executeQuery();
+				String dop = rs.getString("pdate");
+				if (!rs.next()){
+					return null;
 				}
+				return dop;	
+			}
 			
-			String[] rids = new String[ridList.size()];
-			ridList.toArray(rids);
+			if (info.equals("cname")){
+				ps = con.prepareStatement("SELECT c.name FROM Purchase p, Customer C WHERE p.receiptID=? AND p.cid=c.cid");
+				ps.setInt(1, rID);	
+				ResultSet rs = ps.executeQuery();
+				String cname = rs.getString("name");
+				if (!rs.next()){
+					return null;
+				}
+				return cname;	
+			}
+			else return null;
 			
+     		
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	
+	
+	public String[] findArray(String what)
+	{
+		try
+		{	 
+			 List<String> resultList = new ArrayList<String>();
+			if (what.equals("RIDwithoutDD")){
 			
-			return rids;
+				ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
+
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()){
+			
+				    String em = rs.getString("receiptID");  
+				    System.out.println(em);
+				  resultList.add(em);
+					}
+				
+		}
+			
+			String[] resultArray = new String[resultList.size()];
+			resultList.toArray(resultArray);
+		return resultArray;
+		
+		
 		}
 		catch (SQLException ex)
 		{

@@ -333,7 +333,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 	 
 	class ProcessDeliveryDialog extends JDialog implements ActionListener
 	{
-		String[] receiptID = manager.RIDwithoutDD();	// Use SQL to pull receiptIDs that currently don't have a delivered date.
+		String[] receiptID = manager.findArray("RIDwithoutDD");	// Use SQL to pull receiptIDs that currently don't have a delivered date.
 		private JComboBox purchaseReceiptID = new JComboBox(receiptID);
 
 
@@ -487,7 +487,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			{
 								if (validateInsert() != VALIDATIONERROR)
 								{
-									dispose();
+									//dispose();
 								}
 								else
 				{
@@ -500,13 +500,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			}
 		}
 
-		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
-				/*
-				 * Validates the text fields in AddItemsDialog and then
-				 * calls manager.addItem() if the fields are valid.
-				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
-				 * OPERATIONFAILED, VALIDATIONERROR.
-				 */ 
+
 				private int validateInsert()
 				{
 					try
@@ -535,6 +529,14 @@ public class ManagerController implements ActionListener, ExceptionListener
 						if (manager.setDeliveryDate( Integer.valueOf(id)))
 						{
 							AMS.updateStatusBar("Operation successful.");
+							
+							String dateOfPurchase = manager.findInfo(Integer.valueOf(id), "dop");
+							purchaseDate.setText(dateOfPurchase);
+							
+							String cname = manager.findInfo(Integer.valueOf(id), "cname");
+							customerName.setText(cname);
+						 //TODO maybe: show itemlist for JTextArea purchaseItem;
+						
 							return OPERATIONSUCCESS; 
 						}
 						else

@@ -19,7 +19,7 @@ drop trigger test_trigger1;
 drop trigger test_trigger2;
 drop trigger test_trigger3;
 drop trigger test_trigger4;
-drop trigger test_trigger5;
+--drop trigger test_trigger5;
 
 
 -- CREATE Tables
