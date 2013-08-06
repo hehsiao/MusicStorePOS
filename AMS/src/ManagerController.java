@@ -3,11 +3,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
-
+import java.util.Date;
 import oracle.sql.DATE;
 
+
 import java.sql.*;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class ManagerController implements ActionListener, ExceptionListener
 {
@@ -99,6 +101,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 			AMS.updateStatusBar("An exception occurred!");
 		}
 	}    
+	
+
+
 
 	/*
 	 * This class creates a dialog box for adding an item to inventory.
@@ -591,7 +596,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(YYMMDD): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -653,6 +658,25 @@ public class ManagerController implements ActionListener, ExceptionListener
 					dispose();
 				}
 			});
+		}	
+		
+		private void showDailySalesReport(java.sql.Date date)
+		{
+			ResultSet rs = manager.showResultSet(date);
+
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+
+			// register to be notified of any exceptions that occur in the model and table
+		//	model.addExceptionListener(this);
+		//	data.addExceptionListener(this);
+
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
 		}
 
 		/*
@@ -664,18 +688,26 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-								if (validateInsert() != VALIDATIONERROR)
-								{
-									dispose();
-								}
-								else
-				{
-					Toolkit.getDefaultToolkit().beep();
+								try {
+									if (validateInsert() != VALIDATIONERROR)
+									{
+										dispose();
+									}
+									else
+{
+Toolkit.getDefaultToolkit().beep();
 
-					// display a popup to inform the user of the validation error
-					JOptionPane errorPopup = new JOptionPane();
-					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
-				}	
+// display a popup to inform the user of the validation error
+JOptionPane errorPopup = new JOptionPane();
+errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+}
+								} catch (HeadlessException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (ParseException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}	
 			}
 		}
 
@@ -686,30 +718,34 @@ public class ManagerController implements ActionListener, ExceptionListener
 				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 				 * OPERATIONFAILED, VALIDATIONERROR.
 				 */ 
-				private int validateInsert()
+				private int validateInsert() throws ParseException
 				{
 					try
 					{
-						DATE date;
+						java.sql.Date date;
+						
 		
 						if (purchaseDate.getText().trim().length() != 0)
 						{
 							String pd = purchaseDate.getText().trim();
-							String[] arguments = pd.split("-");
+						
 							
-							if (arguments.length != 3) {
+							if (pd.length() != 6) {
 								return VALIDATIONERROR;
 							}
-							String arg0 = arguments[0];
-							String arg1 = arguments[1];
-							String arg2 = arguments[2];
-														
-							date = DATE.fromText(arg0, arg1, arg2);
-		
+							
+							//frickk doesn't work
+							//date=DATE.fromText(arg0, arg1, arg2);
+							
+							SimpleDateFormat format = new SimpleDateFormat("yymmdd");
+							Date parsed = format.parse(pd);
+							date = new java.sql.Date(parsed.getTime());
+							
+							System.out.println("HELLO");
 							// check for duplicates
 							if (manager.findDate(date))
 							{
-								
+								System.out.println("BYE");
 							}
 						}
 						else
@@ -718,28 +754,29 @@ public class ManagerController implements ActionListener, ExceptionListener
 						}
 		
 						AMS.updateStatusBar("Creating Daily Sales Report...");
-		
-						if (manager.findRID(1))//stub
-						{
-							AMS.updateStatusBar("Operation successful.");
-							return OPERATIONSUCCESS; 
-						}
-						else
-						{
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Operation failed.");
-							return OPERATIONFAILED; 
-						}
+						showDailySalesReport(date);
+						System.out.println("YO");
+						return OPERATIONSUCCESS;
+										
+						
+//						if (manager.findRID(1))//stub
+//						{
+//							AMS.updateStatusBar("Operation successful.");
+//							return OPERATIONSUCCESS; 
+//						}
+//						else
+//						{
+//							Toolkit.getDefaultToolkit().beep();
+//							AMS.updateStatusBar("Operation failed.");
+//							return OPERATIONFAILED; 
+//						}
+				
 					}
 					catch (NumberFormatException ex)
 					{
 						// this exception is thrown when a string 
 						// cannot be converted to a number
 						return VALIDATIONERROR; 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					return VALIDATIONERROR;
 					}
 					
 				}
