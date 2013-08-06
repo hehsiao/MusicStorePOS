@@ -12,7 +12,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private CustomerModel customer = null;
 	private ItemModel item = null;
 	private PurchaseModel purchase = null;
-
+	
 	// Virtual Cart
 	class CartItem{
 		int upc;
@@ -31,11 +31,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 		customer = new CustomerModel();
 		item = new ItemModel();
 		purchase = new PurchaseModel();
-
-		AMS.clearStatusBar();
-		displayPurchaseDetail(19);
-		AMS.clearStatusBar();
-		displayPurchaseDetail(17);
+		
+		displayPurchaseItem(19);
 		// register to receive exception events from branch
 		customer.addExceptionListener(this);
 	}
@@ -50,7 +47,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Register Account"))
 		{
-			AMS.buttonPane.setVisible(false);
 			RegisterAccountInsertDialog iDialog = new RegisterAccountInsertDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -60,7 +56,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Purchase Items"))
 		{
-			AMS.buttonPane.setVisible(false);
 			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -553,7 +548,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			super(parent, "Online Purchase", true);
 			setResizable(false);
-			AMS.buttonPane.setVisible(true);
 
 			JPanel contentPane = new JPanel(new BorderLayout());
 			setContentPane(contentPane);
@@ -657,7 +651,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			if (actionCommand.equals("Search"))
 			{
 				if (validateInput() != VALIDATIONERROR)
-				{	
+				{
 					dispose();
 				}
 				else
@@ -766,9 +760,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	private void displayPurchaseDetail(int receiptID)
 	{
-		AMS.updateStatusBar("Purchase Order Details of ReceiptID: " + receiptID);
-		AMS.updateStatusBar("Total Price for order: " + purchase.getPurchaseTotal(receiptID));
-		AMS.updateStatusBar("You have ordered the following items.");
 		ResultSet rs = purchase.getPurchaseItems(receiptID);
 
 		// CustomTableModel maintains the result set's data, e.g., if  
@@ -819,9 +810,9 @@ public class CustomerController implements ActionListener, ExceptionListener
 	public void test(){
 		addToCart(1,2);
 		addToCart(2,3);
-
+		
 		int receiptID = purchase.createCashPurchaseOrder().intValue();
-
+			
 		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
 	}
 }

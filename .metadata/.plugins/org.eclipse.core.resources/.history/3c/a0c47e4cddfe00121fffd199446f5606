@@ -210,7 +210,7 @@ public class PurchaseModel
 	 * @param receiptID
 	 * @return ResultSet [receiptID, UPC, Title, Quantity, Price]
 	 */
-	public ResultSet getPurchaseItems(Integer receiptID){
+	public ResultSet getPurchaseDetail(Integer receiptID){
 		try
 		{	 
 			String query = "SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
