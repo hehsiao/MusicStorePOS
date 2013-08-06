@@ -13,12 +13,12 @@ public class ManagerController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
 	private ManagerModel manager = null;
-	
-//  static NumberFormat numForm = NumberFormat.getInstance();
-  //  static {
-  //      numForm.setMaximumIntegerDigits(20);
-  //  }
-	
+
+	//  static NumberFormat numForm = NumberFormat.getInstance();
+	//  static {
+	//      numForm.setMaximumIntegerDigits(20);
+	//  }
+
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
 	public static final int OPERATIONFAILED = 1;
@@ -105,15 +105,15 @@ public class ManagerController implements ActionListener, ExceptionListener
 	 */
 	class ItemInsertDialog extends JDialog implements ActionListener
 	{
-	  
+
 		//JFormattedTextField itemUPC = new JFormattedTextField(numForm);
 		//JFormattedTextField itemQuantity = new JFormattedTextField(numForm);
-	    //JFormattedTextField itemPrice = new JFormattedTextField(numForm);
-	
-	    JTextField itemUPC = new JTextField(10);
+		//JFormattedTextField itemPrice = new JFormattedTextField(numForm);
+
+		JTextField itemUPC = new JTextField(10);
 		JTextField itemQuantity = new JTextField(10);
-	    JTextField itemPrice = new JTextField(10);
-	
+		JTextField itemPrice = new JTextField(10);
+
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -155,7 +155,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			gb.setConstraints(itemUPC, c);
 			inputPane.add(itemUPC);
 
-		
+
 			// create and place price label
 			label = new JLabel("Price(Optional): ", SwingConstants.RIGHT);
 			c.gridwidth = GridBagConstraints.RELATIVE;
@@ -170,7 +170,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			c.anchor = GridBagConstraints.WEST;
 			gb.setConstraints(itemPrice, c);
 			inputPane.add(itemPrice);
-			
+
 			// create and place quantity label
 			label = new JLabel("Quantity: ", SwingConstants.RIGHT);
 			c.gridwidth = GridBagConstraints.RELATIVE;
@@ -186,7 +186,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			gb.setConstraints(itemQuantity, c);
 			inputPane.add(itemQuantity);
 
-	
+
 
 			// when the return key is pressed in the last field
 			// of this form, the action performed by the ok button
@@ -276,7 +276,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					// check for duplicates
 					if (manager.findItem(upc.intValue()))
 					{
-						
+
 					}
 				}
 				else
@@ -294,7 +294,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					price =0;
 				}
 
-			
+
 				if (itemQuantity.getText().trim().length() != 0)
 				{
 					quantity = Integer.valueOf(itemQuantity.getText().trim());
@@ -302,15 +302,15 @@ public class ManagerController implements ActionListener, ExceptionListener
 				else
 				{
 					return VALIDATIONERROR; 
-					}
-				
+				}
+
 
 				AMS.updateStatusBar("Inserting item...");
 
 				if (manager.insertItem(upc, price, quantity))
 				{
 					AMS.updateStatusBar("Operation successful.");
-					
+
 					//showAllBranches();
 					return OPERATIONSUCCESS; 
 				}
@@ -330,7 +330,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 		}
 	}
 
-	 
+
 	class ProcessDeliveryDialog extends JDialog implements ActionListener
 	{
 		String[] receiptID = manager.findArray("RIDwithoutDD");	// Use SQL to pull receiptIDs that currently don't have a delivered date.
@@ -485,11 +485,11 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-								if (validateInsert() != VALIDATIONERROR)
-								{
-									//dispose();
-								}
-								else
+				if (validateInsert() != VALIDATIONERROR)
+				{
+					//dispose();
+				}
+				else
 				{
 					Toolkit.getDefaultToolkit().beep();
 
@@ -501,58 +501,58 @@ public class ManagerController implements ActionListener, ExceptionListener
 		}
 
 
-				private int validateInsert()
-				{
-					try
-					{
-						int id= Integer.parseInt((String)purchaseReceiptID.getSelectedItem());
+		private int validateInsert()
+		{
+			try
+			{
+				int id= Integer.parseInt((String)purchaseReceiptID.getSelectedItem());
 
 
-							
-							// check for duplicates
-							if (manager.findRID(id))
-							{								
-							
-							//	Toolkit.getDefaultToolkit().beep();
-							//	return OPERATIONFAILED; 
-							}
 
+				// check for duplicates
+				if (manager.findRID(id))
+				{								
 
-						else
-						{
-							return VALIDATIONERROR; 
-						}
-		
-					
-						AMS.updateStatusBar("Processing Delivery of Order...");
-		
-						if (manager.setDeliveryDate( Integer.valueOf(id)))
-						{
-							AMS.updateStatusBar("Operation successful.");
-							
-							String dateOfPurchase = manager.findInfo(Integer.valueOf(id), "dop");
-							purchaseDate.setText(dateOfPurchase);
-							
-							String cname = manager.findInfo(Integer.valueOf(id), "cname");
-							customerName.setText(cname);
-						 //TODO maybe: show itemlist for JTextArea purchaseItem;
-						
-							return OPERATIONSUCCESS; 
-						}
-						else
-						{
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Operation failed.");
-							return OPERATIONFAILED; 
-						}
-					}
-					catch (NumberFormatException ex)
-					{
-						// this exception is thrown when a string 
-						// cannot be converted to a number
-						return VALIDATIONERROR; 
-					}
+					//	Toolkit.getDefaultToolkit().beep();
+					//	return OPERATIONFAILED; 
 				}
+
+
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+
+				AMS.updateStatusBar("Processing Delivery of Order...");
+
+				if (manager.setDeliveryDate( Integer.valueOf(id)))
+				{
+					AMS.updateStatusBar("Operation successful.");
+
+					String dateOfPurchase = manager.findInfo(Integer.valueOf(id), "dop");
+					purchaseDate.setText(dateOfPurchase);
+
+					String cname = manager.findInfo(Integer.valueOf(id), "cname");
+					customerName.setText(cname);
+					//TODO maybe: show itemlist for JTextArea purchaseItem;
+
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+		}
 	}	// end ProcessDeliveryDialog
 
 	/*
@@ -591,7 +591,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date: ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -664,11 +664,11 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-				//				if (validateInsert() != VALIDATIONERROR)
-				//				{
-				//					dispose();
-				//				}
-				//				else
+								if (validateInsert() != VALIDATIONERROR)
+								{
+									dispose();
+								}
+								else
 				{
 					Toolkit.getDefaultToolkit().beep();
 
@@ -679,97 +679,70 @@ public class ManagerController implements ActionListener, ExceptionListener
 			}
 		}
 
-		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
-		//		/*
-		//		 * Validates the text fields in AddItemsDialog and then
-		//		 * calls manager.addItem() if the fields are valid.
-		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
-		//		 * OPERATIONFAILED, VALIDATIONERROR.
-		//		 */ 
-		//		private int validateInsert()
-		//		{
-		//			try
-		//			{
-		//				Integer cid;
-		//				String password;
-		//				String name;
-		//				String address;
-		//				Integer phone;
-		//
-		//				if (itemUPC.getText().trim().length() != 0)
-		//				{
-		//					cid = Integer.valueOf(itemUPC.getText().trim());
-		//
-		//					// check for duplicates
-		//					if (manager.findItem(cid.intValue()))
-		//					{
-		//						Toolkit.getDefaultToolkit().beep();
-		//						AMS.updateStatusBar("Manager " + cid.toString() + " already exists!");
-		//						return OPERATIONFAILED; 
-		//					}
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemTitle.getText().trim().length() != 0)
-		//				{
-		//					password = itemTitle.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemType.getText().trim().length() != 0)
-		//				{
-		//					name = itemType.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemCategory.getText().trim().length() != 0)
-		//				{
-		//					address = itemCategory.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					address = null; 
-		//				}
-		//
-		//				if (itemCompany.getText().trim().length() != 0)
-		//				{
-		//					phone = Integer.valueOf(itemCompany.getText().trim());
-		//				}
-		//				else
-		//				{
-		//					phone = null; 
-		//				}
-		//
-		//				AMS.updateStatusBar("Creating Account...");
-		//
-		//				if (manager.addItem(cid, password, name, address, phone))
-		//				{
-		//					AMS.updateStatusBar("Operation successful.");
-		//					return OPERATIONSUCCESS; 
-		//				}
-		//				else
-		//				{
-		//					Toolkit.getDefaultToolkit().beep();
-		//					AMS.updateStatusBar("Operation failed.");
-		//					return OPERATIONFAILED; 
-		//				}
-		//			}
-		//			catch (NumberFormatException ex)
-		//			{
-		//				// this exception is thrown when a string 
-		//				// cannot be converted to a number
-		//				return VALIDATIONERROR; 
-		//			}
-		//		}
+	
+				/*
+				 * Validates the text fields in AddItemsDialog and then
+				 * calls manager.addItem() if the fields are valid.
+				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+				 * OPERATIONFAILED, VALIDATIONERROR.
+				 */ 
+				private int validateInsert()
+				{
+					try
+					{
+						DATE date;
+		
+						if (purchaseDate.getText().trim().length() != 0)
+						{
+							String pd = purchaseDate.getText().trim();
+							String[] arguments = pd.split("-");
+							
+							if (arguments.length != 3) {
+								return VALIDATIONERROR;
+							}
+							String arg0 = arguments[0];
+							String arg1 = arguments[1];
+							String arg2 = arguments[2];
+														
+							date = DATE.fromText(arg0, arg1, arg2);
+		
+							// check for duplicates
+							if (manager.findDate(date))
+							{
+								
+							}
+						}
+						else
+						{
+							return VALIDATIONERROR; 
+						}
+		
+						AMS.updateStatusBar("Creating Daily Sales Report...");
+		
+						if (manager.findRID(1))//stub
+						{
+							AMS.updateStatusBar("Operation successful.");
+							return OPERATIONSUCCESS; 
+						}
+						else
+						{
+							Toolkit.getDefaultToolkit().beep();
+							AMS.updateStatusBar("Operation failed.");
+							return OPERATIONFAILED; 
+						}
+					}
+					catch (NumberFormatException ex)
+					{
+						// this exception is thrown when a string 
+						// cannot be converted to a number
+						return VALIDATIONERROR; 
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					return VALIDATIONERROR;
+					}
+					
+				}
 	}	// end DailySalesReportDialog
 
 	/*

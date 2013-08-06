@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
+import oracle.sql.DATE;
+
 public class ManagerModel 
 {
 	protected PreparedStatement ps = null;
@@ -280,7 +282,37 @@ public class ManagerModel
 			return false; 
 		}
 	}
+	public boolean findDate(DATE date)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT date FROM Purchase WHERE date = ?");
 
+			Date d = date.dateValue();
+			
+			ps.setDate(1,d);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
+			{
+				return true; 
+			}
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
+	}
+
+	
 	/*
 	 * Returns the database connection used by this manager model
 	 */
