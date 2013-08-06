@@ -22,7 +22,6 @@ public class PurchaseModel
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
 		System.out.println(getPurchaseTotal(17));
-		System.out.println(getPurchaseTotal(19));
 	}
 
 	/**
