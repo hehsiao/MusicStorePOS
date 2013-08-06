@@ -33,6 +33,14 @@ public class AMSView extends JFrame
 	// the debug menu
 	private JMenu debug;
 
+	// command buttons for purchasing
+	GridLayout buttonLayout = new GridLayout(1,4);
+	public JPanel buttonPane = new JPanel();
+	public JButton searchItems = new JButton("Search for Items");
+	public JButton addToCart = new JButton("Add Item to Cart");
+	public JButton viewCart = new JButton("View Cart");
+	public JButton cancelOrder = new JButton("Cancel Order");
+
 	/*
 	 * Default constructor. Constructs the main window.
 	 */ 
@@ -73,9 +81,19 @@ public class AMSView extends JFrame
 		statusField.setLineWrap(true);
 		statusField.setWrapStyleWord(true);
 
+		// add the command buttons for purchasing and hide them until we need them
+		buttonPane.setLayout(buttonLayout);
+		buttonPane.add(searchItems);
+		buttonPane.add(addToCart);
+		buttonPane.add(viewCart);
+		buttonPane.add(cancelOrder);
+		buttonPane.setVisible(false);
+
+
 		// add the panes to the content pane
 		contentPane.add(tableScrPane, BorderLayout.CENTER);
 		contentPane.add(statusScrPane, BorderLayout.NORTH);
+		contentPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// center the main window
 		Dimension screenSize = getToolkit().getScreenSize();
@@ -276,15 +294,15 @@ public class AMSView extends JFrame
 			menuItem = manager.getItem(i);
 			menuItem.addActionListener(managerControl);
 		}
-		
-				// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
-				ClerkController clerkControl = new ClerkController(this);
-		
-				for (int i = 0; i < clerk.getItemCount(); i++)
-				{
-					menuItem = clerk.getItem(i);
-					menuItem.addActionListener(clerkControl);
-				}
+
+		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
+		ClerkController clerkControl = new ClerkController(this);
+
+		for (int i = 0; i < clerk.getItemCount(); i++)
+		{
+			menuItem = clerk.getItem(i);
+			menuItem.addActionListener(clerkControl);
+		}
 
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
 		CustomerController customerControl = new CustomerController(this);

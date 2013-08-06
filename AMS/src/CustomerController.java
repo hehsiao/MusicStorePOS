@@ -650,7 +650,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 			if (actionCommand.equals("Search"))
 			{
 				if (validateInput() != VALIDATIONERROR)
-				{
+				{	
+					AMS.buttonPane.setVisible(true);
 					dispose();
 				}
 				else
