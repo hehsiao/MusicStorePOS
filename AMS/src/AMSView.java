@@ -36,10 +36,10 @@ public class AMSView extends JFrame
 	// command buttons for purchasing
 	GridLayout buttonLayout = new GridLayout(1,4);
 	public JPanel buttonPane = new JPanel();
-	public JButton searchItems = new JButton("Search for Items");
-	public JButton addToCart = new JButton("Add Item to Cart");
-	public JButton viewCart = new JButton("View Cart");
-	public JButton cancelOrder = new JButton("Cancel Order");
+	private JButton searchItems = new JButton("Search for Items");
+	private JButton addToCart = new JButton("Add Item to Cart");
+	private JButton viewCart = new JButton("View Cart");
+	private JButton cancelOrder = new JButton("Cancel Order");
 
 	/*
 	 * Default constructor. Constructs the main window.

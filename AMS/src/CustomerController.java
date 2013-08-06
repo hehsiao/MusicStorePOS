@@ -12,7 +12,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private CustomerModel customer = null;
 	private ItemModel item = null;
 	private PurchaseModel purchase = null;
-	
+
 	// Virtual Cart
 	class CartItem{
 		int upc;
@@ -46,6 +46,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Register Account"))
 		{
+			AMS.buttonPane.setVisible(false);
 			RegisterAccountInsertDialog iDialog = new RegisterAccountInsertDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -55,6 +56,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Purchase Items"))
 		{
+			AMS.buttonPane.setVisible(false);
 			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -547,6 +549,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			super(parent, "Online Purchase", true);
 			setResizable(false);
+			AMS.buttonPane.setVisible(true);
 
 			JPanel contentPane = new JPanel(new BorderLayout());
 			setContentPane(contentPane);
@@ -651,7 +654,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			{
 				if (validateInput() != VALIDATIONERROR)
 				{	
-					AMS.buttonPane.setVisible(true);
 					dispose();
 				}
 				else
@@ -787,9 +789,9 @@ public class CustomerController implements ActionListener, ExceptionListener
 	public void test(){
 		addToCart(1,2);
 		addToCart(2,3);
-		
+
 		int receiptID = purchase.createCashPurchaseOrder().intValue();
-			
+
 		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
 	}
 }

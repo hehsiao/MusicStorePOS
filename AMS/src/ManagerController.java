@@ -45,6 +45,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Add Items"))
 		{
+			AMS.buttonPane.setVisible(false);
 			ItemInsertDialog iDialog = new ItemInsertDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -54,6 +55,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Process Delivery"))
 		{
+			AMS.buttonPane.setVisible(false);
 			ProcessDeliveryDialog iDialog = new ProcessDeliveryDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -63,6 +65,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("View Daily Sales Report"))
 		{
+			AMS.buttonPane.setVisible(false);
 			DailySalesReportDialog iDialog = new DailySalesReportDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -72,6 +75,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("View Top Selling Items"))
 		{
+			AMS.buttonPane.setVisible(false);
 			TopSalesItemsReportDialog iDialog = new TopSalesItemsReportDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -101,7 +105,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			AMS.updateStatusBar("An exception occurred!");
 		}
 	}    
-	
+
 
 
 
@@ -659,7 +663,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}
 			});
 		}	
-		
+
 		private void showDailySalesReport(java.sql.Date date)
 		{
 			ResultSet rs = manager.showResultSet(date);
@@ -671,8 +675,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 			CustomTable data = new CustomTable(model);
 
 			// register to be notified of any exceptions that occur in the model and table
-		//	model.addExceptionListener(this);
-		//	data.addExceptionListener(this);
+			//	model.addExceptionListener(this);
+			//	data.addExceptionListener(this);
 
 			// Adds the table to the scrollpane.
 			// By default, a JTable does not have scroll bars.
@@ -688,98 +692,98 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-								try {
-									if (validateInsert() != VALIDATIONERROR)
-									{
-										dispose();
-									}
-									else
-{
-Toolkit.getDefaultToolkit().beep();
+				try {
+					if (validateInsert() != VALIDATIONERROR)
+					{
+						dispose();
+					}
+					else
+					{
+						Toolkit.getDefaultToolkit().beep();
 
-// display a popup to inform the user of the validation error
-JOptionPane errorPopup = new JOptionPane();
-errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
-}
-								} catch (HeadlessException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								} catch (ParseException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}	
+						// display a popup to inform the user of the validation error
+						JOptionPane errorPopup = new JOptionPane();
+						errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (HeadlessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	
 			}
 		}
 
-	
-				/*
-				 * Validates the text fields in AddItemsDialog and then
-				 * calls manager.addItem() if the fields are valid.
-				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
-				 * OPERATIONFAILED, VALIDATIONERROR.
-				 */ 
-				private int validateInsert() throws ParseException
+
+		/*
+		 * Validates the text fields in AddItemsDialog and then
+		 * calls manager.addItem() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 */ 
+		private int validateInsert() throws ParseException
+		{
+			try
+			{
+				java.sql.Date date;
+
+
+				if (purchaseDate.getText().trim().length() != 0)
 				{
-					try
-					{
-						java.sql.Date date;
-						
-		
-						if (purchaseDate.getText().trim().length() != 0)
-						{
-							String pd = purchaseDate.getText().trim();
-						
-							
-							if (pd.length() != 6) {
-								return VALIDATIONERROR;
-							}
-							
-							//frickk doesn't work
-							//date=DATE.fromText(arg0, arg1, arg2);
-							
-							SimpleDateFormat sdf = new SimpleDateFormat("yy-mm-dd");
-							String parsed = sdf.format(pd);
-							date = (java.sql.Date)sdf.parse(parsed);
-							
-							System.out.println("HELLO");
-							// check for duplicates
-							if (manager.findDate(date))
-							{
-								System.out.println("BYE");
-							}
-						}
-						else
-						{
-							return VALIDATIONERROR; 
-						}
-		
-						AMS.updateStatusBar("Creating Daily Sales Report...");
-						showDailySalesReport(date);
-						System.out.println("YO");
-						return OPERATIONSUCCESS;
-										
-						
-//						if (manager.findRID(1))//stub
-//						{
-//							AMS.updateStatusBar("Operation successful.");
-//							return OPERATIONSUCCESS; 
-//						}
-//						else
-//						{
-//							Toolkit.getDefaultToolkit().beep();
-//							AMS.updateStatusBar("Operation failed.");
-//							return OPERATIONFAILED; 
-//						}
-				
+					String pd = purchaseDate.getText().trim();
+
+
+					if (pd.length() != 6) {
+						return VALIDATIONERROR;
 					}
-					catch (NumberFormatException ex)
+
+					//frickk doesn't work
+					//date=DATE.fromText(arg0, arg1, arg2);
+
+					SimpleDateFormat sdf = new SimpleDateFormat("yy-mm-dd");
+					String parsed = sdf.format(pd);
+					date = (java.sql.Date)sdf.parse(parsed);
+
+					System.out.println("HELLO");
+					// check for duplicates
+					if (manager.findDate(date))
 					{
-						// this exception is thrown when a string 
-						// cannot be converted to a number
-						return VALIDATIONERROR; 
+						System.out.println("BYE");
 					}
-					
 				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				AMS.updateStatusBar("Creating Daily Sales Report...");
+				showDailySalesReport(date);
+				System.out.println("YO");
+				return OPERATIONSUCCESS;
+
+
+				//						if (manager.findRID(1))//stub
+				//						{
+				//							AMS.updateStatusBar("Operation successful.");
+				//							return OPERATIONSUCCESS; 
+				//						}
+				//						else
+				//						{
+				//							Toolkit.getDefaultToolkit().beep();
+				//							AMS.updateStatusBar("Operation failed.");
+				//							return OPERATIONFAILED; 
+				//						}
+
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+
+		}
 	}	// end DailySalesReportDialog
 
 	/*

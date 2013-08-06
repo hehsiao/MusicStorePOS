@@ -38,49 +38,49 @@ public class DebugController implements ActionListener, ExceptionListener
 			editTables("Item");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("LeadSinger"))
 		{
 			AMS.updateStatusBar("Displaying Lead Singer Table");
 			showTables("LeadSinger");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("HasSong"))
 		{
 			AMS.updateStatusBar("Displaying HasSong Table");
 			showTables("HasSong");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("Purchase"))
 		{			
 			AMS.updateStatusBar("Displaying Purchase Table");
 			showTables("Purchase");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("PurchaseItem"))
 		{
 			AMS.updateStatusBar("Displaying Purchase Item Table");
 			showTables("PurchaseItem");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("Customer"))
 		{
 			AMS.updateStatusBar("Displaying Customer Table");
 			showTables("Customer");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("Return"))
 		{
 			AMS.updateStatusBar("Displaying Return Table");
 			showTables("Return");
 			return; 
 		}
-		
+
 		else if (actionCommand.equals("ReturnItem"))
 		{
 			AMS.updateStatusBar("Displaying Return Item Table");
@@ -110,7 +110,7 @@ public class DebugController implements ActionListener, ExceptionListener
 			AMS.updateStatusBar("An exception occurred!");
 		}
 	}    
-	
+
 	/*
 	 * This method displays all Items in a non-editable JTable
 	 */

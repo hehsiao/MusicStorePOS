@@ -33,7 +33,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 	public static final int OPERATIONSUCCESS = 0;
 	public static final int OPERATIONFAILED = 1;
 	public static final int VALIDATIONERROR = 2; 
-	
+
 	public ClerkController(AMSView AMS)
 	{
 		this.AMS = AMS;
@@ -55,6 +55,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 		// you cannot use == for string comparisons
 		if (actionCommand.equals("Process Purchase"))
 		{
+			AMS.buttonPane.setVisible(false);
 			PurchaseDialog iDialog = new PurchaseDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -64,6 +65,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Process Return"))
 		{
+			AMS.buttonPane.setVisible(false);
 			//BranchUpdateDialog uDialog = new BranchUpdateDialog(AMS);
 			//uDialog.pack();
 			//AMS.centerWindow(uDialog);
@@ -98,58 +100,58 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 	class PurchaseDialog extends JDialog implements ActionListener
 	{
-	
-			/*
+
+		/*
 		 * Constructor. Creates the dialog's GUI.
 		 */
 		public PurchaseDialog(JFrame parent)
 		{
 			super(parent, "Process Purchase", true);
 			setResizable(false);
-			
+
 			JPanel contentPane = new JPanel(new BorderLayout());
 			setContentPane(contentPane);
 			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-			
+
 			// this panel will contain the text field labels and the text fields.
 			JPanel inputPane = new JPanel();
 			inputPane.setBorder(BorderFactory.createCompoundBorder(
-			new TitledBorder(new EtchedBorder(), "Process Purchase"), 
-			new EmptyBorder(5, 5, 5, 5)));
-			
+					new TitledBorder(new EtchedBorder(), "Process Purchase"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
 			GridBagLayout gb = new GridBagLayout();
 			inputPane.setLayout(gb);
-		
-	
-						JPanel buttonPane = new JPanel();
-						buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
-						buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-						JButton cashButton = new JButton("CASH");
-						cashButton.addActionListener(this);
-						cashButton.setActionCommand("CASH");
-						
-						JButton creditButton = new JButton("CREDIT CARD");
-						creditButton.setActionCommand("CREDIT");
-						creditButton.addActionListener(this);
-						
-								
-						// add the buttons to buttonPane
-						buttonPane.add(Box.createHorizontalGlue());
-						buttonPane.add(cashButton);
-						buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
-						buttonPane.add(creditButton);
 
-						contentPane.add(inputPane, BorderLayout.CENTER);
-						contentPane.add(buttonPane, BorderLayout.CENTER);
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-						addWindowListener(new WindowAdapter() 
-						{
-							public void windowClosing(WindowEvent e)
-							{
-								dispose();
-							}
-						});
+			JButton cashButton = new JButton("CASH");
+			cashButton.addActionListener(this);
+			cashButton.setActionCommand("CASH");
+
+			JButton creditButton = new JButton("CREDIT CARD");
+			creditButton.setActionCommand("CREDIT");
+			creditButton.addActionListener(this);
+
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(cashButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(creditButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.CENTER);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
 
 		}
 
@@ -176,9 +178,9 @@ public class ClerkController implements ActionListener, ExceptionListener
 	}
 	class CashDialog extends JDialog implements ActionListener
 	{
-	    JTextField itemUPC = new JTextField(10);
+		JTextField itemUPC = new JTextField(10);
 		JTextField itemQuantity = new JTextField(10);
-	
+
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -220,8 +222,8 @@ public class ClerkController implements ActionListener, ExceptionListener
 			gb.setConstraints(itemUPC, c);
 			inputPane.add(itemUPC);
 
-	
-			
+
+
 			// create and place quantity label
 			label = new JLabel("Quantity: ", SwingConstants.RIGHT);
 			c.gridwidth = GridBagConstraints.RELATIVE;
@@ -237,7 +239,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			gb.setConstraints(itemQuantity, c);
 			inputPane.add(itemQuantity);
 
-	
+
 
 			// when the return key is pressed in the last field
 			// of this form, the action performed by the ok button
@@ -325,17 +327,17 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 					// check for duplicates
 					if (clerk.findItem(upc.intValue())){
-									
+
 					}
 				}
-				
+
 				else
 				{
 					return VALIDATIONERROR; 
 
 				}
-				
-			
+
+
 				if (itemQuantity.getText().trim().length() != 0)
 				{
 					quantity = Integer.valueOf(itemQuantity.getText().trim());
@@ -343,17 +345,17 @@ public class ClerkController implements ActionListener, ExceptionListener
 				else
 				{
 					return VALIDATIONERROR; 
-					}
-				
-				
+				}
+
+
 				AMS.updateStatusBar("Processing Cash Purchase...");
 
 				if (clerk.processCash(upc, quantity))
 				{
-					
+
 					AMS.updateStatusBar("Operation successful.");
 
-//					showAllPurchases();
+					//					showAllPurchases();
 
 					return OPERATIONSUCCESS; 
 				}
@@ -374,29 +376,29 @@ public class ClerkController implements ActionListener, ExceptionListener
 	}
 
 
-//	/*
-//	 * This method displays all purchases in a non-editable JTable
-//	 */
-//	private void showAllPurchases()
-//	{
-//		ResultSet rs = clerk.showPurchases();
-//
-//		// CustomTableModel maintains the result set's data, e.g., if  
-//		// the result set is updatable, it will update the database
-//		// when the table's data is modified.  
-//		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
-//		CustomTable data = new CustomTable(model);
-//
-//		// register to be notified of any exceptions that occur in the model and table
-//		model.addExceptionListener(this);
-//		data.addExceptionListener(this);
-//
-//		// Adds the table to the scrollpane.
-//		// By default, a JTable does not have scroll bars.
-//		AMS.addTable(data);
-//	}
+	//	/*
+	//	 * This method displays all purchases in a non-editable JTable
+	//	 */
+	//	private void showAllPurchases()
+	//	{
+	//		ResultSet rs = clerk.showPurchases();
+	//
+	//		// CustomTableModel maintains the result set's data, e.g., if  
+	//		// the result set is updatable, it will update the database
+	//		// when the table's data is modified.  
+	//		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+	//		CustomTable data = new CustomTable(model);
+	//
+	//		// register to be notified of any exceptions that occur in the model and table
+	//		model.addExceptionListener(this);
+	//		data.addExceptionListener(this);
+	//
+	//		// Adds the table to the scrollpane.
+	//		// By default, a JTable does not have scroll bars.
+	//		AMS.addTable(data);
+	//	}
 
-	 
+
 }
 
 
