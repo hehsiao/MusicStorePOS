@@ -1,15 +1,18 @@
 
 import java.sql.*; 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.EventListenerList;
-
+/**
+ * PurchaseModel contains operations that modifies the Purchase and PurchaseItem.
+ */
 public class PurchaseModel 
 {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
-	private ItemModel item = new ItemModel();
+
 	/*
 	 * Default constructor
 	 * Precondition: The Connection object in AMSOracleConnection must be
@@ -18,14 +21,15 @@ public class PurchaseModel
 	public PurchaseModel()
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
+		System.out.println(getPurchaseTotal(17));
 	}
-	
+
 	/**
 	 * Checks and return the last ReceiptID in the Purchase table.
 	 * Returns -1 if error.
 	 * @return last receiptID in purchases table.
 	 */
-	public Integer lastPurchaseID(){
+	public Integer getReceiptID(){
 		try
 		{	
 			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
@@ -41,7 +45,7 @@ public class PurchaseModel
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
 
-			return 0; 
+			return -1; 
 		}
 	}
 
@@ -49,7 +53,7 @@ public class PurchaseModel
 	 * creates a new purchase Order for online purchases purchases
 	 * @return true if successful
 	 */
-	public boolean createPurchaseOrder(int cid, String cardNumber, String expiryDate){
+	public Integer createOnlinePurchaseOrder(int cid, String cardNumber, String expiryDate){
 		try
 		{	  
 			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid, cardnum, expiryDate) values(SYSDATE, ?, ?, ?)");
@@ -58,8 +62,118 @@ public class PurchaseModel
 			ps.setString(3, expiryDate);
 			ps.executeUpdate();
 			con.commit();
-			
-			return true; 
+			return getReceiptID();
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return -1; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+
+	/**
+	 * creates a new purchase Order
+	 * @return true if successful
+	 */
+	public Integer createCashPurchaseOrder(){
+		try
+		{	  
+			System.out.println("Creating Purchase Order");
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
+			ps.executeUpdate();
+			con.commit();
+			return getReceiptID();
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return -1; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+
+	/**
+	 * addItemToPurchase adds item with receiptID to purchaseItem Table
+	 * @param upc
+	 * @param quantity
+	 * @param receiptID
+	 * @return true if successful
+	 */
+	public boolean addItemToPurchase(int upc, int quantity, int receiptID){
+		try
+		{	  
+			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc, quantity) values(?,?,?)");
+			ps.setInt(1, receiptID);
+			ps.setInt(2, upc);
+			ps.setInt(3, quantity);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+
+	/**
+	 * addItemToPurchase adds item with receiptID to purchaseItem Table
+	 * @param upc
+	 * @param quantity
+	 * @param receiptID
+	 * @return true if successful
+	 */
+	public boolean addMultipleItemToPurchase(ArrayList<CustomerController.CartItem> vCart, int receiptID){
+		try
+		{	 
+			for(CustomerController.CartItem item: vCart){
+				ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc, quantity) values(?,?,?)");
+				ps.setInt(1, receiptID);
+
+				ps.setInt(2, item.upc);
+				ps.setInt(3, item.quantity);
+				System.out.println("table for " + item.upc + " Q:" + item.quantity );
+
+				ps.executeUpdate();
+			}
+			con.commit();
+			return true;
 		}
 		catch (SQLException ex)
 		{
@@ -81,37 +195,61 @@ public class PurchaseModel
 	}
 	
 	/**
-	 * creates a new purchase Order
-	 * @return true if successful
+	 * getPurchaseDetail returns the items purchased in the receiptID provided
+	 * @param receiptID
+	 * @return ResultSet [receiptID, UPC, Title, Quantity, Price]
 	 */
-	public boolean createPurchaseOrder(){
+	public ResultSet getPurchaseDetail(Integer receiptID){
 		try
-		{	  
-			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
-			ps.executeUpdate();
-			con.commit();
+		{	 
+			String query = "SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+					"FROM item i, purchase p, purchaseitem pi " +
+					"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = " +receiptID;
+
+			ps = con.prepareStatement(query, 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
 			
-			return true; 
+			ResultSet rs = ps.executeQuery();
+
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	/**
+	 * getPurchaseTotal returns the total price of the Purchase based on the receipt ID
+	 * @param receiptID
+	 * @return Total price of purchase
+	 */
+	public double getPurchaseTotal(Integer receiptID){
+		try
+		{				
+			ps = con.prepareStatement("SELECT SUM(i.price*pi.quantity) FROM item i, purchase p, purchaseitem pi WHERE pi.upc = i.upc AND pi.receiptid = p.receiptid AND p.receiptid = ?");
+			System.out.println(receiptID.intValue());
+			ps.setInt(1, receiptID.intValue());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+			{
+				return rs.getDouble(1);
+			}
+			return -1; // return negative number if error
 		}
 		catch (SQLException ex)
 		{
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
 
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
+			return -1; 
 		}
 	}
-	
 	/*
 	 * Returns the database connection used by this purchase model
 	 */

@@ -20,50 +20,39 @@ public class ItemModel
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 
-	public boolean insertItem(Integer upc, String title, String type, String category, String company, Integer year, double price, Integer stock)
+	public boolean addItem(Integer upc, String title, String type, String category, String company, Integer year, double price, Integer stock)
 	{
 		try
 		{	   
 			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?,?)");
 
 			ps.setInt(1, upc.intValue());
-
 			ps.setString(2, title);
-
 			ps.setString(3, type);
 
-			if (category != null)
-			{
+			if (category != null){
 				ps.setString(4, category);
 			}
-			else
-			{
+			else{
 				ps.setString(4, null);
 			}
 
-			if (company != null)
-			{
+			if (company != null){
 				ps.setString(5, company);
 			}
-			else
-			{
+			else{
 				ps.setString(5, null);
 			}
 
-			if (year != null)
-			{
+			if (year != null) {
 				ps.setInt(6, year.intValue());
 			}
 			else {
 				ps.setNull(6, Types.INTEGER);
 			}
-
 			ps.setDouble(7, price);
-
 			ps.setInt(8, stock.intValue());
-
 			ps.executeUpdate();
-
 			con.commit();
 
 			return true; 
@@ -91,14 +80,12 @@ public class ItemModel
 	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public ResultSet findItemByUPC(int upc)
+	public ResultSet findItemByUPC(Integer upc)
 	{
 		try
 		{	
 			ps = con.prepareStatement("SELECT * FROM item WHERE upc = ?");
-
-			ps.setInt(1, upc);
-
+			ps.setInt(1, upc.intValue());
 			ResultSet rs = ps.executeQuery();
 
 			return rs; 
@@ -147,12 +134,12 @@ public class ItemModel
 	 * @param upc
 	 * @return stock level of requested stock
 	 */
-	public Integer checkStock(int upc)
+	public Integer getStock(Integer upc)
 	{
 		try
 		{	
 			ps = con.prepareStatement("SELECT stock FROM item WHERE upc = ?");
-			ps.setInt(1, upc);
+			ps.setInt(1, upc.intValue());
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()){
 				return rs.getInt(1); 
@@ -171,10 +158,73 @@ public class ItemModel
 	}
 	
 	/**
+	 * return price of upc
+	 * @param upc
+	 * @return stock level of requested stock
+	 */
+	public Integer getPrice(Integer upc)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT price FROM item WHERE upc = ?");
+			ps.setInt(1, upc.intValue());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()){
+				return rs.getInt(1); 
+			}
+			else {
+				return -1; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return -1; 
+		}
+	}
+	
+	/**
+	 * restock Item updates the quantity for the upc input
+	 * @param upc
+	 * @param quantity
+	 * @return true if successful
+	 */
+	public boolean restockItem(int upc, int quantity){
+		try
+		{	  
+			ps = con.prepareStatement("UPDATE Item SET stock =(stock+?)  WHERE upc= ?");
+			ps.setInt(1, quantity);
+			ps.setInt(2, upc);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	
+	/**
 	 * sellItem decrement the stock level of the UPC product by quantity amount
 	 * @param upc
 	 * @param quantity
-	 * @return true if successfuly, false if failed.
+	 * @return true if successfully, false if failed.
 	 */
 	public boolean sellItem(int upc, int quantity){
 		try

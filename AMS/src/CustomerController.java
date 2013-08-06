@@ -11,9 +11,10 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private AMSView AMS = null;
 	private CustomerModel customer = null;
 	private ItemModel item = null;
-
+	private PurchaseModel purchase = null;
+	
 	// Virtual Cart
-	private class CartItem{
+	class CartItem{
 		int upc;
 		int quantity;
 	}
@@ -29,6 +30,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		this.AMS = AMS;
 		customer = new CustomerModel();
 		item = new ItemModel();
+		purchase = new PurchaseModel();
 
 		// register to receive exception events from branch
 		customer.addExceptionListener(this);
@@ -781,5 +783,12 @@ public class CustomerController implements ActionListener, ExceptionListener
 		inputPane.add(fieldName);
 	}
 
-
+	public void test(){
+		addToCart(1,2);
+		addToCart(2,3);
+		
+		int receiptID = purchase.createCashPurchaseOrder().intValue();
+			
+		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
+	}
 }
