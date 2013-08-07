@@ -60,34 +60,20 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Purchase Items"))
 		{
+			AMS.buttonPane.setVisible(false);
 			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
 			return; 
 		}
-
-		if (actionCommand.equals("SearchItems")){
+		
+		if (actionCommand.equals("Search for Item")){
+			AMS.buttonPane.setVisible(false);
 			ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
-			return; 
-		}
-		
-		if (actionCommand.equals("addToCart")){
-			// add fxn
-			return; 
-		}
-		
-		if (actionCommand.equals("viewCart")){
-			// add fxn
-			return; 
-		}
-		
-		if (actionCommand.equals("cancelOrder")){
-			AMS.buttonPane.setVisible(false);
-			// add fxn
 			return; 
 		}
 	}
@@ -532,10 +518,10 @@ public class CustomerController implements ActionListener, ExceptionListener
 						// Adds button after customer login
 						AMS.buttonPane.setVisible(true);
 						// calls describe item dialog
-						//						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
-						//						iDialog.pack();
-						//						AMS.centerWindow(iDialog);
-						//						iDialog.setVisible(true);
+//						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
+//						iDialog.pack();
+//						AMS.centerWindow(iDialog);
+//						iDialog.setVisible(true);
 						return OPERATIONSUCCESS;
 					}
 					else {
@@ -810,8 +796,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 		// By default, a JTable does not have scroll bars.
 		AMS.addTable(data);
 	}
-
-
+	
+	
 	/*
 	 * This method adds the item upc and quantity into the virtualcart
 	 */

@@ -60,6 +60,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("Purchase Items"))
 		{
+			AMS.buttonPane.setVisible(false);
 			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -67,27 +68,12 @@ public class CustomerController implements ActionListener, ExceptionListener
 			return; 
 		}
 
-		if (actionCommand.equals("SearchItems")){
+		if (actionCommand.equals("Search for Item")){
+			AMS.buttonPane.setVisible(false);
 			ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
-			return; 
-		}
-		
-		if (actionCommand.equals("addToCart")){
-			// add fxn
-			return; 
-		}
-		
-		if (actionCommand.equals("viewCart")){
-			// add fxn
-			return; 
-		}
-		
-		if (actionCommand.equals("cancelOrder")){
-			AMS.buttonPane.setVisible(false);
-			// add fxn
 			return; 
 		}
 	}

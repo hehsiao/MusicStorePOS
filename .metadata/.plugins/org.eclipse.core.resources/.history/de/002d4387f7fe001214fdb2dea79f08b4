@@ -327,6 +327,7 @@ public class AMSView extends JFrame
 		cancelOrder.addActionListener(customerControl);
 		cancelOrder.setActionCommand("cancelOrder");
 		
+		
 		// add the command buttons for purchasing and hide them until we need them
 		buttonPane.setLayout(buttonLayout);
 		buttonPane.add(searchItems);

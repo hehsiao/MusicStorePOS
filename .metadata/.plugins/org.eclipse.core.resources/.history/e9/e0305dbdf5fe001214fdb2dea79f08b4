@@ -81,13 +81,13 @@ public class AMSView extends JFrame
 		statusField.setLineWrap(true);
 		statusField.setWrapStyleWord(true);
 
-//		// add the command buttons for purchasing and hide them until we need them
-//		buttonPane.setLayout(buttonLayout);
-//		buttonPane.add(searchItems);
-//		buttonPane.add(addToCart);
-//		buttonPane.add(viewCart);
-//		buttonPane.add(cancelOrder);
-//		buttonPane.setVisible(false);
+		// add the command buttons for purchasing and hide them until we need them
+		buttonPane.setLayout(buttonLayout);
+		buttonPane.add(searchItems);
+		buttonPane.add(addToCart);
+		buttonPane.add(viewCart);
+		buttonPane.add(cancelOrder);
+		buttonPane.setVisible(false);
 
 
 
@@ -319,21 +319,6 @@ public class AMSView extends JFrame
 		}
 		
 		searchItems.addActionListener(customerControl);
-		searchItems.setActionCommand("SearchItems");
-		addToCart.addActionListener(customerControl);
-		addToCart.setActionCommand("addToCart");
-		viewCart.addActionListener(customerControl);
-		viewCart.setActionCommand("viewCart");
-		cancelOrder.addActionListener(customerControl);
-		cancelOrder.setActionCommand("cancelOrder");
-		
-		// add the command buttons for purchasing and hide them until we need them
-		buttonPane.setLayout(buttonLayout);
-		buttonPane.add(searchItems);
-		buttonPane.add(addToCart);
-		buttonPane.add(viewCart);
-		buttonPane.add(cancelOrder);
-		buttonPane.setVisible(false);
 		
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
 		DebugController debugControl = new DebugController(this);

@@ -76,18 +76,27 @@ public class CustomerController implements ActionListener, ExceptionListener
 		}
 		
 		if (actionCommand.equals("addToCart")){
-			// add fxn
+			ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
+			iDialog.pack();
+			AMS.centerWindow(iDialog);
+			iDialog.setVisible(true);
 			return; 
 		}
 		
 		if (actionCommand.equals("viewCart")){
-			// add fxn
+			ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
+			iDialog.pack();
+			AMS.centerWindow(iDialog);
+			iDialog.setVisible(true);
 			return; 
 		}
 		
 		if (actionCommand.equals("cancelOrder")){
 			AMS.buttonPane.setVisible(false);
-			// add fxn
+//			ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
+//			iDialog.pack();
+//			AMS.centerWindow(iDialog);
+//			iDialog.setVisible(true);
 			return; 
 		}
 	}
