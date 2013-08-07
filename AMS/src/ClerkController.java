@@ -404,10 +404,183 @@ public class ClerkController implements ActionListener, ExceptionListener
 			}
 		}
 	}
+	class AuthorizeDialog extends JDialog implements ActionListener
+	{
+		JTextField ccardnum = new JTextField(16);
+	   // JTextField 
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public AuthorizeDialog(JFrame parent)
+		{
+			super(parent, "CREDIT", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Item Fields"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			// create and place upc label
+			JLabel label= new JLabel("Credit Card #: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(ccardnum, c);
+			inputPane.add(ccardnum);
+
+
+
+			// when the return key is pressed in the last field
+			// of this form, the action performed by the ok button
+			// is executed
+			ccardnum.addActionListener(this);
+			ccardnum.setActionCommand("OK");
+
+			// panel for the OK and cancel buttons
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton OKButton = new JButton("Authorize");
+			JButton cancelButton = new JButton("Cancel");
+			OKButton.addActionListener(this);
+			OKButton.setActionCommand("OK");
+			cancelButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					dispose();
+				}
+			});
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(OKButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(cancelButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+
+	
+		public void actionPerformed(ActionEvent e)
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("OK"))
+			{
+				if (validateCREDIT() != VALIDATIONERROR)
+				{
+					dispose();
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		}
+
+
+		/*
+		 * Validates the text fields in BranchInsertDialog and then
+		 * calls branch.insertBranch() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 * 
+		 * 
+		 */ 
+		private int validateCREDIT()
+		{
+			try
+			{
+				Integer upc = null;
+				Integer quantity=null;
+				Integer cnum;
+				Integer rID;
+
+				if (ccardnum.getText().trim().length() != 0)
+				{
+					cnum = Integer.valueOf(ccardnum.getText().trim());
+
+					// check for duplicates
+					if (purchase.findItem(cnum.intValue())){
+
+					}
+				}
+
+				else
+				{
+					return VALIDATIONERROR; 
+
+				}
+
+				AMS.updateStatusBar("Processing Credit Card Purchase...");
+                  rID = purchase.createPurchaseOrder();
+                  System.out.println(rID.toString());
+				if (clerk.reduceStock(upc, quantity) && purchase.addItemToPurchase(upc,quantity,rID))
+				{
+
+					AMS.updateStatusBar("Operation successful.");
+
+					showPurchase(rID);
+
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+		}
+	}
 	class CreditDialog extends JDialog implements ActionListener
 	{
 		JTextField itemUPC = new JTextField(10);
 		JTextField itemQuantity = new JTextField(10);
+		JTextField creditnum = new JTextField(16);
 
 
 		/*
@@ -619,7 +792,6 @@ public class ClerkController implements ActionListener, ExceptionListener
 	}
 	
 	
-
 		/*
 		 * This method displays all purchases in a non-editable JTable
 		 */
