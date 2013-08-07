@@ -99,7 +99,7 @@ Foreign Key (upc) REFERENCES Item);
 			}
 			
 			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
-			ps.setInt(1, receiptID);
+			ps.setInt(1, receiptID.intValue());
 			ps.setInt(2, upc.intValue());
 			ps.setInt(3, quantity.intValue());
 			ps.executeUpdate();

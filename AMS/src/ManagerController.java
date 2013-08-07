@@ -4,10 +4,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
 import java.util.Date;
+import java.util.TimeZone;
+
 import oracle.sql.DATE;
 
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -636,7 +639,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date(YYMMDD): ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -758,32 +761,38 @@ public class ManagerController implements ActionListener, ExceptionListener
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
 		 */ 
+		@SuppressWarnings("deprecation")
 		private int validateInsert() throws ParseException
 		{
 			try
 			{
-				java.sql.Date date;
-
+				Date utilDate = new Date();
+				 java.sql.Date sqlDate;
 
 				if (purchaseDate.getText().trim().length() != 0)
 				{
 					String pd = purchaseDate.getText().trim();
+					System.out.println(pd);
 
-
-					if (pd.length() != 6) {
+					if (pd.length() != 8) {
 						return VALIDATIONERROR;
 					}
-
-					//frickk doesn't work
+					
+					
 					//date=DATE.fromText(arg0, arg1, arg2);
 
-					SimpleDateFormat sdf = new SimpleDateFormat("yy-mm-dd");
-					String parsed = sdf.format(pd);
-					date = (java.sql.Date)sdf.parse(parsed);
-
-					System.out.println("HELLO");
+					DateFormat format = new SimpleDateFormat("yy-mm-dd");
+					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+					System.out.println("Current Time: "+utilDate);
+				   // utilDate = format.parse(pd);//if wrong format, "invalid format"
+					//System.out.println("Current Time: "+utilDate);
+				  			
+				
+				    sqlDate= new java.sql.Date(utilDate.getTime());
+				    System.out.println("utilDate:" + utilDate);
+				    System.out.println("sqlDate:" + sqlDate);
 					// check for duplicates
-					if (manager.findDate(date))
+					if (manager.findDate(sqlDate))
 					{
 						System.out.println("BYE");
 					}
@@ -794,7 +803,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}
 
 				AMS.updateStatusBar("Creating Daily Sales Report...");
-				showDailySalesReport(date);
+				showDailySalesReport(sqlDate);
 				System.out.println("YO");
 				return OPERATIONSUCCESS;
 

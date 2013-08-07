@@ -143,18 +143,13 @@ public class ManagerModel
 		try
 		{	 
 			//category totalunit totalvalue
-			ps = con.prepareStatement("(SELECT i.upc, i.category, i.price as Unit_Price, sum(pi.quantity) as " +
-					"Units_Sold,sum(pi.quantity)*(i.price) as Total_Value FROM Item i, Purchase p, PurchaseItem pi " +
-					"WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? group by i.category) UNION " +
-
-					"(SELECT i.category, sum(sum(pi.quantity)) as Total_Units_Sold, sum(sum(pi.quantity)*(i.price)) as Total Value" +
-					"FROM Item i, Purchase p, PurchaseItem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? ", 
+			ps = con.prepareStatement("SELECT i.upc, i.category, i.price as Unit_Price, sum(pi.quantity) as Units_Sold,sum((pi.quantity)*(i.price)) as Total_Value, sum(sum(pi.quantity)) as Total_Units_Sold_Category, sum(sum((pi.quantity)*(i.price))) as Total_Value_Category FROM Item i, Purchase p, PurchaseItem pi " +
+					"WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? Group by i.category", 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
 
-
 			ps.setDate(1,date);
-			ps.setDate(2,date);
+		//	ps.setDate(2,date);
 			ResultSet rs = ps.executeQuery();
 
 
