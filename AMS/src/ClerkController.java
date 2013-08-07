@@ -27,7 +27,9 @@ import java.sql.*;
 public class ClerkController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
-	private ClerkModel clerk = null; 
+	private ClerkModel clerk = null;
+	private PurchaseModel purchase = null;
+
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -318,6 +320,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 		{
 			try
 			{
+				Integer rID;
 				Integer upc;
 				Integer quantity;
 
@@ -349,13 +352,14 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 
 				AMS.updateStatusBar("Processing Cash Purchase...");
-
-				if (clerk.processCash(upc, quantity))
+                  rID = purchase.createCashPurchaseOrder();
+                  System.out.println(rID.toString());
+				if (purchase.addItemToPurchase(upc,quantity,rID))
 				{
 
 					AMS.updateStatusBar("Operation successful.");
 
-					//					showAllPurchases();
+					showPurchase(rID);
 
 					return OPERATIONSUCCESS; 
 				}
@@ -376,27 +380,27 @@ public class ClerkController implements ActionListener, ExceptionListener
 	}
 
 
-	//	/*
-	//	 * This method displays all purchases in a non-editable JTable
-	//	 */
-	//	private void showAllPurchases()
-	//	{
-	//		ResultSet rs = clerk.showPurchases();
-	//
-	//		// CustomTableModel maintains the result set's data, e.g., if  
-	//		// the result set is updatable, it will update the database
-	//		// when the table's data is modified.  
-	//		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
-	//		CustomTable data = new CustomTable(model);
-	//
-	//		// register to be notified of any exceptions that occur in the model and table
-	//		model.addExceptionListener(this);
-	//		data.addExceptionListener(this);
-	//
-	//		// Adds the table to the scrollpane.
-	//		// By default, a JTable does not have scroll bars.
-	//		AMS.addTable(data);
-	//	}
+		/*
+		 * This method displays all purchases in a non-editable JTable
+		 */
+		private void showPurchase(Integer receiptID)
+		{
+			ResultSet rs = purchase.getPurchaseItems(receiptID);
+	
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+	
+			// register to be notified of any exceptions that occur in the model and table
+			model.addExceptionListener(this);
+			data.addExceptionListener(this);
+	
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
+		}
 
 
 }
