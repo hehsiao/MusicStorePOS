@@ -1,8 +1,10 @@
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.*; 
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -13,6 +15,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private ItemModel item = null;
 	private PurchaseModel purchase = null;
 
+	private int currReceiptID = 0;
+	private JScrollPane shoppingCart;
 	// Virtual Cart
 	class CartItem{
 		int upc;
@@ -31,7 +35,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		customer = new CustomerModel();
 		item = new ItemModel();
 		purchase = new PurchaseModel();
-
+		purchase.getPurchaseItems(currReceiptID);
 		AMS.clearStatusBar();
 		displayPurchaseDetail(19);
 		AMS.clearStatusBar();
@@ -74,17 +78,24 @@ public class CustomerController implements ActionListener, ExceptionListener
 			iDialog.setVisible(true);
 			return; 
 		}
-		
+
 		if (actionCommand.equals("addToCart")){
-			// add fxn
+			ItemInsertDialog iDialog = new ItemInsertDialog(AMS);
+			iDialog.pack();
+			AMS.centerWindow(iDialog);
+			iDialog.setVisible(true);
 			return; 
 		}
-		
-		if (actionCommand.equals("viewCart")){
-			// add fxn
-			return; 
+
+		if (actionCommand.equals("checkout"))
+		{
+			CheckoutDialog iDialog = new CheckoutDialog(AMS);
+			iDialog.pack();
+			AMS.centerWindow(iDialog);
+			iDialog.setVisible(true);
+			return;
 		}
-		
+
 		if (actionCommand.equals("cancelOrder")){
 			AMS.buttonPane.setVisible(false);
 			// add fxn
@@ -528,7 +539,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					if ((cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
 					{
 						AMS.updateStatusBar("Welcome " + cname + "! What would you like today?");
-
+						currReceiptID = purchase.createOnlinePurchaseOrder(cid);
 						// Adds button after customer login
 						AMS.buttonPane.setVisible(true);
 						// calls describe item dialog
@@ -767,6 +778,250 @@ public class CustomerController implements ActionListener, ExceptionListener
 	}
 
 	/*
+	 * This class creates a dialog box for view cart dialog.
+	 */
+	class CheckoutDialog extends JDialog implements ActionListener
+	{
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public CheckoutDialog(JFrame parent)
+		{
+			super(parent, "Checkout", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Items in the Cart"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			GridBagLayout gb = new GridBagLayout();
+			inputPane.setLayout(gb);
+
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton cashButton = new JButton("Pay Now");
+			cashButton.addActionListener(this);
+			cashButton.setActionCommand("Pay Now");
+
+			JButton creditButton = new JButton("Continue Shopping");
+			creditButton.setActionCommand("Continue");
+			creditButton.addActionListener(this);
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(cashButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(creditButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.CENTER);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+
+		}
+	}	// end CheckoutDialog
+
+	/*
+	 * This class creates a dialog box for adding an item to inventory.
+	 */
+	class ItemInsertDialog extends JDialog implements ActionListener
+	{
+
+		JTextField itemUPC = new JTextField(10);
+		JTextField itemQuantity = new JTextField(10);
+		JTextField itemPrice = new JTextField(10);
+
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public ItemInsertDialog(JFrame parent)
+		{
+			super(parent, "Add Items", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Item Fields"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			// create and place upc label
+			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(itemUPC, c);
+			inputPane.add(itemUPC);
+
+			// create and place quantity label
+			label = new JLabel("Quantity: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place Quantity field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(itemQuantity, c);
+			inputPane.add(itemQuantity);
+
+
+
+			// when the return key is pressed in the last field
+			// of this form, the action performed by the ok button
+			// is executed
+			itemQuantity.addActionListener(this);
+			itemQuantity.setActionCommand("OK");
+
+			// panel for the OK and cancel buttons
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton OKButton = new JButton("OK");
+			JButton cancelButton = new JButton("Cancel");
+			OKButton.addActionListener(this);
+			OKButton.setActionCommand("OK");
+			cancelButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					dispose();
+				}
+			});
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(OKButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(cancelButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+
+		/*
+		 * Event handler for the OK button in BranchInsertDialog
+		 */ 
+		public void actionPerformed(ActionEvent e)
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("OK"))
+			{
+				if (validateInsert() != VALIDATIONERROR)
+				{
+					dispose();
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		}
+
+
+		/*
+		 * Validates the text fields in BranchInsertDialog and then
+		 * calls branch.insertBranch() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 */ 
+		private int validateInsert()
+		{
+			try
+			{
+				Integer upc;
+				Integer quantity;
+
+				if (itemUPC.getText().trim().length() != 0)
+				{
+					upc = Integer.valueOf(itemUPC.getText().trim());
+
+				}
+				else
+				{
+					//or operationfailed
+					return VALIDATIONERROR; 
+				}
+
+				if (itemQuantity.getText().trim().length() != 0)
+				{
+					quantity = Integer.valueOf(itemQuantity.getText().trim());
+				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				addToCart(upc, quantity);
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+			return 0;
+		}
+	}
+
+	/*
 	 * This method displays all branches in an editable JTable
 	 */
 	public void searchResults(ArrayList<String> description)
@@ -821,6 +1076,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		item.quantity = quantity;
 
 		vCart.add(item);
+		purchase.addItemToPurchase(upc, quantity, currReceiptID);
 		AMS.updateStatusBar(quantity + " of Item " + upc + " is added to the cart.");
 	}
 
@@ -839,6 +1095,14 @@ public class CustomerController implements ActionListener, ExceptionListener
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(fieldName, c);
 		inputPane.add(fieldName);
+	}
+
+	/*
+	 * This method adds the given JTable into tableScrPane
+	 */
+	public void addTable(JTable data)
+	{
+		shoppingCart.setViewportView(data);
 	}
 
 	public void test(){

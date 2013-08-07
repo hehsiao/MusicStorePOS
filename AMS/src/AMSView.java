@@ -38,7 +38,7 @@ public class AMSView extends JFrame
 	public JPanel buttonPane = new JPanel();
 	private JButton searchItems = new JButton("Search for Items");
 	private JButton addToCart = new JButton("Add Item to Cart");
-	private JButton viewCart = new JButton("View Cart");
+	private JButton checkout = new JButton("Checkout");
 	private JButton cancelOrder = new JButton("Cancel Order");
 
 	/*
@@ -80,16 +80,6 @@ public class AMSView extends JFrame
 		statusField.setEditable(false);
 		statusField.setLineWrap(true);
 		statusField.setWrapStyleWord(true);
-
-//		// add the command buttons for purchasing and hide them until we need them
-//		buttonPane.setLayout(buttonLayout);
-//		buttonPane.add(searchItems);
-//		buttonPane.add(addToCart);
-//		buttonPane.add(viewCart);
-//		buttonPane.add(cancelOrder);
-//		buttonPane.setVisible(false);
-
-
 
 		// add the panes to the content pane
 		contentPane.add(tableScrPane, BorderLayout.CENTER);
@@ -267,7 +257,7 @@ public class AMSView extends JFrame
 		// just added to the text area. This line guarantees that it does.
 		statusField.revalidate();
 	}
-	
+
 	public void clearStatusBar(){
 		statusField.setText(null);
 	}
@@ -317,24 +307,24 @@ public class AMSView extends JFrame
 			menuItem = customer.getItem(i);
 			menuItem.addActionListener(customerControl);
 		}
-		
+
 		searchItems.addActionListener(customerControl);
 		searchItems.setActionCommand("SearchItems");
 		addToCart.addActionListener(customerControl);
 		addToCart.setActionCommand("addToCart");
-		viewCart.addActionListener(customerControl);
-		viewCart.setActionCommand("viewCart");
+		checkout.addActionListener(customerControl);
+		checkout.setActionCommand("checkout");
 		cancelOrder.addActionListener(customerControl);
 		cancelOrder.setActionCommand("cancelOrder");
-		
+
 		// add the command buttons for purchasing and hide them until we need them
 		buttonPane.setLayout(buttonLayout);
 		buttonPane.add(searchItems);
 		buttonPane.add(addToCart);
-		buttonPane.add(viewCart);
+		buttonPane.add(checkout);
 		buttonPane.add(cancelOrder);
 		buttonPane.setVisible(false);
-		
+
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
 		DebugController debugControl = new DebugController(this);
 
