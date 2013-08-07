@@ -19,34 +19,34 @@ public class CustomerModel
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 
-	public boolean insertCustomer(String password, String name, String address, Integer phone)
+	public boolean insertCustomer(Integer cid, String password, String name, String address, Integer phone)
 	{
 		try
 		{	   
-			ps = con.prepareStatement("INSERT INTO customer(password,name,address,phone) VALUES (?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
 
-	
+			ps.setInt(1, cid.intValue());
 
-			ps.setString(1, password);
+			ps.setString(2, password);
 
-			ps.setString(2, name);
+			ps.setString(3, name);
 
 			if (address != null)
 			{
-				ps.setString(3, address);
+				ps.setString(4, address);
 			}
 			else
 			{
-				ps.setString(3, null);
+				ps.setString(4, null);
 			}
 
 			if (phone != null)
 			{
-				ps.setInt(4, phone.intValue());
+				ps.setInt(5, phone.intValue());
 			}
 			else
 			{
-				ps.setNull(4, Types.INTEGER);
+				ps.setNull(5, Types.INTEGER);
 			}
 
 			ps.executeUpdate();
@@ -78,13 +78,13 @@ public class CustomerModel
 	 * Returns true if the customer exists; false
 	 * otherwise.
 	 */ 
-	public boolean findCustomer(String username)
+	public boolean findCustomer(int cid)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT name FROM customer WHERE name = ?");
+			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ?");
 
-			ps.setString(1, username);
+			ps.setInt(1, cid);
 
 			ResultSet rs = ps.executeQuery();
 
@@ -110,13 +110,13 @@ public class CustomerModel
 	 * Returns true if the customer/password combination is correct; false
 	 * otherwise.
 	 */ 
-	public String authenticateCustomer(String name, String pwd)
+	public String authenticateCustomer(int cid, String pwd)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT name FROM customer WHERE name = ? AND password = ?");
+			ps = con.prepareStatement("SELECT name FROM customer WHERE cid = ? AND password = ?");
 
-			ps.setString(1, name);
+			ps.setInt(1, cid);
 			ps.setString(2, pwd);
 
 			ResultSet rs = ps.executeQuery();

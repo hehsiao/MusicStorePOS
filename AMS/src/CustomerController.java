@@ -117,8 +117,9 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	class RegisterAccountInsertDialog extends JDialog implements ActionListener
 	{
+		private JTextField customerID = new JTextField(4);
 		private JPasswordField customerPW = new JPasswordField(15);
-		private JTextField userName = new JTextField(10);
+		private JTextField customerName = new JTextField(10);
 		private JTextField customerAddress = new JTextField(15);
 		private JTextField customerPhone = new JTextField(10);
 
@@ -149,7 +150,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			/** CUSTOMER ID **/
 			// create and place customer id label
-			JLabel label = new JLabel("Username: ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Customer ID: ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -160,8 +161,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 			c.gridwidth = GridBagConstraints.REMAINDER;
 			c.insets = new Insets(0, 0, 0, 0);
 			c.anchor = GridBagConstraints.WEST;
-			gb.setConstraints(userName, c);
-			inputPane.add(userName);
+			gb.setConstraints(customerID, c);
+			inputPane.add(customerID);
 
 			/** CUSTOMER PASSWORD **/
 			// create and place customer password label
@@ -179,6 +180,21 @@ public class CustomerController implements ActionListener, ExceptionListener
 			gb.setConstraints(customerPW, c);
 			inputPane.add(customerPW);
 
+			/** CUSTOMER NAME **/
+			// create and place customer name label
+			label = new JLabel("Name: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place customer name field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(customerName, c);
+			inputPane.add(customerName);
 
 			/** CUSTOMER ADDRESS **/
 			// create and place customer address label
@@ -288,21 +304,21 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				
+				Integer cid;
 				String password;
-				String username;
+				String name;
 				String address;
 				Integer phone;
 
-				if (userName.getText().trim().length() != 0)
+				if (customerID.getText().trim().length() != 0)
 				{
-					username = userName.getText().trim();
+					cid = Integer.valueOf(customerID.getText().trim());
 
 					// check for duplicates
-					if (customer.findCustomer(username))
+					if (customer.findCustomer(cid.intValue()))
 					{
 						Toolkit.getDefaultToolkit().beep();
-						AMS.updateStatusBar("Customer " + username + " already exists!");
+						AMS.updateStatusBar("Customer " + cid.toString() + " already exists!");
 						return OPERATIONFAILED; 
 					}
 				}
@@ -311,16 +327,24 @@ public class CustomerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
-				if (customerPW.getPassword().length!= 0)
+				if (customerPW.getText().trim().length() != 0)
 				{
-					password =new String(customerPW.getPassword());
+					password = customerPW.getText().trim();
 				}
 				else
 				{
 					return VALIDATIONERROR; 
 				}
 
-				
+				if (customerName.getText().trim().length() != 0)
+				{
+					name = customerName.getText().trim();
+				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
 				if (customerAddress.getText().trim().length() != 0)
 				{
 					address = customerAddress.getText().trim();
@@ -341,7 +365,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 				AMS.updateStatusBar("Creating Account...");
 
-				if (customer.insertCustomer(password, username, address, phone))
+				if (customer.insertCustomer(cid, password, name, address, phone))
 				{
 					AMS.updateStatusBar("Operation successful.");
 					return OPERATIONSUCCESS; 
@@ -368,7 +392,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	class CustomerLoginDialog extends JDialog implements ActionListener
 	{
-		private JTextField userName = new JTextField(4);
+		private JTextField customerID = new JTextField(4);
 		private JPasswordField customerPW = new JPasswordField(15);
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -397,7 +421,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			/** CUSTOMER ID **/
 			JLabel label = null;
-			labelTextField("Username", userName, label, inputPane, gb, c);
+			labelTextField("Customer ID", customerID, label, inputPane, gb, c);
 
 			/** CUSTOMER PASSWORD **/
 			// create and place customer password label
@@ -481,29 +505,29 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				String username;
+				Integer cid;
 				String password;
 
-				if (userName.getText().trim().length() == 0 && customerPW.getPassword().length == 0){
+				if (customerID.getText().trim().length() == 0 && customerPW.getPassword().length == 0){
 					// If customerID or password was not entered, return validation error.
 
 					return VALIDATIONERROR;
 				}
 				else {
-					username = new String(userName.getText().trim());
+					cid = Integer.valueOf(customerID.getText().trim());
 					password = new String(customerPW.getPassword());
 
-					Boolean duplicate = customer.findCustomer(username);
+					Boolean duplicate = customer.findCustomer(cid.intValue());
 					System.out.println(duplicate.toString());
 					if(!duplicate){
 
-						AMS.updateStatusBar("Customer " + username + " is not found." );
+						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
 						return OPERATIONFAILED;				
 				
 					} 	
 					
 					String cname;
-					cname = customer.authenticateCustomer(username, password);
+					cname = customer.authenticateCustomer(cid.intValue(), password);
 					System.out.println(cname);
 					// check for account 
 					if (cname!= null)
@@ -521,7 +545,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					}
 					else {
 						Toolkit.getDefaultToolkit().beep();
-						AMS.updateStatusBar("Customer " + username + " might have a wrong id/password combinations!");
+						AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
 						return OPERATIONFAILED; 
 
 					}
