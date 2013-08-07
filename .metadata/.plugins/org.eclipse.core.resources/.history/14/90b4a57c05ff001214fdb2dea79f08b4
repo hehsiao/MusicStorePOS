@@ -112,6 +112,26 @@ public class ManagerController implements ActionListener, ExceptionListener
 	}    
 
 
+
+
+	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,
+			GridBagConstraints c) {
+		label = new JLabel(labelName + ": ", SwingConstants.RIGHT);	    
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.insets = new Insets(0, 0, 0, 5);
+		c.anchor = GridBagConstraints.EAST;
+		gb.setConstraints(label, c);
+		inputPane.add(label);
+
+		// place Item UPC field
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
+		gb.setConstraints(fieldName, c);
+		inputPane.add(fieldName);
+	}
+
+
 	/*
 	 * This method displays all branches in an editable JTable
 	 */
@@ -303,10 +323,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (!manager.findItem(upc.intValue()))
+					if (manager.findItem(upc.intValue()))
 					{
-						AMS.updateStatusBar("UPC not Found!");
-						return VALIDATIONERROR;
+
 					}
 				}
 				else
@@ -334,10 +353,14 @@ public class ManagerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
+
+				AMS.updateStatusBar("Inserting item...");
+
 				if (manager.insertItem(upc, price, quantity))
 				{
-					AMS.updateStatusBar("Item Updated");
-					displayUpdateItem(upc);
+					AMS.updateStatusBar("Operation successful.");
+
+					//showAllBranches();
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -354,25 +377,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 				return VALIDATIONERROR; 
 			}
 		}
-	}
-
-	private void displayUpdateItem(int upc)
-	{
-		ResultSet rs = item.findItemByUPC(upc);
-
-		// CustomTableModel maintains the result set's data, e.g., if  
-		// the result set is updatable, it will update the database
-		// when the table's data is modified.  
-		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		// register to be notified of any exceptions that occur in the model and table
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
-		// Adds the table to the scrollpane.
-		// By default, a JTable does not have scroll bars.
-		AMS.addTable(data);
 	}
 
 

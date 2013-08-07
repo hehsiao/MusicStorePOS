@@ -15,7 +15,11 @@ public class ManagerController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
 	private ManagerModel manager = null;
-	private ItemModel item = null;
+
+	//  static NumberFormat numForm = NumberFormat.getInstance();
+	//  static {
+	//      numForm.setMaximumIntegerDigits(20);
+	//  }
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -26,11 +30,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 	{
 		this.AMS = AMS;
 		manager = new ManagerModel();
-		item = new ItemModel();
 
 		// register to receive exception events from branch
 		manager.addExceptionListener(this);
-		item.addExceptionListener(this);
 	}
 
 	/*
@@ -48,13 +50,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
-			return; 
-		}
-
-		if (actionCommand.equals("Edit Items"))
-		{
-			AMS.buttonPane.setVisible(false);
-			editAllItems();
 			return; 
 		}
 
@@ -112,21 +107,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 	}    
 
 
-	/*
-	 * This method displays all branches in an editable JTable
-	 */
-	private void editAllItems()
-	{
-		ResultSet rs = item.editItem();
-
-		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
-		AMS.addTable(data);
-	}
 
 
 	/*
@@ -170,19 +150,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place upc label
-			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);       
-			c.gridwidth = GridBagConstraints.RELATIVE;
-			c.insets = new Insets(0, 0, 0, 5);
-			c.anchor = GridBagConstraints.EAST;
-			gb.setConstraints(label, c);
-			inputPane.add(label);
-
-			// place upc field
-			c.gridwidth = GridBagConstraints.REMAINDER;
-			c.insets = new Insets(0, 0, 0, 0);
-			c.anchor = GridBagConstraints.WEST;
-			gb.setConstraints(itemUPC, c);
-			inputPane.add(itemUPC);
+			JLabel label;
+			textfieldlabel(inputPane, gb, c);
 
 
 			// create and place price label
@@ -259,6 +228,24 @@ public class ManagerController implements ActionListener, ExceptionListener
 		}
 
 
+		private void textfieldlabel(JPanel inputPane, GridBagLayout gb,
+				GridBagConstraints c) {
+			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(itemUPC, c);
+			inputPane.add(itemUPC);
+		}
+
+
 		/*
 		 * Event handler for the OK button in BranchInsertDialog
 		 */ 
@@ -279,7 +266,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					// display a popup to inform the user of the validation error
 					JOptionPane errorPopup = new JOptionPane();
 					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
-				}       
+				}	
 			}
 		}
 
@@ -295,7 +282,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			try
 			{
 				Integer upc;
-				double price;
+				Integer price;
 				Integer quantity;
 
 				if (itemUPC.getText().trim().length() != 0)
@@ -303,10 +290,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (!manager.findItem(upc.intValue()))
+					if (manager.findItem(upc.intValue()))
 					{
-						AMS.updateStatusBar("UPC not Found!");
-						return VALIDATIONERROR;
+
 					}
 				}
 				else
@@ -317,7 +303,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				if (itemPrice.getText().trim().length() != 0)
 				{
-					price = Double.valueOf(itemPrice.getText().trim());
+					price = Integer.valueOf(itemPrice.getText().trim());
 				}
 				else
 				{
@@ -334,10 +320,14 @@ public class ManagerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
+
+				AMS.updateStatusBar("Inserting item...");
+
 				if (manager.insertItem(upc, price, quantity))
 				{
-					AMS.updateStatusBar("Item Updated");
-					displayUpdateItem(upc);
+					AMS.updateStatusBar("Operation successful.");
+
+					//showAllBranches();
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -354,25 +344,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 				return VALIDATIONERROR; 
 			}
 		}
-	}
-
-	private void displayUpdateItem(int upc)
-	{
-		ResultSet rs = item.findItemByUPC(upc);
-
-		// CustomTableModel maintains the result set's data, e.g., if  
-		// the result set is updatable, it will update the database
-		// when the table's data is modified.  
-		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		// register to be notified of any exceptions that occur in the model and table
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
-		// Adds the table to the scrollpane.
-		// By default, a JTable does not have scroll bars.
-		AMS.addTable(data);
 	}
 
 

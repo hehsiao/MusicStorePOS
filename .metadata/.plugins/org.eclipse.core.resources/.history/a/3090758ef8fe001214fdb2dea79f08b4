@@ -1,180 +1,55 @@
 
 import java.sql.*; 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.EventListenerList;
-
-public class ItemModel 
+/**
+ * PurchaseModel contains operations that modifies the Purchase and PurchaseItem.
+ */
+public class PurchaseModel 
 {
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
+	
+	class purchaseDetail{
+		int receiptID;
+		String pdate;
+		int cid;
+		String cardNum;
+		String expiryDate;
+		String expectedDate;
+		String deliveredDate;
+	}
 
 	/*
 	 * Default constructor
 	 * Precondition: The Connection object in AMSOracleConnection must be
 	 * a valid database connection.
 	 */ 
-	public ItemModel()
+	public PurchaseModel()
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
-	}
-
-	public boolean addItem(Integer upc, String title, String type, String category, String company, Integer year, double price, Integer stock)
-	{
-		try
-		{	   
-			ps = con.prepareStatement("INSERT INTO item VALUES (?,?,?,?,?,?,?,?)");
-
-			ps.setInt(1, upc.intValue());
-			ps.setString(2, title);
-			ps.setString(3, type);
-
-			if (category != null){
-				ps.setString(4, category);
-			}
-			else{
-				ps.setString(4, null);
-			}
-
-			if (company != null){
-				ps.setString(5, company);
-			}
-			else{
-				ps.setString(5, null);
-			}
-
-			if (year != null) {
-				ps.setInt(6, year.intValue());
-			}
-			else {
-				ps.setNull(6, Types.INTEGER);
-			}
-			ps.setDouble(7, price);
-			ps.setInt(8, stock.intValue());
-			ps.executeUpdate();
-			con.commit();
-
-			return true; 
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
-		}
-	}
-
-	/*
-	 * Returns true if the item exists; false
-	 * otherwise.
-	 */ 
-	public ResultSet findItemByUPC(Integer upc)
-	{
-		try
-		{	
-			ps = con.prepareStatement("SELECT * FROM item WHERE upc = ?");
-			ps.setInt(1, upc.intValue());
-			ResultSet rs = ps.executeQuery();
-
-			return rs; 
-
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return null; 
-		}
-	}
-
-	/*
-	 * Returns true if the item exists; false
-	 * otherwise.
-	 */ 
-	public ResultSet findItemByDescription(List<String> description)
-	{
-		try
-		{	
-			String query = "SELECT i.upc, i.title, s.name, i.type, i.category, i.year, i.price, i.stock FROM item i, leadsinger s WHERE s.upc = i.upc";
-			if(!description.isEmpty()){
-				query += " AND " + queryBuilder(description, " AND ");
-			}
-			System.out.println(query);
-			ps = con.prepareStatement(query);
-
-			ResultSet rs = ps.executeQuery();
-
-			return rs; 
-
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return null; 
-		}
+		System.out.println(getPurchaseTotal(17));
+		System.out.println(getPurchaseTotal(19));
 	}
 
 	/**
-	 * return stock level of upc
-	 * @param upc
-	 * @return stock level of requested stock
+	 * Checks and return the last ReceiptID in the Purchase table.
+	 * Returns -1 if error.
+	 * @return last receiptID in purchases table.
 	 */
-	public Integer getStock(Integer upc)
-	{
+	public Integer getReceiptID(){
 		try
 		{	
-			ps = con.prepareStatement("SELECT stock FROM item WHERE upc = ?");
-			ps.setInt(1, upc.intValue());
+			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
 			ResultSet rs = ps.executeQuery();
-			if (rs.next()){
-				return rs.getInt(1); 
+			if (rs.next())
+			{
+				return rs.getInt(1);
 			}
-			else {
-				return -1; 
-			}
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return null; 
-		}
-	}
-	
-	/**
-	 * return price of upc
-	 * @param upc
-	 * @return stock level of requested stock
-	 */
-	public Integer getPrice(Integer upc)
-	{
-		try
-		{	
-			ps = con.prepareStatement("SELECT price FROM item WHERE upc = ?");
-			ps.setInt(1, upc.intValue());
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()){
-				return rs.getInt(1); 
-			}
-			else {
-				return -1; 
-			}
+			return -1; // return negative number if error
 		}
 		catch (SQLException ex)
 		{
@@ -184,20 +59,130 @@ public class ItemModel
 			return -1; 
 		}
 	}
-	
+
 	/**
-	 * restock Item updates the quantity for the upc input
-	 * @param upc
-	 * @param quantity
+	 * creates a new purchase Order for online purchases purchases
 	 * @return true if successful
 	 */
-	public boolean restockItem(int upc, int quantity){
+	public Integer createOnlinePurchaseOrder(int cid, String cardNumber, String expiryDate){
 		try
 		{	  
-			ps = con.prepareStatement("UPDATE Item SET stock =(stock+?)  WHERE upc= ?");
-			ps.setInt(1, quantity);
-			ps.setInt(2, upc);
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid, cardnum, expiryDate) values(SYSDATE, ?, ?, ?)");
+			ps.setInt(1, cid);
+			ps.setString(2, cardNumber);
+			ps.setString(3, expiryDate);
 			ps.executeUpdate();
+			con.commit();
+			return getReceiptID();
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return -1; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+
+	/**
+	 * creates a new purchase Order
+	 * @return true if successful
+	 */
+	public Integer createCashPurchaseOrder(){
+		try
+		{	  
+			System.out.println("Creating Purchase Order");
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
+			ps.executeUpdate();
+			con.commit();
+			return getReceiptID();
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return -1; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return 0; 
+			}
+		}
+	}
+
+	/**
+	 * addItemToPurchase adds item with receiptID to purchaseItem Table
+	 * @param upc
+	 * @param quantity
+	 * @param receiptID
+	 * @return true if successful
+	 */
+	public boolean addItemToPurchase(int upc, int quantity, int receiptID){
+		try
+		{	  
+			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc, quantity) values(?,?,?)");
+			ps.setInt(1, receiptID);
+			ps.setInt(2, upc);
+			ps.setInt(3, quantity);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+
+	/**
+	 * addItemToPurchase adds item with receiptID to purchaseItem Table
+	 * @param upc
+	 * @param quantity
+	 * @param receiptID
+	 * @return true if successful
+	 */
+	public boolean addMultipleItemToPurchase(ArrayList<CustomerController.CartItem> vCart, int receiptID){
+		try
+		{	 
+			for(CustomerController.CartItem item: vCart){
+				ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc, quantity) values(?,?,?)");
+				ps.setInt(1, receiptID);
+
+				ps.setInt(2, item.upc);
+				ps.setInt(3, item.quantity);
+				System.out.println("table for " + item.upc + " Q:" + item.quantity );
+
+				ps.executeUpdate();
+			}
 			con.commit();
 			return true;
 		}
@@ -221,52 +206,21 @@ public class ItemModel
 	}
 	
 	/**
-	 * sellItem decrement the stock level of the UPC product by quantity amount
-	 * @param upc
-	 * @param quantity
-	 * @return true if successfully, false if failed.
+	 * getPurchaseDetail returns the items purchased in the receiptID provided
+	 * @param receiptID
+	 * @return ResultSet [receiptID, UPC, Title, Quantity, Price]
 	 */
-	public boolean sellItem(int upc, int quantity){
-		try
-		{	  
-			ps = con.prepareStatement("UPDATE Item SET stock =(stock-?)  WHERE upc= ?");
-			ps.setInt(1, quantity);
-			ps.setInt(2, upc);
-			ps.executeUpdate();
-			con.commit();
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
-		}
-	}
-	
-	/*
-	 * Same as showBranch() except that an updatable result set
-	 * is returned.
-	 */ 
-	public ResultSet editItem()
-	{
+	public ResultSet getPurchaseItems(Integer receiptID){
 		try
 		{	 
-			ps = con.prepareStatement("SELECT i.* FROM item i", 
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
+			String query = "SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+					"FROM item i, purchase p, purchaseitem pi " +
+					"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = " +receiptID;
 
+			ps = con.prepareStatement(query, 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			
 			ResultSet rs = ps.executeQuery();
 
 			return rs; 
@@ -281,8 +235,34 @@ public class ItemModel
 		}
 	}
 	
+	/**
+	 * getPurchaseTotal returns the total price of the Purchase based on the receipt ID
+	 * @param receiptID
+	 * @return Total price of purchase
+	 */
+	public double getPurchaseTotal(Integer receiptID){
+		try
+		{				
+			ps = con.prepareStatement("SELECT SUM(i.price*pi.quantity) FROM item i, purchase p, purchaseitem pi WHERE pi.upc = i.upc AND pi.receiptid = p.receiptid AND p.receiptid = ?");
+			System.out.println(receiptID.intValue());
+			ps.setInt(1, receiptID.intValue());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+			{
+				return rs.getDouble(1);
+			}
+			return -1; // return negative number if error
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return -1; 
+		}
+	}
 	/*
-	 * Returns the database connection used by this item model
+	 * Returns the database connection used by this purchase model
 	 */
 	public Connection getConnection()
 	{
@@ -307,7 +287,7 @@ public class ItemModel
 	/******************************************************************************
 	 * Below are the methods to add and remove ExceptionListeners.
 	 * 
-	 * Whenever an exception occurs in ItemModel, an exception event
+	 * Whenever an exception occurs in PurchaseModel, an exception event
 	 * is sent to all registered ExceptionListeners.
 	 ******************************************************************************/ 
 

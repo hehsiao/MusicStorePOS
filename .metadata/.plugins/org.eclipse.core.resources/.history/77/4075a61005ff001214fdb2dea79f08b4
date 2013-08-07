@@ -39,6 +39,7 @@ public class ManagerModel
 
 				ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
 
+
 			}
 			else {
 				ps = con.prepareStatement("UPDATE Item SET price = ?, stock =(stock+?)  WHERE upc= ?");

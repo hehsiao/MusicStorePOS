@@ -337,7 +337,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				if (manager.insertItem(upc, price, quantity))
 				{
 					AMS.updateStatusBar("Item Updated");
-					displayUpdateItem(upc);
+					//showAllBranches();
 					return OPERATIONSUCCESS; 
 				}
 				else

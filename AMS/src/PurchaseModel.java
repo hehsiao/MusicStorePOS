@@ -164,9 +164,8 @@ public class PurchaseModel
 	}
 
 	/**
-	 * addItemToPurchase adds item with receiptID to purchaseItem Table
-	 * @param upc
-	 * @param quantity
+	 * addItemToPurchase adds items with receiptID to purchaseItem Table
+	 * @param ArrayList vCart containing the items requested
 	 * @param receiptID
 	 * @return true if successful
 	 */

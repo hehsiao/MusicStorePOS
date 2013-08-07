@@ -337,7 +337,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				if (manager.insertItem(upc, price, quantity))
 				{
 					AMS.updateStatusBar("Item Updated");
-					displayUpdateItem(upc);
+					//showAllBranches();
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -354,25 +354,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 				return VALIDATIONERROR; 
 			}
 		}
-	}
-
-	private void displayUpdateItem(int upc)
-	{
-		ResultSet rs = item.findItemByUPC(upc);
-
-		// CustomTableModel maintains the result set's data, e.g., if  
-		// the result set is updatable, it will update the database
-		// when the table's data is modified.  
-		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
-		CustomTable data = new CustomTable(model);
-
-		// register to be notified of any exceptions that occur in the model and table
-		model.addExceptionListener(this);
-		data.addExceptionListener(this);
-
-		// Adds the table to the scrollpane.
-		// By default, a JTable does not have scroll bars.
-		AMS.addTable(data);
 	}
 
 
