@@ -72,7 +72,7 @@ Foreign Key (receiptId) REFERENCES Purchase
 Foreign Key (upc) REFERENCES Item);
 
 	 */ 
-	public boolean processCash(Integer upc, Integer quantity)
+	public boolean reduceStock(Integer upc, Integer quantity)
 	{
 		try
 		{	   
@@ -85,27 +85,27 @@ Foreign Key (upc) REFERENCES Item);
 			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
 			con.commit();
-			
-			System.out.println("1");
-			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
-			ps.executeUpdate();
-			con.commit();
-			
-			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-			{
-				receiptID = rs.getInt(1);
-			}
-			
-			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
-			ps.setInt(1, receiptID.intValue());
-			ps.setInt(2, upc.intValue());
-			ps.setInt(3, quantity.intValue());
-			ps.executeUpdate();
-			con.commit();
-
-			System.out.println("3");
+//			
+//			System.out.println("1");
+//			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
+//			ResultSet rs = ps.executeQuery();
+//			if (rs.next())
+//			{
+//				receiptID = rs.getInt(1);
+//			}
+//			
+//			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
+//			ps.setInt(1, receiptID.intValue());
+//			ps.setInt(2, upc.intValue());
+//			ps.setInt(3, quantity.intValue());
+//			ps.executeUpdate();
+//			con.commit();
+//
+//			System.out.println("3");
 
 			return true; 
 		}
@@ -186,33 +186,33 @@ Foreign Key (upc) REFERENCES Item);
 	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public boolean findItem(int upc)
-	{
-		try
-		{	
-			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
-
-			ps.setInt(1, upc);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				return true; 
-			}
-			else
-			{
-				return false; 
-			}
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return false; 
-		}
-	}
+//	public boolean findItem(int upc)
+//	{
+//		try
+//		{	
+//			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
+//
+//			ps.setInt(1, upc);
+//
+//			ResultSet rs = ps.executeQuery();
+//
+//			if (rs.next())
+//			{
+//				return true; 
+//			}
+//			else
+//			{
+//				return false; 
+//			}
+//		}
+//		catch (SQLException ex)
+//		{
+//			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+//			fireExceptionGenerated(event);
+//
+//			return false; 
+//		}
+//	}
 
 
 	/*

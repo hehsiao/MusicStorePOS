@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.EventListenerList;
+
+import oracle.sql.DATE;
 /**
  * PurchaseModel contains operations that modifies the Purchase and PurchaseItem.
  */
@@ -64,13 +66,13 @@ public class PurchaseModel
 	 * creates a new purchase Order for online purchases purchases
 	 * @return true if successful
 	 */
-	public Integer createOnlinePurchaseOrder(int cid, String cardNumber, String expiryDate){
+	public Integer createOnlinePurchaseOrder(int cid, String cardNumber, Date expiryDate){
 		try
 		{	  
-			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid, cardnum, expiryDate) values(SYSDATE, ?, ?, ?)");
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid, cardnum, expiryDate) values(SYSDATE, ?, ?, SYSDATE+15)");
 			ps.setInt(1, cid);
 			ps.setString(2, cardNumber);
-			ps.setString(3, expiryDate);
+
 			ps.executeUpdate();
 			con.commit();
 			return getReceiptID();
@@ -96,9 +98,9 @@ public class PurchaseModel
 
 	/**
 	 * creates a new purchase Order
-	 * @return true if successful
+	 * @return Integer receiptID if successful
 	 */
-	public Integer createCashPurchaseOrder(){
+	public Integer createPurchaseOrder(){
 		try
 		{	  
 			System.out.println("Creating Purchase Order");

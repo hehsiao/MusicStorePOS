@@ -853,7 +853,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		displayPurchaseDetail(19);
 		AMS.clearStatusBar();
 		displayPurchaseDetail(17);
-		int receiptID = purchase.createCashPurchaseOrder().intValue();
+		int receiptID = purchase.createPurchaseOrder().intValue();
 
 		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
 	}
