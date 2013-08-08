@@ -958,19 +958,44 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-								if (validateInsert() != VALIDATIONERROR)
-								{
-									dispose();
-								}
-								else
-				{
-					Toolkit.getDefaultToolkit().beep();
+				try {
+					if (validateInsert() != VALIDATIONERROR)
+					{
+						dispose();
+					}
+					else
+					{
+						Toolkit.getDefaultToolkit().beep();
 
-					// display a popup to inform the user of the validation error
-					JOptionPane errorPopup = new JOptionPane();
-					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+						// display a popup to inform the user of the validation error
+						JOptionPane errorPopup = new JOptionPane();
+						errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (HeadlessException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
 				}	
 			}
+		}
+		
+		private void showTopSalesItemsReport(java.sql.Date date)
+		{
+			
+			ResultSet rs = manager.showResultSet(date);
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+
+			// register to be notified of any exceptions that occur in the model and table
+			//	model.addExceptionListener(this);
+			//	data.addExceptionListener(this);
+
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
 		}
 
 		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
@@ -982,10 +1007,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 		//		 */ 
 				private int validateInsert() throws ParseException
 				{
-					try
-					{
-						Integer salesDate;
-						Integer TopNumberSalesItem;
 						try
 						{
 							Date utilDate = new Date();
@@ -1054,4 +1075,4 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}
 	}	// end TopSalesItemsReportDialog
 }
-}
+
