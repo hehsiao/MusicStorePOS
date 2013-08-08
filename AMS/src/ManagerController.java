@@ -784,8 +784,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 					DateFormat format = new SimpleDateFormat("yy-mm-dd");
 					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 					System.out.println("Current Time: "+utilDate);
-				   // utilDate = format.parse(pd);//if wrong format, "invalid format"
-					//System.out.println("Current Time: "+utilDate);
+				    utilDate = format.parse(pd);//if wrong format, "invalid format"
+					System.out.println("Current Time: "+utilDate);
 				  			
 				
 				    sqlDate= new java.sql.Date(utilDate.getTime());
@@ -957,11 +957,11 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-				//				if (validateInsert() != VALIDATIONERROR)
-				//				{
-				//					dispose();
-				//				}
-				//				else
+								if (validateInsert() != VALIDATIONERROR)
+								{
+									dispose();
+								}
+								else
 				{
 					Toolkit.getDefaultToolkit().beep();
 
@@ -979,89 +979,89 @@ public class ManagerController implements ActionListener, ExceptionListener
 		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		//		 * OPERATIONFAILED, VALIDATIONERROR.
 		//		 */ 
-		//		private int validateInsert()
-		//		{
-		//			try
-		//			{
-		//				Integer cid;
-		//				String password;
-		//				String name;
-		//				String address;
-		//				Integer phone;
-		//
-		//				if (itemUPC.getText().trim().length() != 0)
-		//				{
-		//					cid = Integer.valueOf(itemUPC.getText().trim());
-		//
-		//					// check for duplicates
-		//					if (manager.findItem(cid.intValue()))
-		//					{
-		//						Toolkit.getDefaultToolkit().beep();
-		//						AMS.updateStatusBar("Manager " + cid.toString() + " already exists!");
-		//						return OPERATIONFAILED; 
-		//					}
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemTitle.getText().trim().length() != 0)
-		//				{
-		//					password = itemTitle.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemType.getText().trim().length() != 0)
-		//				{
-		//					name = itemType.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					return VALIDATIONERROR; 
-		//				}
-		//
-		//				if (itemCategory.getText().trim().length() != 0)
-		//				{
-		//					address = itemCategory.getText().trim();
-		//				}
-		//				else
-		//				{
-		//					address = null; 
-		//				}
-		//
-		//				if (itemCompany.getText().trim().length() != 0)
-		//				{
-		//					phone = Integer.valueOf(itemCompany.getText().trim());
-		//				}
-		//				else
-		//				{
-		//					phone = null; 
-		//				}
-		//
-		//				AMS.updateStatusBar("Creating Account...");
-		//
-		//				if (manager.addItem(cid, password, name, address, phone))
-		//				{
-		//					AMS.updateStatusBar("Operation successful.");
-		//					return OPERATIONSUCCESS; 
-		//				}
-		//				else
-		//				{
-		//					Toolkit.getDefaultToolkit().beep();
-		//					AMS.updateStatusBar("Operation failed.");
-		//					return OPERATIONFAILED; 
-		//				}
-		//			}
-		//			catch (NumberFormatException ex)
-		//			{
-		//				// this exception is thrown when a string 
-		//				// cannot be converted to a number
-		//				return VALIDATIONERROR; 
-		//			}
-		//		}
+				private int validateInsert()
+				{
+					try
+					{
+						Integer cid;
+						String password;
+						String name;
+						String address;
+						Integer phone;
+		
+						if (itemUPC.getText().trim().length() != 0)
+						{
+							cid = Integer.valueOf(itemUPC.getText().trim());
+		
+							// check for duplicates
+							if (manager.findItem(cid.intValue()))
+							{
+								Toolkit.getDefaultToolkit().beep();
+								AMS.updateStatusBar("Manager " + cid.toString() + " already exists!");
+								return OPERATIONFAILED; 
+							}
+						}
+						else
+						{
+							return VALIDATIONERROR; 
+						}
+		
+						if (itemTitle.getText().trim().length() != 0)
+						{
+							password = itemTitle.getText().trim();
+						}
+						else
+						{
+							return VALIDATIONERROR; 
+						}
+		
+						if (itemType.getText().trim().length() != 0)
+						{
+							name = itemType.getText().trim();
+						}
+						else
+						{
+							return VALIDATIONERROR; 
+						}
+		
+						if (itemCategory.getText().trim().length() != 0)
+						{
+							address = itemCategory.getText().trim();
+						}
+						else
+						{
+							address = null; 
+						}
+		
+						if (itemCompany.getText().trim().length() != 0)
+						{
+							phone = Integer.valueOf(itemCompany.getText().trim());
+						}
+						else
+						{
+							phone = null; 
+						}
+		
+						AMS.updateStatusBar("Creating Account...");
+		
+						if (manager.addItem(cid, password, name, address, phone))
+						{
+							AMS.updateStatusBar("Operation successful.");
+							return OPERATIONSUCCESS; 
+						}
+						else
+						{
+							Toolkit.getDefaultToolkit().beep();
+							AMS.updateStatusBar("Operation failed.");
+							return OPERATIONFAILED; 
+						}
+					}
+					catch (NumberFormatException ex)
+					{
+						// this exception is thrown when a string 
+						// cannot be converted to a number
+						return VALIDATIONERROR; 
+					}
+				}
 	}	// end TopSalesItemsReportDialog
 }
