@@ -139,21 +139,21 @@ public class ManagerModel
 	}
 
 	
-	public ResultSet selectView(java.sql.Date date)
+	public ResultSet selectDSView(java.sql.Date date)
 	{
 		try
 		{	 
 
-			ps = con.prepareStatement("create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='?' Group by i.category, i.upc, i.price;");
+			ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='?' Group by i.category, i.upc, i.price;");
 			ps.setDate(1,date);
 //query works:
 //create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YY-MM-DD')='13-08-08' Group by i.category, i.upc, i.price;
 			
 			ps.executeQuery();
 
-			ps = con.prepareStatement("Select * from ManagerView");
+			ps = con.prepareStatement("Select * from DSView");
 	//fix later TODO: put in another function to return the second rs	
-			ps = con.prepareStatement("select m.category,sum(m.unitssold)as unitsoldcategory,sum(m.totalvalue)as totalVcategory from managerview m group by m.category;");
+			ps = con.prepareStatement("select m.category,sum(m.unitssold)as unitsoldcategory,sum(m.totalvalue)as totalVcategory from dsview m group by m.category;");
 			ResultSet rs = ps.executeQuery();
 
 			return rs; 
@@ -167,6 +167,30 @@ public class ManagerModel
 			return null; 
 		}
 	}
+	
+	//called after selected dailysales view
+	public ResultSet selectTOPView(int number)
+	{
+		try
+		{	 
+
+			ps = con.prepareStatement("select i.title, i.company, i.stock, ds.unitssold from item i, dsview ds where ds.upc=i.upc and rownum<=? order by (ds.unitssold) desc;");
+			ps.setInt(1,number);
+		ResultSet rs = ps.executeQuery();
+
+
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
 	
 	public ResultSet showResultSet(java.sql.Date date)
 	{
