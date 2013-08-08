@@ -989,10 +989,15 @@ public class ManagerController implements ActionListener, ExceptionListener
 						String name;
 						String address;
 						Integer phone;
+						Boolean itemUPC = manager.findItem(cid.intValue());
+						String itemTitle;
+						String itemType;
+						String itemCategory;
+						String itemCompany;
 		
-						if (itemUPC.getText().trim().length() != 0)
+						if (itemUPC.toString().trim().length() != 0)
 						{
-							cid = Integer.valueOf(itemUPC.getText().trim());
+							cid = Integer.valueOf(itemUPC.toString().trim());
 		
 							// check for duplicates
 							if (manager.findItem(cid.intValue()))
@@ -1045,7 +1050,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 		
 						AMS.updateStatusBar("Creating Account...");
 		
-						if (manager.addItem(cid, password, name, address, phone))
+						if (manager.addAccount(cid, password, name, address, phone))
 						{
 							AMS.updateStatusBar("Operation successful.");
 							return OPERATIONSUCCESS; 
