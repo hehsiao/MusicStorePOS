@@ -32,6 +32,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 	private PurchaseModel purchase = null;
 	private ArrayList<CustomerController.CartItem> cart = new ArrayList<CustomerController.CartItem>(); 
     private CustomerController customerController;
+    private Integer cnum = null;
 
 
 	// constants used for describing the outcome of an operation
@@ -181,7 +182,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("CREDIT"))
 			{
-				CashDialog iDialog = new CashDialog(AMS);
+				AuthorizeDialog iDialog = new AuthorizeDialog(AMS);
 				iDialog.pack();
 				AMS.centerWindow(iDialog);
 				iDialog.setVisible(true);
@@ -278,6 +279,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					Integer rID = purchase.getReceiptID();
 					AMS.updateStatusBar("Processing Cash Purchase...");
 					purchase.addMultipleItemToPurchase(cart,rID);
+					showPurchase(rID);
 					cart.clear();
 				
 					//print total price etc
@@ -385,7 +387,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					cart.add(cItem);
 					AMS.updateStatusBar("Operation successful.");
 
-					showPurchase(rID);
+					
 
 					return OPERATIONSUCCESS; 
 				}
@@ -473,6 +475,8 @@ public class ClerkController implements ActionListener, ExceptionListener
 					dispose();
 				}
 			});
+			
+			
 
 			// add the buttons to buttonPane
 			buttonPane.add(Box.createHorizontalGlue());
@@ -492,7 +496,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			});
 		}
 
-
+		
 	
 		public void actionPerformed(ActionEvent e)
 		{
@@ -502,7 +506,13 @@ public class ClerkController implements ActionListener, ExceptionListener
 			{
 				if (validateCREDIT() != VALIDATIONERROR)
 				{
-					dispose();
+					CreditDialog iDialog = new CreditDialog(AMS);
+					iDialog.pack();
+					AMS.centerWindow(iDialog);
+					iDialog.setVisible(true);
+					return;
+					
+					
 				}
 				else
 				{
@@ -528,46 +538,21 @@ public class ClerkController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				Integer upc = null;
-				Integer quantity=null;
-				Integer cnum;
-				Integer rID;
+			
 
 				if (ccardnum.getText().trim().length() != 0)
 				{
 					cnum = Integer.valueOf(ccardnum.getText().trim());
-
-					// check for duplicates
-					if (purchase.findItem(cnum.intValue())){
-
-					}
-				}
-
-				else
-				{
-					return VALIDATIONERROR; 
-
-				}
-
-				AMS.updateStatusBar("Processing Credit Card Purchase...");
-                  rID = purchase.createPurchaseOrder();
-                  System.out.println(rID.toString());
-				if (clerk.reduceStock(upc, quantity) && purchase.addItemToPurchase(upc,quantity,rID))
-				{
-
-					AMS.updateStatusBar("Operation successful.");
-
-					showPurchase(rID);
-
+			
 					return OPERATIONSUCCESS; 
-				}
-				else
-				{
-					Toolkit.getDefaultToolkit().beep();
-					AMS.updateStatusBar("Operation failed.");
-					return OPERATIONFAILED; 
-				}
+			
 			}
+				else 
+				{
+				return OPERATIONFAILED;	
+				}
+				}
+					
 			catch (NumberFormatException ex)
 			{
 				// this exception is thrown when a string 
@@ -580,7 +565,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 	{
 		JTextField itemUPC = new JTextField(10);
 		JTextField itemQuantity = new JTextField(10);
-		JTextField creditnum = new JTextField(16);
+		
 
 
 		/*
@@ -608,17 +593,25 @@ public class ClerkController implements ActionListener, ExceptionListener
 			GridBagConstraints c = new GridBagConstraints();
 			inputPane.setLayout(gb);
 
-			// create and place upc label
-			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			JLabel label= new JLabel("Credit Card Number: "+cnum, SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
 			gb.setConstraints(label, c);
 			inputPane.add(label);
 
+			
+			// create and place upc label
+			label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
 			// place upc field
 			c.gridwidth = GridBagConstraints.REMAINDER;
-			c.insets = new Insets(0, 0, 0, 0);
+			c.insets = new Insets(5, 0, 0, 0);
 			c.anchor = GridBagConstraints.WEST;
 			gb.setConstraints(itemUPC, c);
 			inputPane.add(itemUPC);
@@ -662,9 +655,10 @@ public class ClerkController implements ActionListener, ExceptionListener
 				public void actionPerformed(ActionEvent e)
 				{
 					Integer rID = purchase.getReceiptID();
-					AMS.updateStatusBar("Processing Cash Purchase...");
+					AMS.updateStatusBar("Processing Credit Card Purchase...");
 					purchase.addMultipleItemToPurchase(cart,rID);
 					cart.clear();
+					cnum=null;
 				
 					//print total price etc
 				}
@@ -762,7 +756,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 				AMS.updateStatusBar("Adding Item to Purchase List...");
                  if (cart.isEmpty()){
-                           	 rID = purchase.createPurchaseOrder();
+                           	 rID = clerk.createCreditPurchaseOrder(cnum);
                              System.out.println(rID.toString());
                  } 
          
