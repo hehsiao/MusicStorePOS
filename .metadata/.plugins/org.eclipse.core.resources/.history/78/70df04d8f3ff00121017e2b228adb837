@@ -130,14 +130,14 @@ public class PurchaseModel
 	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public boolean findItemInCart(int upc, Integer receiptID)
+	public boolean findItem(int upc)
 	{
 		try
 		{	
-			ps = con.prepareStatement("SELECT upc FROM PurchaseItem WHERE upc = ? AND receiptID = ?");
+			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
 
 			ps.setInt(1, upc);
-			ps.setInt(2, receiptID.intValue());
+
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next())
@@ -157,7 +157,6 @@ public class PurchaseModel
 			return false; 
 		}
 	}
-
 	/**
 	 * addItemToPurchase adds item with receiptID to purchaseItem Table
 	 * @param upc
@@ -172,43 +171,6 @@ public class PurchaseModel
 			ps.setInt(1, receiptID);
 			ps.setInt(2, upc);
 			ps.setInt(3, quantity);
-			ps.executeUpdate();
-			con.commit();
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
-		}
-	}
-
-	/**
-	 * updateItemToPurchase updates item with receiptID to purchaseItem Table
-	 * @param upc
-	 * @param quantity
-	 * @param receiptID
-	 * @return true if successful
-	 */
-	public boolean updateItemToPurchase(int upc, int quantity, int receiptID){
-		try
-		{	  
-			ps = con.prepareStatement("UPDATE PurchaseItem SET quantity = ? WHERE receiptID = ? AND upc = ?");
-			ps.setInt(2, receiptID);
-			ps.setInt(3, upc);
-			ps.setInt(1, quantity);
 			ps.executeUpdate();
 			con.commit();
 			return true;

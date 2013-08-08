@@ -163,33 +163,33 @@ Foreign Key (upc) REFERENCES Item);
 	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-//	public boolean findItem(int upc)
-//	{
-//		try
-//		{	
-//			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
-//
-//			ps.setInt(1, upc);
-//
-//			ResultSet rs = ps.executeQuery();
-//
-//			if (rs.next())
-//			{
-//				return true; 
-//			}
-//			else
-//			{
-//				return false; 
-//			}
-//		}
-//		catch (SQLException ex)
-//		{
-//			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-//			fireExceptionGenerated(event);
-//
-//			return false; 
-//		}
-//	}
+	public boolean findItem(int upc)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
+
+			ps.setInt(1, upc);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
+			{
+				return true; 
+			}
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
+}
 
 
 	/*

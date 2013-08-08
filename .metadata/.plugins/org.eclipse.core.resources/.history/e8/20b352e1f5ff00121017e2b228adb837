@@ -1187,7 +1187,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
 		if(quantity > currentStock){
 			quantity = currentStock;
-			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
+			AMS.updateStatusBar("We only have " + currentStock + " available.");
 		}
 		
 		// Add or Update the quantity to purchaseItem.
