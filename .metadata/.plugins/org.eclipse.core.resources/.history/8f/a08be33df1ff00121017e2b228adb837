@@ -96,11 +96,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 		if (actionCommand.equals("cancelOrder")){
 			AMS.buttonPane.setVisible(false);
-			System.out.println("Cancel Order: " + currReceiptID);
-			if(currReceiptID > 0)
-				if(purchase.removePurchase(currReceiptID))
-					AMS.updateStatusBar("Order has been cancelled.");
-			
+			// add fxn
 			return; 
 		}
 	}
@@ -1117,7 +1113,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 				}
 
 				addToCart(upc, quantity);
-				displayPurchaseDetail(currReceiptID);
 			}
 			catch (NumberFormatException ex)
 			{
@@ -1154,8 +1149,9 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	private void displayPurchaseDetail(int receiptID)
 	{
-		AMS.updateStatusBar("Your order has been updated.");
-		AMS.updateStatusBar("Total Price for current order: " + purchase.getPurchaseTotal(receiptID));
+		AMS.updateStatusBar("Purchase Order Details of ReceiptID: " + receiptID);
+		AMS.updateStatusBar("Total Price for order: " + purchase.getPurchaseTotal(receiptID));
+		AMS.updateStatusBar("You have ordered the following items.");
 		ResultSet rs = purchase.getPurchaseItems(receiptID);
 
 		// CustomTableModel maintains the result set's data, e.g., if  
@@ -1178,23 +1174,13 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
 	public void addToCart(Integer upc, Integer quantity){
-//		CartItem item = new CartItem();
-//		item.upc = upc;
-//		item.quantity = quantity;
-//		vCart.add(item);
-		int currentStock = item.getStock(upc);
-		
-		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
-		if(quantity > currentStock){
-			quantity = currentStock;
-			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
-		}
-		
-		// Add or Update the quantity to purchaseItem.
-		if(!purchase.findItemInCart(upc,currReceiptID))
-			purchase.addItemToPurchase(upc, quantity, currReceiptID);
-		else
-			purchase.updateItemToPurchase(upc, quantity, currReceiptID);
+		CartItem item = new CartItem();
+		item.upc = upc;
+		item.quantity = quantity;
+
+		vCart.add(item);
+		purchase.addItemToPurchase(upc, quantity, currReceiptID);
+		AMS.updateStatusBar(quantity + " of Item " + upc + " is added to the cart.");
 	}
 
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,

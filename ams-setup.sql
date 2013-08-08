@@ -9,18 +9,13 @@ drop table RETURN cascade constraints;
 drop table RETURNITEM cascade constraints;
 -- -- DELETE TABLE CODE ENDS 
 
-drop sequence test_sequence1;
-drop sequence test_sequence2;
-drop sequence test_sequence3;
-drop sequence test_sequence4;
-drop sequence test_sequence5;
+drop sequence return_sequence;
+drop sequence purchase_sequence;
+drop sequence customer_sequence;
 
-drop trigger test_trigger1;
-drop trigger test_trigger2;
-drop trigger test_trigger3;
-drop trigger test_trigger4;
---drop trigger test_trigger5;
-
+drop TRIGGER return_trigger;
+drop TRIGGER purchase_trigger;
+drop TRIGGER customer_trigger;
 
 -- CREATE Tables
 create table Item
@@ -142,4 +137,8 @@ INSERT into Customer(cid,password,name,address,phone) values (1,'1234', 'Matthew
 INSERT into Customer(cid,password,name,address,phone) values (2, '2345', 'Risa', '100 Main', '6045551235' );
 INSERT into Customer(cid,password,name,address,phone) values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
 INSERT into Customer(cid,password,name,address,phone) values (4, '2234', 'Shanifer', '100 Burnaby', '604555444' );
+INSERT into Purchase (receiptId, pdate, cid) values (1, sysdate, 1);
+INSERT into PurchaseItem (1, 1, 2);
+INSERT into Purchase (receiptid, pdate, cid) values (2, sysdate, 3);
+INSERT into PurchaseItem (2, 2, 1);
 

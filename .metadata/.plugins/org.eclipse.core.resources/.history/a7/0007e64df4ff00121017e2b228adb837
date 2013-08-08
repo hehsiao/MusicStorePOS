@@ -1178,23 +1178,13 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
 	public void addToCart(Integer upc, Integer quantity){
-//		CartItem item = new CartItem();
-//		item.upc = upc;
-//		item.quantity = quantity;
-//		vCart.add(item);
-		int currentStock = item.getStock(upc);
-		
-		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
-		if(quantity > currentStock){
-			quantity = currentStock;
-			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
-		}
-		
-		// Add or Update the quantity to purchaseItem.
-		if(!purchase.findItemInCart(upc,currReceiptID))
+		CartItem item = new CartItem();
+		item.upc = upc;
+		item.quantity = quantity;
+
+		vCart.add(item);
+		if(purchase.findItemInCart(upc,currReceiptID))
 			purchase.addItemToPurchase(upc, quantity, currReceiptID);
-		else
-			purchase.updateItemToPurchase(upc, quantity, currReceiptID);
 	}
 
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,
