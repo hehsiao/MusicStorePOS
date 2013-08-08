@@ -63,6 +63,31 @@ public class PurchaseModel
 	}
 
 	/**
+	 * Checks and return the last ReceiptID in the Purchase table.
+	 * Returns -1 if error.
+	 * @return last receiptID in purchases table.
+	 */
+	public Integer getRID(int id){
+		try
+		{	
+			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+			{
+				return rs.getInt(1);
+			}
+			return null; // return null if error
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return null; 
+		}
+	}
+	
+	/**
 	 * creates a new purchase Order for online purchases purchases
 	 * @return true if successful
 	 */
@@ -359,6 +384,141 @@ public class PurchaseModel
 			}
 		}
 	}
+	
+	/**
+	 * 	Sets the delivery date for a Purchase
+	 * @param id
+	 * @return
+	 */
+	public boolean setDeliveryDate(Integer rID)
+	{
+		try
+		{	
+			ps = con.prepareStatement("UPDATE Purchase SET deliveredDate = (sysdate) WHERE receiptID = ?");
+
+
+			ps.setInt(1, rID.intValue());
+
+			ps.executeUpdate();
+
+			con.commit();
+
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	/**
+	 * Finds info on a purchase given the id and a string, either customer name or date of purchase
+	 * @param id
+	 * @param string
+	 * @return
+	 */
+		
+	public String findInfo(Integer rID, String info)
+	{
+		try
+		{	 
+			if (info.equals("dop")){
+				ps = con.prepareStatement("SELECT p.pdate FROM Purchase p WHERE p.receiptID=?");
+				ps.setInt(1, rID);
+
+				ResultSet rs = ps.executeQuery();
+				String dop = rs.getString("pdate");
+				if (!rs.next()){
+					return null;
+				}
+				return dop;	
+			}
+
+			if (info.equals("cname")){
+				ps = con.prepareStatement("SELECT c.name FROM Purchase p, Customer C WHERE p.receiptID=? AND p.cid=c.cid");
+				ps.setInt(1, rID);	
+				ResultSet rs = ps.executeQuery();
+				String cname = rs.getString("name");
+				if (!rs.next()){
+					return null;
+				}
+				return cname;	
+			}
+
+			if (info.equals("items")) {
+			ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+			"FROM item i, purchase p, purchaseitem pi " +
+			"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
+			ps.setInt(1, rID);
+			
+			ResultSet rs = ps.executeQuery();
+			String items = rs.getString("receiptID, upc, title, quantity, price");
+			if (!rs.next()){
+				return null;
+			}
+			return items;
+			}
+			else return null;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	public String[] findArray(String what)
+	{
+		try
+		{	 
+			List<String> resultList = new ArrayList<String>();
+			if (what.equals("RIDwithoutDD")){
+
+				ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
+
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()){
+
+					String em = rs.getString("receiptID");  
+					System.out.println(em);
+					resultList.add(em);
+				}
+
+			}
+
+			String[] resultArray = new String[resultList.size()];
+			resultList.toArray(resultArray);
+			return resultArray;
+
+
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	
 	/*
 	 * Returns the database connection used by this purchase model
 	 */
