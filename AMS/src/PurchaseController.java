@@ -262,13 +262,14 @@ public class PurchaseController implements ActionListener, ExceptionListener
 				Integer upc;
 				Integer price;
 				Integer quantity;
+				Integer receiptID = null;
 
 				if (itemUPC.getText().trim().length() != 0)
 				{
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (purchase.findItem(upc.intValue()))
+					if (purchase.findItemInCart(upc.intValue(), receiptID.intValue()))
 					{
 
 					}
@@ -301,7 +302,7 @@ public class PurchaseController implements ActionListener, ExceptionListener
 
 				AMS.updateStatusBar("Inserting item...");
 
-				if (purchase.insertItem(upc, price, quantity))
+				if (purchase.addItemToPurchase(upc, quantity, receiptID))
 				{
 					AMS.updateStatusBar("Operation successful.");
 
@@ -504,18 +505,18 @@ public class PurchaseController implements ActionListener, ExceptionListener
 
 
 				// check for duplicates
-				if (purchase.findRID(id))
-				{								
+//				if (purchase.getRID(id) != null)
+//				{								
 
-					//	Toolkit.getDefaultToolkit().beep();
-					//	return OPERATIONFAILED; 
-				}
+//					Toolkit.getDefaultToolkit().beep();
+//					return OPERATIONFAILED; 
+//				}
+//
 
-
-				else
-				{
-					return VALIDATIONERROR; 
-				}
+//				else
+//				{
+//					return VALIDATIONERROR; 
+//				}
 
 
 				AMS.updateStatusBar("Processing Delivery of Order...");
@@ -688,11 +689,56 @@ public class PurchaseController implements ActionListener, ExceptionListener
 
 				if (purchaseDate.getText().trim().length() != 0)
 				{
+<<<<<<< HEAD
 					String pd = purchaseDate.getText().trim();
 					String[] arguments = pd.split("-");
 
 					if (arguments.length != 3) {
 						return VALIDATIONERROR;
+=======
+					try
+					{
+						DATE date;
+		
+						if (purchaseDate.getText().trim().length() != 0)
+						{
+							String pd = purchaseDate.getText().trim();
+							String[] arguments = pd.split("-");
+							
+							if (arguments.length != 3) {
+								return VALIDATIONERROR;
+							}
+							String arg0 = arguments[0];
+							String arg1 = arguments[1];
+							String arg2 = arguments[2];
+														
+							date = DATE.fromText(arg0, arg1, arg2);
+		
+							// check for duplicates
+			//				if (purchase.findDate(date))
+			//				{
+			//					
+							}
+			//			}
+			//			else
+			//			{
+			//				return VALIDATIONERROR; 
+			//			}
+		
+						AMS.updateStatusBar("Creating Daily Sales Report...");
+		
+						if (purchase.getRID(1) != null)//stub
+						{
+							AMS.updateStatusBar("Operation successful.");
+							return OPERATIONSUCCESS; 
+						}
+						else
+						{
+							Toolkit.getDefaultToolkit().beep();
+							AMS.updateStatusBar("Operation failed.");
+							return OPERATIONFAILED; 
+						}
+>>>>>>> b1dea7e4a5d2ff90ac657fc9fec1d170c5092a7d
 					}
 					String arg0 = arguments[0];
 					String arg1 = arguments[1];
@@ -703,7 +749,16 @@ public class PurchaseController implements ActionListener, ExceptionListener
 					// check for duplicates
 					if (purchase.findDate(date))
 					{
+<<<<<<< HEAD
 
+=======
+						// this exception is thrown when a string 
+						// cannot be converted to a number
+						return VALIDATIONERROR; 
+					} catch (SQLException e) {
+						e.printStackTrace();
+					return VALIDATIONERROR;
+>>>>>>> b1dea7e4a5d2ff90ac657fc9fec1d170c5092a7d
 					}
 				}
 				else
