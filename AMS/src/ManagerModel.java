@@ -139,7 +139,7 @@ public class ManagerModel
 	}
 
 	
-	public ResultSet createView(java.sql.Date date)
+	public ResultSet selectView(java.sql.Date date)
 	{
 		try
 		{	 
@@ -148,10 +148,13 @@ public class ManagerModel
 			ps.setDate(1,date);
 //query works:
 //create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YY-MM-DD')='13-08-08' Group by i.category, i.upc, i.price;
-			ResultSet rs = ps.executeQuery();
+			
+			ps.executeQuery();
 
 			ps = con.prepareStatement("Select * from ManagerView");
-			
+	//fix later TODO: put in another function to return the second rs	
+			ps = con.prepareStatement("select m.category,sum(m.unitssold)as unitsoldcategory,sum(m.totalvalue)as totalVcategory from managerview m group by m.category;");
+			ResultSet rs = ps.executeQuery();
 
 			return rs; 
 		}
