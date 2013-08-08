@@ -534,9 +534,9 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
 						return OPERATIONFAILED;				
-				
+
 					} 	
-					
+
 					String cname;
 					cname = customer.authenticateCustomer(cid.intValue(), password);
 					System.out.println(cname);
@@ -839,12 +839,110 @@ public class CustomerController implements ActionListener, ExceptionListener
 			});
 		}
 
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
+		public void actionPerformed(ActionEvent e) 
+		{
+			String actionCommand = e.getActionCommand();
 
+			if (actionCommand.equals("Pay Now"))
+			{
+				dispose();
+				CreditCardDialog iDialog = new CreditCardDialog(AMS);
+				iDialog.pack();
+				AMS.centerWindow(iDialog);
+				iDialog.setVisible(true);
+				return; 
+			}
+
+			if (actionCommand.equals("Continue"))
+			{
+				dispose();
+			}
 		}
 	}	// end CheckoutDialog
+
+	/*
+	 * This class creates a dialog box for credit card dialog
+	 */
+	class CreditCardDialog extends JDialog implements ActionListener
+	{
+		private JTextField ccNumber = new JTextField(16);
+		private JTextField ccExpiry = new JTextField(4);
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public CreditCardDialog(JFrame parent)
+		{
+			super(parent, "Credit Card Information", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Enter Payment Information"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			/** Credit Card Number **/
+			JLabel label = null;
+			labelTextField("Credit Card Number", ccNumber, label, inputPane, gb, c);
+
+			/** Expiry Date **/
+			labelTextField("Expiry Date", ccExpiry, label, inputPane, gb, c);
+
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton submitButton = new JButton("Submit Order");
+			submitButton.addActionListener(this);
+			submitButton.setActionCommand("Submit Order");
+
+			JButton continueButton = new JButton("Continue Shopping");
+			continueButton.setActionCommand("Continue");
+			continueButton.addActionListener(this);
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(submitButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(continueButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+		public void actionPerformed(ActionEvent e) 
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("Submit Order"))
+			{
+
+			}
+
+			if (actionCommand.equals("Continue"))
+			{
+				dispose();
+			}
+		}
+	}	// end CreditCardtDialog
 
 	/*
 	 * This class creates a dialog box for adding an item to inventory.
