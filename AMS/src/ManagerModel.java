@@ -192,9 +192,21 @@ public class ManagerModel
 				}
 				return cname;	
 			}
+
+			if (info.equals("items")) {
+			ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+			"FROM item i, purchase p, purchaseitem pi " +
+			"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
+			ps.setInt(1, rID);
+			
+			ResultSet rs = ps.executeQuery();
+			String items = rs.getString("receiptID, upc, title, quantity, price");
+			if (!rs.next()){
+				return null;
+			}
+			return items;
+			}
 			else return null;
-
-
 		}
 		catch (SQLException ex)
 		{

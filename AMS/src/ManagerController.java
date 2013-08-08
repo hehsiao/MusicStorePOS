@@ -535,7 +535,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			{
 				if (validateInsert() != VALIDATIONERROR)
 				{
-					//dispose();
+					dispose();
 				}
 				else
 				{
@@ -583,8 +583,10 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 					String cname = manager.findInfo(Integer.valueOf(id), "cname");
 					customerName.setText(cname);
-					//TODO maybe: show itemlist for JTextArea purchaseItem;
 
+					String itemlist = manager.findInfo(Integer.valueOf(id), "items");
+					purchaseItem.setText(itemlist);
+					
 					return OPERATIONSUCCESS; 
 				}
 				else
