@@ -38,13 +38,13 @@ create table LeadSinger
 	(upc number(10) not null, 
 	name varchar(30) not null,
     PRIMARY KEY (upc, name),
-	Foreign Key (upc) REFERENCES Item(upc));
+	Foreign Key (upc) REFERENCES Item(upc) on DELETE cascade);
 
 create table HasSong
 	(upc number(10) not null, 
 	title varchar(30) not null,
 	PRIMARY KEY (upc, title),
-	Foreign Key (upc) references Item(upc));
+	Foreign Key (upc) references Item(upc) on DELETE cascade);
 
 create table Customer
 	(cid number(10), 
@@ -70,7 +70,7 @@ create table PurchaseItem
 	upc number(10) not null,
 	quantity number(4), 
 	PRIMARY KEY (receiptId, upc),
-	Foreign Key (receiptId) REFERENCES Purchase,
+	Foreign Key (receiptId) REFERENCES Purchase ON DELETE cascade,
 	Foreign Key (upc) REFERENCES Item
 );
 
@@ -87,62 +87,48 @@ create table ReturnItem
 	quantity number(4),	
 	PRIMARY KEY (retid, upc),
 	FOREIGN KEY (upc) REFERENCES Item,
-	FOREIGN KEY (retid) REFERENCES Return);
+	FOREIGN KEY (retid) REFERENCES Return ON DELETE cascade);
 	
 	
-CREATE SEQUENCE test_sequence1
+CREATE SEQUENCE return_sequence
 START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TRIGGER test_trigger1
+CREATE SEQUENCE purchase_sequence
+START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE customer_sequence
+START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER return_trigger
 BEFORE INSERT
 ON Return
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence1.nextval INTO :NEW.RETID FROM dual;
+SELECT return_sequence.nextval INTO :NEW.RETID FROM dual;
 END;
 /	
 
-CREATE SEQUENCE test_sequence2
-START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER test_trigger2
+CREATE OR REPLACE TRIGGER purchase_trigger
 BEFORE INSERT
 ON Purchase
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence2.nextval INTO :NEW.RECEIPTID FROM dual;
+SELECT purchase_sequence.nextval INTO :NEW.RECEIPTID FROM dual;
 END;	
 /
 
 
-CREATE SEQUENCE test_sequence4
-START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER test_trigger4
+CREATE OR REPLACE TRIGGER customer_trigger
 BEFORE INSERT
-ON ReturnItem
+ON Customer
 REFERENCING NEW AS NEW
 FOR EACH ROW
 BEGIN
-SELECT test_sequence4.nextval INTO :NEW.retID FROM dual;
-END;	
-/
-
--- CREATE SEQUENCE test_sequence5
--- START WITH 1 INCREMENT BY 1;
-
--- CREATE OR REPLACE TRIGGER test_trigger5
--- BEFORE INSERT
--- ON PurchaseItem
--- REFERENCING NEW AS NEW
--- FOR EACH ROW
--- BEGIN
--- SELECT test_sequence5.nextval INTO :NEW.receiptID FROM dual;
--- END;	
--- /
-
+SELECT customer_sequence.nextval INTO :NEW.CID FROM dual;
+END;
+/	
 
 -- DUMMY DATA 
 INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
