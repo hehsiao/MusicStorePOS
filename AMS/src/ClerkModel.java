@@ -37,6 +37,7 @@ public class ClerkModel
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
+	private PurchaseModel purchase;
 
 
 	/*
@@ -129,35 +130,15 @@ Foreign Key (upc) REFERENCES Item);
 	}
 
 
-
-	/*
-	 * Updates the name of a branch
-	 * Returns true if the update is successful; false otherwise.
-	 *
-	 * bname cannot be null.
-	 */
-	public boolean updateBranch(int bid, String bname)
-	{
+	public Integer createCreditPurchaseOrder(Integer cardNumber){
 		try
-		{	
-			ps = con.prepareStatement("UPDATE branch SET branch_name = ? WHERE branch_id = ?");
-
-			if (bname != null)
-			{
-				ps.setString(1, bname);
-			}
-			else
-			{
-				return false; 
-			}
-
-			ps.setInt(2, bid);
+		{	  
+			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cardnum, expiryDate) values(SYSDATE, ?, SYSDATE+15)");
+			ps.setInt(1, cardNumber.intValue());
 
 			ps.executeUpdate();
-
 			con.commit();
-
-			return true; 
+			return purchase.getReceiptID();
 		}
 		catch (SQLException ex)
 		{
@@ -167,20 +148,16 @@ Foreign Key (upc) REFERENCES Item);
 			try
 			{
 				con.rollback();
-				return false; 
+				return -1; 
 			}
 			catch (SQLException ex2)
 			{
 				event = new ExceptionEvent(this, ex2.getMessage());
 				fireExceptionGenerated(event);
-				return false; 
+				return 0; 
 			}
 		}
 	}
-
-
-
-
 	
 	/*
 	 * Returns true if the item exists; false
