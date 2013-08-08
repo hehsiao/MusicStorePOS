@@ -975,99 +975,83 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
 		//		/*
-		//		 * Validates the text fields in AddItemsDialog and then
-		//		 * calls manager.addItem() if the fields are valid.
+		//		 * Validates the text fields in TopSalesItemsReportDialog and then
+		//		 * calls manager.() if the fields are valid.
 		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		//		 * OPERATIONFAILED, VALIDATIONERROR.
 		//		 */ 
-				private int validateInsert()
+				private int validateInsert() throws ParseException
 				{
 					try
 					{
-						Integer cid;
-						String password;
-						String name;
-						String address;
-						Integer phone;
-						Boolean itemUPC = manager.findItem(cid.intValue());
-						String itemTitle;
-						String itemType;
-						String itemCategory;
-						String itemCompany;
-		
-						if (itemUPC.toString().trim().length() != 0)
+						Integer salesDate;
+						Integer TopNumberSalesItem;
+						try
 						{
-							cid = Integer.valueOf(itemUPC.toString().trim());
-		
-							// check for duplicates
-							if (manager.findItem(cid.intValue()))
+							Date utilDate = new Date();
+							 java.sql.Date sqlDate;
+
+							if (purchaseDate.getText().trim().length() != 0)
 							{
-								Toolkit.getDefaultToolkit().beep();
-								AMS.updateStatusBar("Manager " + cid.toString() + " already exists!");
-								return OPERATIONFAILED; 
+								String pd = purchaseDate.getText().trim();
+								System.out.println(pd);
+
+								if (pd.length() != 8) {
+									return VALIDATIONERROR;
+								}
+								
+								
+								//date=DATE.fromText(arg0, arg1, arg2);
+
+								DateFormat format = new SimpleDateFormat("yy-mm-dd");
+								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+								System.out.println("Current Time: "+utilDate);
+							    utilDate = format.parse(pd);//if wrong format, "invalid format"
+								System.out.println("Current Time: "+utilDate);
+							  			
+							
+							    sqlDate= new java.sql.Date(utilDate.getTime());
+							    System.out.println("utilDate:" + utilDate);
+							    System.out.println("sqlDate:" + sqlDate);
+							   
+								// check for duplicates
+								if (manager.findDate(sqlDate))
+								{
+									System.out.println("BYE");
+								}
 							}
+							else
+							{
+								return VALIDATIONERROR; 
+							}
+
+							AMS.updateStatusBar("Creating Top Sales Items Report...");
+							showTopSalesItemsReport(sqlDate);
+							return OPERATIONSUCCESS;
+
+
+							//						if (manager.findRID(1))//stub
+							//						{
+							//							AMS.updateStatusBar("Operation successful.");
+							//							return OPERATIONSUCCESS; 
+							//						}
+							//						else
+							//						{
+							//							Toolkit.getDefaultToolkit().beep();
+							//							AMS.updateStatusBar("Operation failed.");
+							//							return OPERATIONFAILED; 
+							//						}
+
 						}
-						else
+						catch (NumberFormatException ex)
 						{
+							// this exception is thrown when a string 
+							// cannot be converted to a number
 							return VALIDATIONERROR; 
 						}
-		
-						if (itemTitle.getText().trim().length() != 0)
-						{
-							password = itemTitle.getText().trim();
-						}
-						else
-						{
-							return VALIDATIONERROR; 
-						}
-		
-						if (itemType.getText().trim().length() != 0)
-						{
-							name = itemType.getText().trim();
-						}
-						else
-						{
-							return VALIDATIONERROR; 
-						}
-		
-						if (itemCategory.getText().trim().length() != 0)
-						{
-							address = itemCategory.getText().trim();
-						}
-						else
-						{
-							address = null; 
-						}
-		
-						if (itemCompany.getText().trim().length() != 0)
-						{
-							phone = Integer.valueOf(itemCompany.getText().trim());
-						}
-						else
-						{
-							phone = null; 
-						}
-		
-						AMS.updateStatusBar("Creating Account...");
-		
-						if (manager.addAccount(cid, password, name, address, phone))
-						{
-							AMS.updateStatusBar("Operation successful.");
-							return OPERATIONSUCCESS; 
-						}
-						else
-						{
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Operation failed.");
-							return OPERATIONFAILED; 
-						}
-					}
-					catch (NumberFormatException ex)
-					{
-						// this exception is thrown when a string 
-						// cannot be converted to a number
-						return VALIDATIONERROR; 
-					}
+
+				
 				}
 	}	// end TopSalesItemsReportDialog
+}
 }

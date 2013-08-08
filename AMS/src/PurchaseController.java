@@ -683,19 +683,6 @@ public class PurchaseController implements ActionListener, ExceptionListener
 		 */ 
 		private int validateInsert()
 		{
-			try
-			{
-				DATE date;
-
-				if (purchaseDate.getText().trim().length() != 0)
-				{
-<<<<<<< HEAD
-					String pd = purchaseDate.getText().trim();
-					String[] arguments = pd.split("-");
-
-					if (arguments.length != 3) {
-						return VALIDATIONERROR;
-=======
 					try
 					{
 						DATE date;
@@ -738,7 +725,6 @@ public class PurchaseController implements ActionListener, ExceptionListener
 							AMS.updateStatusBar("Operation failed.");
 							return OPERATIONFAILED; 
 						}
->>>>>>> b1dea7e4a5d2ff90ac657fc9fec1d170c5092a7d
 					}
 					String arg0 = arguments[0];
 					String arg1 = arguments[1];
@@ -749,16 +735,12 @@ public class PurchaseController implements ActionListener, ExceptionListener
 					// check for duplicates
 					if (purchase.findDate(date))
 					{
-<<<<<<< HEAD
-
-=======
 						// this exception is thrown when a string 
 						// cannot be converted to a number
 						return VALIDATIONERROR; 
 					} catch (SQLException e) {
 						e.printStackTrace();
 					return VALIDATIONERROR;
->>>>>>> b1dea7e4a5d2ff90ac657fc9fec1d170c5092a7d
 					}
 				}
 				else
