@@ -100,7 +100,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			if(currReceiptID > 0)
 				if(purchase.removePurchase(currReceiptID))
 					AMS.updateStatusBar("Order has been cancelled.");
-			
+
 			return; 
 		}
 	}
@@ -804,15 +804,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			setContentPane(contentPane);
 			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-			// this panel will contain the text field labels and the text fields.
-			JPanel inputPane = new JPanel();
-			inputPane.setBorder(BorderFactory.createCompoundBorder(
-					new TitledBorder(new EtchedBorder(), "Items in the Cart"), 
-					new EmptyBorder(5, 5, 5, 5)));
-
-			GridBagLayout gb = new GridBagLayout();
-			inputPane.setLayout(gb);
-
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
@@ -831,7 +822,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
 			buttonPane.add(creditButton);
 
-			contentPane.add(inputPane, BorderLayout.CENTER);
 			contentPane.add(buttonPane, BorderLayout.CENTER);
 
 			addWindowListener(new WindowAdapter() 
@@ -1178,18 +1168,18 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
 	public void addToCart(Integer upc, Integer quantity){
-//		CartItem item = new CartItem();
-//		item.upc = upc;
-//		item.quantity = quantity;
-//		vCart.add(item);
+		//		CartItem item = new CartItem();
+		//		item.upc = upc;
+		//		item.quantity = quantity;
+		//		vCart.add(item);
 		int currentStock = item.getStock(upc);
-		
+
 		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
 		if(quantity > currentStock){
 			quantity = currentStock;
 			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
 		}
-		
+
 		// Add or Update the quantity to purchaseItem.
 		if(!purchase.findItemInCart(upc,currReceiptID))
 			purchase.addItemToPurchase(upc, quantity, currReceiptID);

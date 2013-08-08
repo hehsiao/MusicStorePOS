@@ -373,7 +373,62 @@ public class ManagerModel
 		}
 	}
 
+	public boolean addAccount(Integer cid, String password, String name, String address, Integer phone)
+	{
+		try
+		{	   
+			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
 
+			ps.setInt(1, cid.intValue());
+
+			ps.setString(2, password);
+
+			ps.setString(3, name);
+
+			if (address != null)
+			{
+				ps.setString(4, address);
+			}
+			else
+			{
+				ps.setString(4, null);
+			}
+
+			if (phone != null)
+			{
+				ps.setInt(5, phone.intValue());
+			}
+			else
+			{
+				ps.setNull(5, Types.INTEGER);
+			}
+
+			ps.executeUpdate();
+
+			con.commit();
+
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+	
+	
 	/*
 	 * Returns the database connection used by this manager model
 	 */
