@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.EventListenerList;
+
+import oracle.sql.DATE;
 /**
  * PurchaseModel contains operations that modifies the Purchase and PurchaseItem.
  */
@@ -12,7 +14,7 @@ public class PurchaseModel
 	protected PreparedStatement ps = null;
 	protected EventListenerList listenerList = new EventListenerList();
 	protected Connection con = null; 
-	
+
 	class purchaseDetail{
 		int receiptID;
 		String pdate;
@@ -94,9 +96,9 @@ public class PurchaseModel
 
 	/**
 	 * creates a new purchase Order
-	 * @return true if successful
+	 * @return Integer receiptID if successful
 	 */
-	public Integer createCashPurchaseOrder(){
+	public Integer createPurchaseOrder(){
 		try
 		{	  
 			System.out.println("Creating Purchase Order");
@@ -124,6 +126,37 @@ public class PurchaseModel
 		}
 	}
 
+	/*
+	 * Returns true if the item exists; false
+	 * otherwise.
+	 */ 
+	public boolean findItem(int upc)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
+
+			ps.setInt(1, upc);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
+			{
+				return true; 
+			}
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
+	}
 	/**
 	 * addItemToPurchase adds item with receiptID to purchaseItem Table
 	 * @param upc
@@ -163,9 +196,8 @@ public class PurchaseModel
 
 
 	/**
-	 * addItemToPurchase adds item with receiptID to purchaseItem Table
-	 * @param upc
-	 * @param quantity
+	 * addItemToPurchase adds items with receiptID to purchaseItem Table
+	 * @param ArrayList vCart containing the items requested
 	 * @param receiptID
 	 * @return true if successful
 	 */
@@ -203,7 +235,7 @@ public class PurchaseModel
 			}
 		}
 	}
-	
+
 	/**
 	 * getPurchaseDetail returns the items purchased in the receiptID provided
 	 * @param receiptID
@@ -219,7 +251,7 @@ public class PurchaseModel
 			ps = con.prepareStatement(query, 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
-			
+
 			ResultSet rs = ps.executeQuery();
 
 			return rs; 
@@ -233,7 +265,7 @@ public class PurchaseModel
 			return null; 
 		}
 	}
-	
+
 	/**
 	 * getPurchaseTotal returns the total price of the Purchase based on the receipt ID
 	 * @param receiptID

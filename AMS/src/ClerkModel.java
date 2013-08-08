@@ -72,7 +72,7 @@ Foreign Key (receiptId) REFERENCES Purchase
 Foreign Key (upc) REFERENCES Item);
 
 	 */ 
-	public boolean processCash(Integer upc, Integer quantity)
+	public boolean reduceStock(Integer upc, Integer quantity)
 	{
 		try
 		{	   
@@ -85,27 +85,27 @@ Foreign Key (upc) REFERENCES Item);
 			ps.setInt(2, upc.intValue());
 			ps.executeUpdate();
 			con.commit();
-			
-			System.out.println("1");
-			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
-			ps.executeUpdate();
-			con.commit();
-			
-			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-			{
-				receiptID = rs.getInt(1);
-			}
-			
-			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
-			ps.setInt(1, receiptID);
-			ps.setInt(2, upc.intValue());
-			ps.setInt(3, quantity.intValue());
-			ps.executeUpdate();
-			con.commit();
-
-			System.out.println("3");
+//			
+//			System.out.println("1");
+//			ps = con.prepareStatement("INSERT INTO Purchase(pdate) values(SYSDATE)");
+//			ps.executeUpdate();
+//			con.commit();
+//			
+//			ps = con.prepareStatement("SELECT receiptID FROM purchase WHERE receiptID = (SELECT MAX(receiptID) from purchase)");
+//			ResultSet rs = ps.executeQuery();
+//			if (rs.next())
+//			{
+//				receiptID = rs.getInt(1);
+//			}
+//			
+//			ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc,quantity) values(?, ?,?)");
+//			ps.setInt(1, receiptID.intValue());
+//			ps.setInt(2, upc.intValue());
+//			ps.setInt(3, quantity.intValue());
+//			ps.executeUpdate();
+//			con.commit();
+//
+//			System.out.println("3");
 
 			return true; 
 		}
@@ -179,129 +179,40 @@ Foreign Key (upc) REFERENCES Item);
 	}
 
 
-	/*
-	 * Deletes a branch.
-	 * Returns true if the delete is successful; false otherwise.
-	 */
-	public boolean deleteBranch(int bid)
-	{
-		try
-		{	  
-			ps = con.prepareStatement("DELETE FROM branch WHERE branch_id = ?");
-
-			ps.setInt(1, bid);
-
-			ps.executeUpdate();
-
-			con.commit();
-
-			return true; 
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
-		}
-	}
 
 
-	/*
-	 * Returns a ResultSet containing all branches. The ResultSet is
-	 * scroll insensitive and read only. If there is an error, null
-	 * is returned.
-	 */ 
-	public ResultSet showPurchases()
-	{
-		try
-		{	 
-			ps = con.prepareStatement("SELECT b.* FROM branch b", 
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-
-			ResultSet rs = ps.executeQuery();
-
-			return rs; 
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-			// no need to commit or rollback since it is only a query
-
-			return null; 
-		}
-	}
-
-
-	/*
-	 * Same as showBranch() except that an updatable result set
-	 * is returned.
-	 */ 
-	public ResultSet editBranch()
-	{
-		try
-		{	 
-			ps = con.prepareStatement("SELECT b.* FROM branch b", 
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-
-			ResultSet rs = ps.executeQuery();
-
-			return rs; 
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-			// no need to commit or rollback since it is only a query
-
-			return null; 
-		}
-	}
-
+	
 	/*
 	 * Returns true if the item exists; false
 	 * otherwise.
 	 */ 
-	public boolean findItem(int upc)
-	{
-		try
-		{	
-			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
-
-			ps.setInt(1, upc);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				return true; 
-			}
-			else
-			{
-				return false; 
-			}
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			return false; 
-		}
-	}
+//	public boolean findItem(int upc)
+//	{
+//		try
+//		{	
+//			ps = con.prepareStatement("SELECT upc FROM Item WHERE upc = ?");
+//
+//			ps.setInt(1, upc);
+//
+//			ResultSet rs = ps.executeQuery();
+//
+//			if (rs.next())
+//			{
+//				return true; 
+//			}
+//			else
+//			{
+//				return false; 
+//			}
+//		}
+//		catch (SQLException ex)
+//		{
+//			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+//			fireExceptionGenerated(event);
+//
+//			return false; 
+//		}
+//	}
 
 
 	/*

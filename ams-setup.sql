@@ -58,8 +58,8 @@ create table Purchase
 	(receiptId integer, 
 	pdate DATE default(sysdate),
 	cid number(10), 
-	cardnum varchar(16),
-	expiryDate varchar(5), 
+	cardnum number(16),
+	expiryDate DATE, 
 	expectedDate DATE,
 	deliveredDate DATE, 
 	PRIMARY KEY (receiptId),
@@ -116,18 +116,6 @@ SELECT test_sequence2.nextval INTO :NEW.RECEIPTID FROM dual;
 END;	
 /
 
-CREATE SEQUENCE test_sequence3
-START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER test_trigger3
-BEFORE INSERT
-ON Customer
-REFERENCING NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT test_sequence3.nextval INTO :NEW.CID FROM dual;
-END;	
-/
 
 CREATE SEQUENCE test_sequence4
 START WITH 1 INCREMENT BY 1;
@@ -164,8 +152,8 @@ INSERT into Item values (2, 'Random Access Memories', 'CD', 'Electric', 'Daft Li
 INSERT into LeadSinger values (2, 'Daft Punk');
 INSERT into HasSong values (2, 'Get Lucky');
 INSERT into HasSong values (2, 'One More Time');
-INSERT into Customer(password,name,address,phone) values ('1234', 'Matthew', '100 Hastings', '6045551234' );
-INSERT into Customer(password,name,address,phone) values ( '2345', 'Risa', '100 Main', '6045551235' );
-INSERT into Customer(password,name,address,phone) values ( '1334', 'Henry', '100 Vancouver', '6045551254' );
-INSERT into Customer(password,name,address,phone) values ( '2234', 'Shanifer', '100 Burnaby', '604555444' );
+INSERT into Customer(cid,password,name,address,phone) values (1,'1234', 'Matthew', '100 Hastings', '6045551234' );
+INSERT into Customer(cid,password,name,address,phone) values (2, '2345', 'Risa', '100 Main', '6045551235' );
+INSERT into Customer(cid,password,name,address,phone) values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
+INSERT into Customer(cid,password,name,address,phone) values (4, '2234', 'Shanifer', '100 Burnaby', '604555444' );
 

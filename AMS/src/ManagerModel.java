@@ -28,59 +28,52 @@ public class ManagerModel
 	 * Inserts a tuple into the items table. 
 	 * price can be null
 	 */ 
-	public boolean insertItem(Integer upc, Integer price, Integer quantity)
+	public boolean insertItem(Integer upc, double price, Integer quantity)
 	{
-	  if (upc==null|| quantity==null) return false;
-			
-			try
-			{	
-			
-				if (price==0){
-				
-			ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
-			
-			
+		if (upc==null|| quantity==null) return false;
+
+		try
+		{	
+
+			if (price==0){
+
+				ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
+
 			}
 			else {
 				ps = con.prepareStatement("UPDATE Item SET price = ?, stock =(stock+?)  WHERE upc= ?");
-		
+
 			}
-			    ps.setInt(1,price.intValue());
-				
-				
-				//ps = con.prepareStatement("UPDATE Item SET price = (price+?), stock =(stock+?)  WHERE upc= ?");
-				//ps = con.prepareStatement("UPDATE Item SET stock =100  WHERE upc= 2");
-					
-			
-			ps.setInt(1,price.intValue());
+
+			ps.setDouble(1,price);
 			ps.setInt(2, quantity.intValue());
-		    ps.setInt(3, upc.intValue());
-				
-				ps.executeUpdate();
+			ps.setInt(3, upc.intValue());
 
-				con.commit();
+			ps.executeUpdate();
 
-				return true; 
-			}
-			catch (SQLException ex)
+			con.commit();
+
+			return true; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
 			{
-				ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-				fireExceptionGenerated(event);
-
-				try
-				{
-					con.rollback();
-					return false; 
-				}
-				catch (SQLException ex2)
-				{
-					event = new ExceptionEvent(this, ex2.getMessage());
-					fireExceptionGenerated(event);
-					return false; 
-				}
+				con.rollback();
+				return false; 
 			}
-			
-	
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+
+
 	}
 
 	public boolean setDeliveryDate(Integer rID)
@@ -89,7 +82,7 @@ public class ManagerModel
 		{	
 			ps = con.prepareStatement("UPDATE Purchase SET deliveredDate = (sysdate) WHERE receiptID = ?");
 
-		
+
 			ps.setInt(1, rID.intValue());
 
 			ps.executeUpdate();
@@ -149,22 +142,17 @@ public class ManagerModel
 	{
 		try
 		{	 
-		//category totalunit totalvalue
-			ps = con.prepareStatement("(SELECT i.upc, i.category, i.price as Unit_Price, sum(pi.quantity) as " +
-					"Units_Sold,sum(pi.quantity)*(i.price) as Total_Value FROM Item i, Purchase p, PurchaseItem pi " +
-					"WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? group by i.category) UNION " +
-					
-					"(SELECT i.category, sum(sum(pi.quantity)) as Total_Units_Sold, sum(sum(pi.quantity)*(i.price)) as Total Value" +
-					"FROM Item i, Purchase p, PurchaseItem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? ", 
+			//category totalunit totalvalue
+			ps = con.prepareStatement("SELECT i.upc, i.category, i.price as Unit_Price, sum(pi.quantity) as Units_Sold,sum((pi.quantity)*(i.price)) as Total_Value, sum(sum(pi.quantity)) as Total_Units_Sold_Category, sum(sum((pi.quantity)*(i.price))) as Total_Value_Category FROM Item i, Purchase p, PurchaseItem pi " +
+					"WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and p.pdate=? Group by i.category", 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
-			
-			
+
 			ps.setDate(1,date);
-			ps.setDate(2,date);
+		//	ps.setDate(2,date);
 			ResultSet rs = ps.executeQuery();
-			
-			
+
+
 
 			return rs; 
 		}
@@ -177,7 +165,7 @@ public class ManagerModel
 			return null; 
 		}
 	}
-	
+
 	public String findInfo(Integer rID, String info)
 	{
 		try
@@ -185,7 +173,7 @@ public class ManagerModel
 			if (info.equals("dop")){
 				ps = con.prepareStatement("SELECT p.pdate FROM Purchase p WHERE p.receiptID=?");
 				ps.setInt(1, rID);
-				
+
 				ResultSet rs = ps.executeQuery();
 				String dop = rs.getString("pdate");
 				if (!rs.next()){
@@ -193,7 +181,7 @@ public class ManagerModel
 				}
 				return dop;	
 			}
-			
+
 			if (info.equals("cname")){
 				ps = con.prepareStatement("SELECT c.name FROM Purchase p, Customer C WHERE p.receiptID=? AND p.cid=c.cid");
 				ps.setInt(1, rID);	
@@ -205,8 +193,8 @@ public class ManagerModel
 				return cname;	
 			}
 			else return null;
-			
-     		
+
+
 		}
 		catch (SQLException ex)
 		{
@@ -217,34 +205,34 @@ public class ManagerModel
 			return null; 
 		}
 	}
-	
-	
-	
+
+
+
 	public String[] findArray(String what)
 	{
 		try
 		{	 
-			 List<String> resultList = new ArrayList<String>();
+			List<String> resultList = new ArrayList<String>();
 			if (what.equals("RIDwithoutDD")){
-			
+
 				ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
 
 				ResultSet rs = ps.executeQuery();
 
 				while (rs.next()){
-			
-				    String em = rs.getString("receiptID");  
-				    System.out.println(em);
-				  resultList.add(em);
-					}
-				
-		}
-			
+
+					String em = rs.getString("receiptID");  
+					System.out.println(em);
+					resultList.add(em);
+				}
+
+			}
+
 			String[] resultArray = new String[resultList.size()];
 			resultList.toArray(resultArray);
-		return resultArray;
-		
-		
+			return resultArray;
+
+
 		}
 		catch (SQLException ex)
 		{
@@ -255,10 +243,10 @@ public class ManagerModel
 			return null; 
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	/*
 	 * Returns true if the item exists; false
 	 * otherwise.
@@ -296,7 +284,7 @@ public class ManagerModel
 		{	
 			ps = con.prepareStatement("SELECT date FROM Purchase WHERE date = ?");
 
-					
+
 			ps.setDate(1,date);
 
 			ResultSet rs = ps.executeQuery();
@@ -319,7 +307,7 @@ public class ManagerModel
 		}
 	}
 
-	
+
 	/*
 	 * Returns the database connection used by this manager model
 	 */

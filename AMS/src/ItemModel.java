@@ -256,6 +256,32 @@ public class ItemModel
 	}
 	
 	/*
+	 * Same as showBranch() except that an updatable result set
+	 * is returned.
+	 */ 
+	public ResultSet editItem()
+	{
+		try
+		{	 
+			ps = con.prepareStatement("SELECT i.* FROM item i", 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	/*
 	 * Returns the database connection used by this item model
 	 */
 	public Connection getConnection()

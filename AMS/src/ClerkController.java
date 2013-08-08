@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.border.*; 
 
 import java.sql.*;
+import java.util.ArrayList;
 
 
 /*
@@ -27,7 +28,11 @@ import java.sql.*;
 public class ClerkController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
-	private ClerkModel clerk = null; 
+	private ClerkModel clerk = null;
+	private PurchaseModel purchase = null;
+	private ArrayList<CustomerController.CartItem> cart = new ArrayList<CustomerController.CartItem>(); 
+    private CustomerController customerController;
+
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -172,6 +177,16 @@ public class ClerkController implements ActionListener, ExceptionListener
 				iDialog.setVisible(true);
 				return; 
 			}
+			
+
+			if (actionCommand.equals("CREDIT"))
+			{
+				CashDialog iDialog = new CashDialog(AMS);
+				iDialog.pack();
+				AMS.centerWindow(iDialog);
+				iDialog.setVisible(true);
+				return; 
+			}
 		}
 
 
@@ -241,18 +256,213 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 
 
-			// when the return key is pressed in the last field
-			// of this form, the action performed by the ok button
-			// is executed
-			itemQuantity.addActionListener(this);
-			itemQuantity.setActionCommand("OK");
+//			// when the return key is pressed in the last field
+//			// of this form, the action performed by the ok button
+//			// is executed
+//			itemQuantity.addActionListener(this);
+//			itemQuantity.setActionCommand("OK");
 
 			// panel for the OK and cancel buttons
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
 
-			JButton OKButton = new JButton("OK");
+			JButton OKButton = new JButton("ADD");
+			JButton cancelButton = new JButton("DONE");
+			OKButton.addActionListener(this);
+			OKButton.setActionCommand("ADD");
+			cancelButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					Integer rID = purchase.getReceiptID();
+					AMS.updateStatusBar("Processing Cash Purchase...");
+					purchase.addMultipleItemToPurchase(cart,rID);
+					cart.clear();
+				
+					//print total price etc
+				}
+			});
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(OKButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(cancelButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+
+		/*
+		 * Event handler for the OK button in BranchInsertDialog
+		 */ 
+		public void actionPerformed(ActionEvent e)
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("ADD"))
+			{
+				if (validateCASH() != VALIDATIONERROR)
+				{
+					dispose();
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		}
+
+
+		/*
+		 * Validates the text fields in BranchInsertDialog and then
+		 * calls branch.insertBranch() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 */ 
+		private int validateCASH()
+		{
+			try
+			{
+				Integer rID = null;
+				Integer upc;
+				Integer quantity;
+				CustomerController.CartItem cItem = null;
+			
+				
+				if (itemUPC.getText().trim().length() != 0)
+				{
+					
+					upc = Integer.valueOf(itemUPC.getText().trim());
+					cItem =customerController.new CartItem();
+					cItem.upc = upc;
+					// check for duplicates
+					if (purchase.findItem(upc.intValue())){
+
+					}
+				}
+
+				else
+				{
+					return VALIDATIONERROR; 
+
+				}
+
+
+				if (itemQuantity.getText().trim().length() != 0)
+				{
+					quantity = Integer.valueOf(itemQuantity.getText().trim());
+					cItem.quantity = quantity;
+				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+
+				AMS.updateStatusBar("Adding Item to Purchase List...");
+                 if (cart.isEmpty()){
+                           	 rID = purchase.createPurchaseOrder();
+                             System.out.println(rID.toString());
+                 } 
+         
+				if (clerk.reduceStock(upc, quantity))
+				{
+					cart.add(cItem);
+					AMS.updateStatusBar("Operation successful.");
+
+					showPurchase(rID);
+
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+		}
+	}
+	class AuthorizeDialog extends JDialog implements ActionListener
+	{
+		JTextField ccardnum = new JTextField(16);
+	   // JTextField 
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public AuthorizeDialog(JFrame parent)
+		{
+			super(parent, "CREDIT", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Item Fields"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			// create and place upc label
+			JLabel label= new JLabel("Credit Card #: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(ccardnum, c);
+			inputPane.add(ccardnum);
+
+
+
+			// when the return key is pressed in the last field
+			// of this form, the action performed by the ok button
+			// is executed
+			ccardnum.addActionListener(this);
+			ccardnum.setActionCommand("OK");
+
+			// panel for the OK and cancel buttons
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton OKButton = new JButton("Authorize");
 			JButton cancelButton = new JButton("Cancel");
 			OKButton.addActionListener(this);
 			OKButton.setActionCommand("OK");
@@ -283,6 +493,202 @@ public class ClerkController implements ActionListener, ExceptionListener
 		}
 
 
+	
+		public void actionPerformed(ActionEvent e)
+		{
+			String actionCommand = e.getActionCommand();
+
+			if (actionCommand.equals("OK"))
+			{
+				if (validateCREDIT() != VALIDATIONERROR)
+				{
+					dispose();
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
+				}	
+			}
+		}
+
+
+		/*
+		 * Validates the text fields in BranchInsertDialog and then
+		 * calls branch.insertBranch() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 * 
+		 * 
+		 */ 
+		private int validateCREDIT()
+		{
+			try
+			{
+				Integer upc = null;
+				Integer quantity=null;
+				Integer cnum;
+				Integer rID;
+
+				if (ccardnum.getText().trim().length() != 0)
+				{
+					cnum = Integer.valueOf(ccardnum.getText().trim());
+
+					// check for duplicates
+					if (purchase.findItem(cnum.intValue())){
+
+					}
+				}
+
+				else
+				{
+					return VALIDATIONERROR; 
+
+				}
+
+				AMS.updateStatusBar("Processing Credit Card Purchase...");
+                  rID = purchase.createPurchaseOrder();
+                  System.out.println(rID.toString());
+				if (clerk.reduceStock(upc, quantity) && purchase.addItemToPurchase(upc,quantity,rID))
+				{
+
+					AMS.updateStatusBar("Operation successful.");
+
+					showPurchase(rID);
+
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+		}
+	}
+	class CreditDialog extends JDialog implements ActionListener
+	{
+		JTextField itemUPC = new JTextField(10);
+		JTextField itemQuantity = new JTextField(10);
+		JTextField creditnum = new JTextField(16);
+
+
+		/*
+		 * Constructor. Creates the dialog's GUI.
+		 */
+		public CreditDialog(JFrame parent)
+		{
+			super(parent, "CREDIT", true);
+			setResizable(false);
+
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setContentPane(contentPane);
+			contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			// this panel will contain the text field labels and the text fields.
+			JPanel inputPane = new JPanel();
+			inputPane.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(new EtchedBorder(), "Item Fields"), 
+					new EmptyBorder(5, 5, 5, 5)));
+
+			// add the text field labels and text fields to inputPane
+			// using the GridBag layout manager
+
+			GridBagLayout gb = new GridBagLayout();
+			GridBagConstraints c = new GridBagConstraints();
+			inputPane.setLayout(gb);
+
+			// create and place upc label
+			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(0, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place upc field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(0, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(itemUPC, c);
+			inputPane.add(itemUPC);
+
+
+
+			// create and place quantity label
+			label = new JLabel("Quantity: ", SwingConstants.RIGHT);
+			c.gridwidth = GridBagConstraints.RELATIVE;
+			c.insets = new Insets(5, 0, 0, 5);
+			c.anchor = GridBagConstraints.EAST;
+			gb.setConstraints(label, c);
+			inputPane.add(label);
+
+			// place Quantity field
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.insets = new Insets(5, 0, 0, 0);
+			c.anchor = GridBagConstraints.WEST;
+			gb.setConstraints(itemQuantity, c);
+			inputPane.add(itemQuantity);
+
+
+
+//			// when the return key is pressed in the last field
+//			// of this form, the action performed by the ok button
+//			// is executed
+//			itemQuantity.addActionListener(this);
+//			itemQuantity.setActionCommand("OK");
+
+			// panel for the OK and cancel buttons
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+			buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 2));
+
+			JButton OKButton = new JButton("ADD");
+			JButton cancelButton = new JButton("DONE");
+			OKButton.addActionListener(this);
+			OKButton.setActionCommand("ADD");
+			cancelButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					Integer rID = purchase.getReceiptID();
+					AMS.updateStatusBar("Processing Cash Purchase...");
+					purchase.addMultipleItemToPurchase(cart,rID);
+					cart.clear();
+				
+					//print total price etc
+				}
+			});
+
+			// add the buttons to buttonPane
+			buttonPane.add(Box.createHorizontalGlue());
+			buttonPane.add(OKButton);
+			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
+			buttonPane.add(cancelButton);
+
+			contentPane.add(inputPane, BorderLayout.CENTER);
+			contentPane.add(buttonPane, BorderLayout.SOUTH);
+
+			addWindowListener(new WindowAdapter() 
+			{
+				public void windowClosing(WindowEvent e)
+				{
+					dispose();
+				}
+			});
+		}
+
+
 		/*
 		 * Event handler for the OK button in BranchInsertDialog
 		 */ 
@@ -290,7 +696,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 		{
 			String actionCommand = e.getActionCommand();
 
-			if (actionCommand.equals("OK"))
+			if (actionCommand.equals("ADD"))
 			{
 				if (validateCASH() != VALIDATIONERROR)
 				{
@@ -318,15 +724,20 @@ public class ClerkController implements ActionListener, ExceptionListener
 		{
 			try
 			{
+				Integer rID = null;
 				Integer upc;
 				Integer quantity;
-
+				CustomerController.CartItem cItem = null;
+			
+				
 				if (itemUPC.getText().trim().length() != 0)
 				{
+					
 					upc = Integer.valueOf(itemUPC.getText().trim());
-
+					cItem =customerController.new CartItem();
+					cItem.upc = upc;
 					// check for duplicates
-					if (clerk.findItem(upc.intValue())){
+					if (purchase.findItem(upc.intValue())){
 
 					}
 				}
@@ -341,6 +752,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 				if (itemQuantity.getText().trim().length() != 0)
 				{
 					quantity = Integer.valueOf(itemQuantity.getText().trim());
+					cItem.quantity = quantity;
 				}
 				else
 				{
@@ -348,14 +760,18 @@ public class ClerkController implements ActionListener, ExceptionListener
 				}
 
 
-				AMS.updateStatusBar("Processing Cash Purchase...");
-
-				if (clerk.processCash(upc, quantity))
+				AMS.updateStatusBar("Adding Item to Purchase List...");
+                 if (cart.isEmpty()){
+                           	 rID = purchase.createPurchaseOrder();
+                             System.out.println(rID.toString());
+                 } 
+         
+				if (clerk.reduceStock(upc, quantity))
 				{
-
+					cart.add(cItem);
 					AMS.updateStatusBar("Operation successful.");
 
-					//					showAllPurchases();
+					showPurchase(rID);
 
 					return OPERATIONSUCCESS; 
 				}
@@ -374,29 +790,29 @@ public class ClerkController implements ActionListener, ExceptionListener
 			}
 		}
 	}
-
-
-	//	/*
-	//	 * This method displays all purchases in a non-editable JTable
-	//	 */
-	//	private void showAllPurchases()
-	//	{
-	//		ResultSet rs = clerk.showPurchases();
-	//
-	//		// CustomTableModel maintains the result set's data, e.g., if  
-	//		// the result set is updatable, it will update the database
-	//		// when the table's data is modified.  
-	//		CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
-	//		CustomTable data = new CustomTable(model);
-	//
-	//		// register to be notified of any exceptions that occur in the model and table
-	//		model.addExceptionListener(this);
-	//		data.addExceptionListener(this);
-	//
-	//		// Adds the table to the scrollpane.
-	//		// By default, a JTable does not have scroll bars.
-	//		AMS.addTable(data);
-	//	}
+	
+	
+		/*
+		 * This method displays all purchases in a non-editable JTable
+		 */
+		private void showPurchase(Integer receiptID)
+		{
+			ResultSet rs = purchase.getPurchaseItems(receiptID);
+	
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(clerk.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+	
+			// register to be notified of any exceptions that occur in the model and table
+			model.addExceptionListener(this);
+			data.addExceptionListener(this);
+	
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
+		}
 
 
 }

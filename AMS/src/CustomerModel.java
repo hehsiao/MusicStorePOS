@@ -120,10 +120,9 @@ public class CustomerModel
 			ps.setString(2, pwd);
 
 			ResultSet rs = ps.executeQuery();
-
 			if (rs.next())
 			{
-				return rs.getString(1); 
+				return rs.getString("name"); 
 			}
 			else
 			{

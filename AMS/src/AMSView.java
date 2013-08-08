@@ -117,6 +117,9 @@ public class AMSView extends JFrame
 		createMenuItem(manager, "Add Items", 
 				KeyEvent.VK_I, "Add Items");
 
+		createMenuItem(manager, "Edit Items", 
+				KeyEvent.VK_I, "Edit Items");
+		
 		createMenuItem(manager, "Process Delivery", 
 				KeyEvent.VK_D, "Process Delivery");
 

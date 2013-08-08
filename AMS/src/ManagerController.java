@@ -4,10 +4,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*; 
 import java.util.Date;
+import java.util.TimeZone;
+
 import oracle.sql.DATE;
 
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -15,11 +18,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 {
 	private AMSView AMS = null;
 	private ManagerModel manager = null;
-
-	//  static NumberFormat numForm = NumberFormat.getInstance();
-	//  static {
-	//      numForm.setMaximumIntegerDigits(20);
-	//  }
+	private ItemModel item = null;
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -30,9 +29,11 @@ public class ManagerController implements ActionListener, ExceptionListener
 	{
 		this.AMS = AMS;
 		manager = new ManagerModel();
+		item = new ItemModel();
 
 		// register to receive exception events from branch
 		manager.addExceptionListener(this);
+		item.addExceptionListener(this);
 	}
 
 	/*
@@ -50,6 +51,13 @@ public class ManagerController implements ActionListener, ExceptionListener
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
 			iDialog.setVisible(true);
+			return; 
+		}
+
+		if (actionCommand.equals("Edit Items"))
+		{
+			AMS.buttonPane.setVisible(false);
+			editAllItems();
 			return; 
 		}
 
@@ -107,6 +115,21 @@ public class ManagerController implements ActionListener, ExceptionListener
 	}    
 
 
+	/*
+	 * This method displays all branches in an editable JTable
+	 */
+	private void editAllItems()
+	{
+		ResultSet rs = item.editItem();
+
+		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		AMS.addTable(data);
+	}
 
 
 	/*
@@ -150,7 +173,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place upc label
-			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);	    
+			JLabel label= new JLabel("Item UPC: ", SwingConstants.RIGHT);       
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -259,7 +282,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					// display a popup to inform the user of the validation error
 					JOptionPane errorPopup = new JOptionPane();
 					errorPopup.showMessageDialog(this, "Invalid Input", "Error", JOptionPane.ERROR_MESSAGE);
-				}	
+				}       
 			}
 		}
 
@@ -275,7 +298,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			try
 			{
 				Integer upc;
-				Integer price;
+				double price;
 				Integer quantity;
 
 				if (itemUPC.getText().trim().length() != 0)
@@ -283,9 +306,10 @@ public class ManagerController implements ActionListener, ExceptionListener
 					upc = Integer.valueOf(itemUPC.getText().trim());
 
 					// check for duplicates
-					if (manager.findItem(upc.intValue()))
+					if (!manager.findItem(upc.intValue()))
 					{
-
+						AMS.updateStatusBar("UPC not Found!");
+						return VALIDATIONERROR;
 					}
 				}
 				else
@@ -296,7 +320,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				if (itemPrice.getText().trim().length() != 0)
 				{
-					price = Integer.valueOf(itemPrice.getText().trim());
+					price = Double.valueOf(itemPrice.getText().trim());
 				}
 				else
 				{
@@ -313,14 +337,10 @@ public class ManagerController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
-
-				AMS.updateStatusBar("Inserting item...");
-
 				if (manager.insertItem(upc, price, quantity))
 				{
-					AMS.updateStatusBar("Operation successful.");
-
-					//showAllBranches();
+					AMS.updateStatusBar("Item Updated");
+					displayUpdateItem(upc);
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -337,6 +357,25 @@ public class ManagerController implements ActionListener, ExceptionListener
 				return VALIDATIONERROR; 
 			}
 		}
+	}
+
+	private void displayUpdateItem(int upc)
+	{
+		ResultSet rs = item.findItemByUPC(upc);
+
+		// CustomTableModel maintains the result set's data, e.g., if  
+		// the result set is updatable, it will update the database
+		// when the table's data is modified.  
+		CustomTableModel model = new CustomTableModel(item.getConnection(), rs);
+		CustomTable data = new CustomTable(model);
+
+		// register to be notified of any exceptions that occur in the model and table
+		model.addExceptionListener(this);
+		data.addExceptionListener(this);
+
+		// Adds the table to the scrollpane.
+		// By default, a JTable does not have scroll bars.
+		AMS.addTable(data);
 	}
 
 
@@ -600,7 +639,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date(YYMMDD): ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -722,32 +761,38 @@ public class ManagerController implements ActionListener, ExceptionListener
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
 		 */ 
+		@SuppressWarnings("deprecation")
 		private int validateInsert() throws ParseException
 		{
 			try
 			{
-				java.sql.Date date;
-
+				Date utilDate = new Date();
+				 java.sql.Date sqlDate;
 
 				if (purchaseDate.getText().trim().length() != 0)
 				{
 					String pd = purchaseDate.getText().trim();
+					System.out.println(pd);
 
-
-					if (pd.length() != 6) {
+					if (pd.length() != 8) {
 						return VALIDATIONERROR;
 					}
-
-					//frickk doesn't work
+					
+					
 					//date=DATE.fromText(arg0, arg1, arg2);
 
-					SimpleDateFormat sdf = new SimpleDateFormat("yy-mm-dd");
-					String parsed = sdf.format(pd);
-					date = (java.sql.Date)sdf.parse(parsed);
-
-					System.out.println("HELLO");
+					DateFormat format = new SimpleDateFormat("yy-mm-dd");
+					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+					System.out.println("Current Time: "+utilDate);
+				   // utilDate = format.parse(pd);//if wrong format, "invalid format"
+					//System.out.println("Current Time: "+utilDate);
+				  			
+				
+				    sqlDate= new java.sql.Date(utilDate.getTime());
+				    System.out.println("utilDate:" + utilDate);
+				    System.out.println("sqlDate:" + sqlDate);
 					// check for duplicates
-					if (manager.findDate(date))
+					if (manager.findDate(sqlDate))
 					{
 						System.out.println("BYE");
 					}
@@ -758,7 +803,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}
 
 				AMS.updateStatusBar("Creating Daily Sales Report...");
-				showDailySalesReport(date);
+				showDailySalesReport(sqlDate);
 				System.out.println("YO");
 				return OPERATIONSUCCESS;
 

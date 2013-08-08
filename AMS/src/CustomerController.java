@@ -37,9 +37,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 		purchase = new PurchaseModel();
 		purchase.getPurchaseItems(currReceiptID);
 		AMS.clearStatusBar();
-		displayPurchaseDetail(19);
-		AMS.clearStatusBar();
-		displayPurchaseDetail(17);
+
 		// register to receive exception events from branch
 		customer.addExceptionListener(this);
 	}
@@ -521,22 +519,29 @@ public class CustomerController implements ActionListener, ExceptionListener
 				Integer cid;
 				String password;
 
-				if (customerID.getText().trim().length() == 0 && customerPW.getText().trim().length() == 0){
+				if (customerID.getText().trim().length() == 0 && customerPW.getPassword().length == 0){
 					// If customerID or password was not entered, return validation error.
 
 					return VALIDATIONERROR;
 				}
 				else {
 					cid = Integer.valueOf(customerID.getText().trim());
-					password = customerPW.getText().trim();
+					password = new String(customerPW.getPassword());
 
-					if(!customer.findCustomer(cid.intValue())){
+					Boolean duplicate = customer.findCustomer(cid.intValue());
+					System.out.println(duplicate.toString());
+					if(!duplicate){
+
 						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
-						return OPERATIONFAILED;
-					}
+						return OPERATIONFAILED;				
+				
+					} 	
+					
 					String cname;
+					cname = customer.authenticateCustomer(cid.intValue(), password);
+					System.out.println(cname);
 					// check for account 
-					if ((cname = customer.authenticateCustomer(cid.intValue(), password)) != null)
+					if (cname!= null)
 					{
 						AMS.updateStatusBar("Welcome " + cname + "! What would you like today?");
 						currReceiptID = purchase.createOnlinePurchaseOrder(cid);
@@ -1109,7 +1114,10 @@ public class CustomerController implements ActionListener, ExceptionListener
 		addToCart(1,2);
 		addToCart(2,3);
 
-		int receiptID = purchase.createCashPurchaseOrder().intValue();
+		displayPurchaseDetail(19);
+		AMS.clearStatusBar();
+		displayPurchaseDetail(17);
+		int receiptID = purchase.createPurchaseOrder().intValue();
 
 		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
 	}
