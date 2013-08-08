@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -659,11 +658,11 @@ public class PurchaseController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("OK"))
 			{
-								if (validateInsert() != VALIDATIONERROR)
-								{
-									dispose();
-								}
-								else
+				if (validateInsert() != VALIDATIONERROR)
+				{
+					dispose();
+				}
+				else
 				{
 					Toolkit.getDefaultToolkit().beep();
 
@@ -674,70 +673,70 @@ public class PurchaseController implements ActionListener, ExceptionListener
 			}
 		}
 
-	
-				/*
-				 * Validates the text fields in AddItemsDialog and then
-				 * calls purchase.addItem() if the fields are valid.
-				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
-				 * OPERATIONFAILED, VALIDATIONERROR.
-				 */ 
-				private int validateInsert()
+
+		/*
+		 * Validates the text fields in AddItemsDialog and then
+		 * calls purchase.addItem() if the fields are valid.
+		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+		 * OPERATIONFAILED, VALIDATIONERROR.
+		 */ 
+		private int validateInsert()
+		{
+			try
+			{
+				DATE date;
+
+				if (purchaseDate.getText().trim().length() != 0)
 				{
-					try
-					{
-						DATE date;
-		
-						if (purchaseDate.getText().trim().length() != 0)
-						{
-							String pd = purchaseDate.getText().trim();
-							String[] arguments = pd.split("-");
-							
-							if (arguments.length != 3) {
-								return VALIDATIONERROR;
-							}
-							String arg0 = arguments[0];
-							String arg1 = arguments[1];
-							String arg2 = arguments[2];
-														
-							date = DATE.fromText(arg0, arg1, arg2);
-		
-							// check for duplicates
-							if (purchase.findDate(date))
-							{
-								
-							}
-						}
-						else
-						{
-							return VALIDATIONERROR; 
-						}
-		
-						AMS.updateStatusBar("Creating Daily Sales Report...");
-		
-						if (purchase.findRID(1))//stub
-						{
-							AMS.updateStatusBar("Operation successful.");
-							return OPERATIONSUCCESS; 
-						}
-						else
-						{
-							Toolkit.getDefaultToolkit().beep();
-							AMS.updateStatusBar("Operation failed.");
-							return OPERATIONFAILED; 
-						}
+					String pd = purchaseDate.getText().trim();
+					String[] arguments = pd.split("-");
+
+					if (arguments.length != 3) {
+						return VALIDATIONERROR;
 					}
-					catch (NumberFormatException ex)
+					String arg0 = arguments[0];
+					String arg1 = arguments[1];
+					String arg2 = arguments[2];
+
+					date = DATE.fromText(arg0, arg1, arg2);
+
+					// check for duplicates
+					if (purchase.findDate(date))
 					{
-						// this exception is thrown when a string 
-						// cannot be converted to a number
-						return VALIDATIONERROR; 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					return VALIDATIONERROR;
+
 					}
-					
 				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				AMS.updateStatusBar("Creating Daily Sales Report...");
+
+				if (purchase.findRID(1))//stub
+				{
+					AMS.updateStatusBar("Operation successful.");
+					return OPERATIONSUCCESS; 
+				}
+				else
+				{
+					Toolkit.getDefaultToolkit().beep();
+					AMS.updateStatusBar("Operation failed.");
+					return OPERATIONFAILED; 
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return VALIDATIONERROR;
+			}
+
+		}
 	}	// end DailySalesReportDialog
 
 	/*
