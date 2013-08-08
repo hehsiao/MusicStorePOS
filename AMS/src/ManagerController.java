@@ -707,8 +707,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		private void showDailySalesReport(java.sql.Date date)
 		{
+			//ResultSet rs = manager.showResultSet(date);
 			ResultSet rs = manager.showResultSet(date);
-
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
 			// when the table's data is modified.  
@@ -791,6 +791,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				    sqlDate= new java.sql.Date(utilDate.getTime());
 				    System.out.println("utilDate:" + utilDate);
 				    System.out.println("sqlDate:" + sqlDate);
+				   
 					// check for duplicates
 					if (manager.findDate(sqlDate))
 					{
