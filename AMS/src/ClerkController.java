@@ -353,7 +353,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					cItem =customerController.new CartItem();
 					cItem.upc = upc;
 					// check for duplicates
-					if (purchase.findItem(upc.intValue())){
+					if (clerk.findItem(upc.intValue())){
 
 					}
 				}
@@ -657,6 +657,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					Integer rID = purchase.getReceiptID();
 					AMS.updateStatusBar("Processing Credit Card Purchase...");
 					purchase.addMultipleItemToPurchase(cart,rID);
+					showPurchase(rID);
 					cart.clear();
 					cnum=null;
 				
@@ -692,7 +693,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("ADD"))
 			{
-				if (validateCASH() != VALIDATIONERROR)
+				if (validateCredit() != VALIDATIONERROR)
 				{
 					dispose();
 				}
@@ -714,7 +715,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		 * OPERATIONFAILED, VALIDATIONERROR.
 		 */ 
-		private int validateCASH()
+		private int validateCredit()
 		{
 			try
 			{
@@ -731,7 +732,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					cItem =customerController.new CartItem();
 					cItem.upc = upc;
 					// check for duplicates
-					if (purchase.findItem(upc.intValue())){
+					if (clerk.findItem(upc.intValue())){
 
 					}
 				}
