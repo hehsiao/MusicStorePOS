@@ -125,20 +125,3 @@ SELECT customer_sequence.nextval INTO :NEW.CID FROM dual;
 END;
 /	
 
--- DUMMY DATA 
-INSERT into Item values (1, 'Levels', 'CD', 'House', 'Universal', 2011, '19.99', '10');
-INSERT into LeadSinger values (1, 'Avicii');
-INSERT into HasSong values (1, 'Levels (original version)');
-INSERT into Item values (2, 'Random Access Memories', 'CD', 'Electric', 'Daft Life', 2012, '19.99', '10');
-INSERT into LeadSinger values (2, 'Daft Punk');
-INSERT into HasSong values (2, 'Get Lucky');
-INSERT into HasSong values (2, 'One More Time');
-INSERT into Customer(cid,password,name,address,phone) values (1,'1234', 'Matthew', '100 Hastings', '6045551234' );
-INSERT into Customer(cid,password,name,address,phone) values (2, '2345', 'Risa', '100 Main', '6045551235' );
-INSERT into Customer(cid,password,name,address,phone) values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
-INSERT into Customer(cid,password,name,address,phone) values (4, '2234', 'Shanifer', '100 Burnaby', '604555444' );
-INSERT into Purchase (receiptId, pdate, cid) values (1, sysdate, 1);
-INSERT into PurchaseItem (1, 1, 2);
-INSERT into Purchase (receiptid, pdate, cid) values (2, sysdate, 3);
-INSERT into PurchaseItem (2, 2, 1);
-
