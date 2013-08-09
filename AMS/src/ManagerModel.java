@@ -145,7 +145,7 @@ public class ManagerModel
 		{	
 			String query1 = "drop view Dsview";
 			ps = con.prepareStatement(query1);
-			
+			ps.executeQuery();
 			System.out.println(date);
 			String query = "create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='" +
 				date+ "' Group by i.category, i.upc, i.price";
