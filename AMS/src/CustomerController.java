@@ -15,7 +15,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private ItemModel item = null;
 	private PurchaseModel purchase = null;
 
-	private int currReceiptID = 0;
+	private Integer currReceiptID = 0;
 	private JScrollPane shoppingCart;
 	// Virtual Cart
 	class CartItem{
@@ -1212,15 +1212,5 @@ public class CustomerController implements ActionListener, ExceptionListener
 		shoppingCart.setViewportView(data);
 	}
 
-	public void test(){
-		addToCart(1,2);
-		addToCart(2,3);
 
-		displayPurchaseDetail(19);
-		AMS.clearStatusBar();
-		displayPurchaseDetail(17);
-		int receiptID = purchase.createPurchaseOrder().intValue();
-
-		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
-	}
 }
