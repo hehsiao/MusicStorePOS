@@ -45,6 +45,11 @@ public class AMSView extends JFrame
 
 	GridLayout buttonLayoutStore = new GridLayout(1,4);
 	public JPanel buttonPaneStore = new JPanel();
+	
+	public JButton addToReturn;
+	public JButton checkoutReturn;
+	public JButton cancelReturn;
+
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -294,13 +299,13 @@ public class AMSView extends JFrame
 		//		JAVA FILE
 
 		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
-		ManagerController managerControl = new ManagerController(this);
-
-		for (int i = 0; i < manager.getItemCount(); i++)
-		{
-			menuItem = manager.getItem(i);
-			menuItem.addActionListener(managerControl);
-		}
+//		ManagerController managerControl = new ManagerController(this);
+//
+//		for (int i = 0; i < manager.getItemCount(); i++)
+//		{
+//			menuItem = manager.getItem(i);
+//			menuItem.addActionListener(managerControl);
+//		}
 
 		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
 		ClerkController clerkControl = new ClerkController(this);
@@ -377,9 +382,9 @@ public class AMSView extends JFrame
 		 */
 		// command buttons for purchasing
 		JButton displayPurchasedItem = new JButton("Display Purchases");
-		JButton addToReturn = new JButton("Return Item");
-		JButton checkoutReturn = new JButton("Checkout");
-		JButton cancelReturn = new JButton("Cancel Return");
+		 addToReturn = new JButton("Return Item");
+		 checkoutReturn = new JButton ("Checkout");
+		 cancelReturn = new JButton("Cancel Return");
 
 		displayPurchasedItem.addActionListener(clerkControl);
 		displayPurchasedItem.setActionCommand("displayItem");

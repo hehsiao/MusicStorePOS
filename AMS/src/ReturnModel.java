@@ -1,6 +1,4 @@
-
 import java.sql.*; 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.EventListenerList;
@@ -50,16 +48,15 @@ public class ReturnModel
 
 	/**
 	 * creates a new return Order
+	 * @param currReceiptID 
 	 * @return true if successful
 	 */
-	public Integer createReturnOrder(Integer retID, String retDate, Integer receiptID){
+	public Integer createReturnOrder(Integer receiptID){
 		try
 		{	  
 			System.out.println("Creating Return Order");
-			ps = con.prepareStatement("INSERT INTO Return(retID, retDate, receiptID) values(SYSDATE, ?)");
-			ps.setInt(1, retID.intValue());
-//			ps.setInt(2,  (Integer retDate.parseInt()));
-			ps.setInt(3, receiptID.intValue());
+			ps = con.prepareStatement("INSERT INTO Return(retDate, receiptID) values(SYSDATE, ?)");
+			ps.setInt(1, receiptID.intValue());
 			ps.executeUpdate();
 			con.commit();
 			return getRetID();
@@ -72,7 +69,7 @@ public class ReturnModel
 			try
 			{
 				con.rollback();
-				return -1; 
+				return null; 
 			}
 			catch (SQLException ex2)
 			{
@@ -93,10 +90,101 @@ public class ReturnModel
 	public boolean addItemToReturn(int upc, int quantity, int retID){
 		try
 		{	  
-			ps = con.prepareStatement("INSERT INTO ReturnItem(receiptID, upc, quantity) values(?,?,?)");
+			ps = con.prepareStatement("INSERT INTO ReturnItem(retID, upc, quantity) values(?,?,?)");
 			ps.setInt(1, retID);
 			ps.setInt(2, upc);
 			ps.setInt(3, quantity);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+
+	public boolean findItemInCart(Integer upc, Integer retID) {
+		try
+		{	
+			ps = con.prepareStatement("SELECT upc FROM ReturnItem WHERE upc = ? AND retID = ?");
+
+			ps.setInt(1, upc);
+			ps.setInt(2, retID.intValue());
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
+			{
+				return true; 
+			}
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
+	}
+
+	public boolean updateItemToReturn(Integer upc, Integer quantity,
+			Integer retID) {
+		try
+		{	  
+			ps = con.prepareStatement("UPDATE ReturnItem SET quantity = ? WHERE retID = ? AND upc = ?");
+			ps.setInt(2, retID);
+			ps.setInt(3, upc);
+			ps.setInt(1, quantity);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
+
+	/** 
+	 * Return Order retID is cancelled
+	 * @param retID
+	 * @return true if successful
+	 */
+	public boolean removeReturn(Integer retID){
+		try
+		{	 
+			ps = con.prepareStatement("DELETE FROM Return WHERE retID = ?");
+			ps.setInt(1, retID.intValue());
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -201,4 +289,55 @@ public class ReturnModel
 		}
 		return sb.toString();				
 	}
+
+	public double getReturnTotal(Integer retID) {
+		try
+		{				
+			ps = con.prepareStatement("SELECT SUM(i.price*ri.quantity) FROM item i, returnitem ri WHERE ri.upc = i.upc AND ri.retid = ?");
+			System.out.println(retID.intValue());
+			ps.setInt(1, retID.intValue());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+			{
+				return rs.getDouble(1);
+			}
+			return Double.NaN; // return negative number if error
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return Double.NaN; 
+		}
+	}
+
+	public ResultSet getReturnItems(Integer retID) {
+		try
+		{	 
+			String query = "SELECT i.upc, i.title, ri.quantity, i.price " +
+					"FROM item i, returnitem ri " +
+					"WHERE i.upc=ri.upc AND ri.retID = "+ retID;
+
+			ps = con.prepareStatement(query, 
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			ResultSet rs = ps.executeQuery();
+
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+
+
+
 }
+

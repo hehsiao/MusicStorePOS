@@ -255,6 +255,12 @@ public class ItemModel
 		}
 	}
 	
+
+	public void sellItem(Integer currReceiptID) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/*
 	 * Same as showBranch() except that an updatable result set
 	 * is returned.
@@ -362,4 +368,5 @@ public class ItemModel
 		}
 		return sb.toString();				
 	}
+
 }

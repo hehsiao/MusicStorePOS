@@ -19,13 +19,13 @@ public class CustomerModel
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
 
-	public boolean insertCustomer(Integer cid, String password, String name, String address, Integer phone)
+	public boolean insertCustomer(String cid, String password, String name, String address, Integer phone)
 	{
 		try
 		{	   
 			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
 
-			ps.setInt(1, cid.intValue());
+			ps.setString(1, cid);
 
 			ps.setString(2, password);
 
@@ -78,13 +78,13 @@ public class CustomerModel
 	 * Returns true if the customer exists; false
 	 * otherwise.
 	 */ 
-	public boolean findCustomer(int cid)
+	public boolean findCustomer(String cid)
 	{
 		try
 		{	
 			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ?");
 
-			ps.setInt(1, cid);
+			ps.setString(1, cid);
 
 			ResultSet rs = ps.executeQuery();
 
@@ -110,13 +110,13 @@ public class CustomerModel
 	 * Returns true if the customer/password combination is correct; false
 	 * otherwise.
 	 */ 
-	public String authenticateCustomer(int cid, String pwd)
+	public String authenticateCustomer(String cid, String pwd)
 	{
 		try
 		{	
 			ps = con.prepareStatement("SELECT name FROM customer WHERE cid = ? AND password = ?");
 
-			ps.setInt(1, cid);
+			ps.setString(1, cid);
 			ps.setString(2, pwd);
 
 			ResultSet rs = ps.executeQuery();

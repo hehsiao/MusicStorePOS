@@ -11,11 +11,9 @@ drop table RETURNITEM cascade constraints;
 
 drop sequence return_sequence;
 drop sequence purchase_sequence;
-drop sequence customer_sequence;
 
 drop TRIGGER return_trigger;
 drop TRIGGER purchase_trigger;
-drop TRIGGER customer_trigger;
 
 -- CREATE Tables
 create table Item
@@ -42,7 +40,7 @@ create table HasSong
 	Foreign Key (upc) references Item(upc) on DELETE cascade);
 
 create table Customer
-	(cid number(10), 
+	(cid varchar(8), 
 	password varchar(8),
 	name varchar(20), 
 	address varchar(20),
@@ -52,9 +50,9 @@ create table Customer
 create table Purchase
 	(receiptId integer, 
 	pdate DATE default(sysdate),
-	cid number(10), 
-	cardnum number(16),
-	expiryDate DATE, 
+	cid varchar(8), 
+	cardnum char(16),
+	expiryDate char(5), 
 	expectedDate DATE,
 	deliveredDate DATE, 
 	PRIMARY KEY (receiptId),
@@ -91,8 +89,6 @@ START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE purchase_sequence
 START WITH 1 INCREMENT BY 1;
 
-CREATE SEQUENCE customer_sequence
-START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TRIGGER return_trigger
 BEFORE INSERT
@@ -115,13 +111,4 @@ END;
 /
 
 
-CREATE OR REPLACE TRIGGER customer_trigger
-BEFORE INSERT
-ON Customer
-REFERENCING NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT customer_sequence.nextval INTO :NEW.CID FROM dual;
-END;
-/	
 

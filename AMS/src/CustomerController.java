@@ -16,13 +16,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private PurchaseModel purchase = null;
 
 	private Integer currReceiptID = 0;
-	private JScrollPane shoppingCart;
-	// Virtual Cart
-	class CartItem{
-		int upc;
-		int quantity;
-	}
-	private ArrayList<CartItem> vCart = new ArrayList<CartItem>();
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
@@ -132,7 +125,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	class RegisterAccountInsertDialog extends JDialog implements ActionListener
 	{
-		private JTextField customerID = new JTextField(4);
+		private JTextField customerID = new JTextField(8);
 		private JPasswordField customerPW = new JPasswordField(15);
 		private JTextField customerName = new JTextField(10);
 		private JTextField customerAddress = new JTextField(15);
@@ -165,7 +158,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			/** CUSTOMER ID **/
 			// create and place customer id label
-			JLabel label = new JLabel("Customer ID: ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Customer ID (Max 8 Characters): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -319,21 +312,21 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				Integer cid;
+				String cid;
 				String password;
 				String name;
 				String address;
 				Integer phone;
 
-				if (customerID.getText().trim().length() != 0)
+				if (customerID.getText().trim().length() == 0 && customerID.getText().trim().length() <= 8)
 				{
-					cid = Integer.valueOf(customerID.getText().trim());
+					cid = customerID.getText().trim();
 
 					// check for duplicates
-					if (customer.findCustomer(cid.intValue()))
+					if (customer.findCustomer(cid))
 					{
 						Toolkit.getDefaultToolkit().beep();
-						AMS.updateStatusBar("Customer " + cid.toString() + " already exists!");
+						AMS.updateStatusBar("Customer " + cid + " already exists!");
 						return OPERATIONFAILED; 
 					}
 				}
@@ -520,29 +513,29 @@ public class CustomerController implements ActionListener, ExceptionListener
 		{
 			try
 			{
-				Integer cid;
+				String cid;
 				String password;
 
-				if (customerID.getText().trim().length() == 0 && customerPW.getPassword().length == 0){
+				if (customerID.getText().trim().length() == 0 && customerID.getText().trim().length() > 8  && customerPW.getPassword().length == 0){
 					// If customerID or password was not entered, return validation error.
 
 					return VALIDATIONERROR;
 				}
 				else {
-					cid = Integer.valueOf(customerID.getText().trim());
+					cid = customerID.getText().trim();
 					password = new String(customerPW.getPassword());
 
-					Boolean duplicate = customer.findCustomer(cid.intValue());
+					Boolean duplicate = customer.findCustomer(cid);
 					System.out.println(duplicate.toString());
 					if(!duplicate){
 
-						AMS.updateStatusBar("Customer " + cid.toString() + " is not found." );
+						AMS.updateStatusBar("Customer " + cid + " is not found." );
 						return OPERATIONFAILED;				
 
 					} 	
 
 					String cname;
-					cname = customer.authenticateCustomer(cid.intValue(), password);
+					cname = customer.authenticateCustomer(cid, password);
 					System.out.println(cname);
 					// check for account 
 					if (cname!= null)
@@ -560,7 +553,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					}
 					else {
 						Toolkit.getDefaultToolkit().beep();
-						AMS.updateStatusBar("Customer " + cid.toString() + " might have a wrong id/password combinations!");
+						AMS.updateStatusBar("Customer " + cid + " might have a wrong id/password combinations!");
 						return OPERATIONFAILED; 
 
 					}
@@ -862,7 +855,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		private JTextField ccNumber = new JTextField(16);
 		private JTextField ccExpiry = new JTextField(4);
-		private JTextField receiptID = new JTextField(10);
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -930,18 +922,33 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("Submit Order"))
 			{
-				purchase.CustomerPayNowCredit(Integer.parseInt((String) receiptID.getSelectedText()), Integer.parseInt((String) ccNumber.getSelectedText()), Integer.parseInt((String) ccExpiry.getSelectedText()));
+				if(ccNumber.getText().trim().length() != 16){
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid CreditCard Number (16 digits)", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				if(ccExpiry.getText().trim().length() != 5){
+					Toolkit.getDefaultToolkit().beep();
+
+					// display a popup to inform the user of the validation error
+					JOptionPane errorPopup = new JOptionPane();
+					errorPopup.showMessageDialog(this, "Invalid Expiry Date (MM/YY)", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				purchase.customerPayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim());
+				AMS.updateStatusBar("Received payment for Purchase ID " + currReceiptID + " from credit card ending in " + ccNumber.getText().trim().substring(12));
+				AMS.buttonPane.setVisible(false);
 				dispose();
 			}
 
 			if (actionCommand.equals("Continue"))
 			{
 				dispose();
-				AMS.updateStatusBar(null);
 			}
 		}
 	}	// end CreditCardtDialog
-
+	
 	/*
 	 * This class creates a dialog box for adding an item to inventory.
 	 */
@@ -1172,10 +1179,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
 	public void addToCart(Integer upc, Integer quantity){
-		//		CartItem item = new CartItem();
-		//		item.upc = upc;
-		//		item.quantity = quantity;
-		//		vCart.add(item);
+
 		int currentStock = item.getStock(upc);
 
 		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
@@ -1206,14 +1210,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(fieldName, c);
 		inputPane.add(fieldName);
-	}
-
-	/*
-	 * This method adds the given JTable into tableScrPane
-	 */
-	public void addTable(JTable data)
-	{
-		shoppingCart.setViewportView(data);
 	}
 
 

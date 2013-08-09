@@ -88,14 +88,39 @@ public class PurchaseModel
 	}
 	
 	/**
+	 * getCreditCard returns the last 4 digits of creditcard used
+	 * @param recieptID
+	 * @return last 4 digits of creditcard for return verifications.
+	 */
+	public String getCreditCard(int receiptID){
+		try
+		{	
+			ps = con.prepareStatement("SELECT cardNum FROM purchase WHERE receiptID = ?");
+			ps.setInt(1, receiptID);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() && rs.getString(1) != null)
+			{
+				return rs.getString(1).substring(12); // returns the last four digits
+			}
+			return null; // return null if error
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return null; 
+		}
+	}
+	/**
 	 * creates a new purchase Order for online purchases purchases
 	 * @return true if successful
 	 */
-	public Integer createOnlinePurchaseOrder(int cid){
+	public Integer createOnlinePurchaseOrder(String cid){
 		try
 		{	  
 			ps = con.prepareStatement("INSERT INTO Purchase(pdate, cid) values(SYSDATE, ?)");
-			ps.setInt(1, cid);
+			ps.setString(1, cid);
 			ps.executeUpdate();
 			con.commit();
 			return getReceiptID();
@@ -150,20 +175,20 @@ public class PurchaseModel
 			}
 		}
 	}
-	
+
 	/**
 	 * CustomerPayNow updates a customer purchase with receiptID to purchaseItem Table
 	 * @param cid
-	 * @param ccnumber
-	 * @param ccexpirydate
+	 * @param string
+	 * @param string2
 	 * @return true if successful
 	 */
-	public boolean CustomerPayNowCredit(int receiptID, int ccnumber, int ccexpirydate){
+	public boolean customerPayNowCredit(int receiptID, String ccNumber, String ccExpiry){
 		try
 		{	  
-			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE receiptId = ?");
-			ps.setInt(1, ccnumber);
-			ps.setInt(2, ccexpirydate);
+			ps = con.prepareStatement("UPDATE Purchase SET cardnum = ?, expiryDate = ? WHERE receiptId = ?");
+			ps.setString(1, ccNumber);
+			ps.setString(2, ccExpiry);
 			ps.setInt(3,  receiptID);
 			ps.executeUpdate();
 			con.commit();
@@ -352,6 +377,32 @@ public class PurchaseModel
 			return -1; 
 		}
 	}
+	
+
+	public Integer getPurchasedQuantity(Integer upc, Integer receiptID)
+	{
+		try
+		{	
+			ps = con.prepareStatement("SELECT quantity FROM purchaseitem WHERE upc = ? and receiptID = ?");
+			ps.setInt(1, upc.intValue());
+			ps.setInt(2, receiptID.intValue());
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()){
+				return rs.getInt(1); 
+			}
+			else {
+				return null; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return null; 
+		}
+	}
+	
 
 	public boolean removePurchase(Integer receiptID){
 		try
@@ -381,7 +432,7 @@ public class PurchaseModel
 			}
 		}
 	}
-	
+
 	/**
 	 * 	Sets the delivery date for a Purchase
 	 * @param id
@@ -426,7 +477,7 @@ public class PurchaseModel
 	 * @param string
 	 * @return
 	 */
-		
+
 	public String findInfo(Integer rID, String info)
 	{
 		try
@@ -455,17 +506,17 @@ public class PurchaseModel
 			}
 
 			if (info.equals("items")) {
-			ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
-			"FROM item i, purchase p, purchaseitem pi " +
-			"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
-			ps.setInt(1, rID);
-			
-			ResultSet rs = ps.executeQuery();
-			String items = rs.getString("receiptID, upc, title, quantity, price");
-			if (!rs.next()){
-				return null;
-			}
-			return items;
+				ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+						"FROM item i, purchase p, purchaseitem pi " +
+						"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
+				ps.setInt(1, rID);
+
+				ResultSet rs = ps.executeQuery();
+				String items = rs.getString("receiptID, upc, title, quantity, price");
+				if (!rs.next()){
+					return null;
+				}
+				return items;
 			}
 			else return null;
 		}
@@ -478,7 +529,7 @@ public class PurchaseModel
 			return null; 
 		}
 	}
-	
+
 	public String[] findArray(String what)
 	{
 		try
@@ -514,8 +565,8 @@ public class PurchaseModel
 			return null; 
 		}
 	}
-	
-	
+
+
 	/*
 	 * Returns the database connection used by this purchase model
 	 */
@@ -596,5 +647,31 @@ public class PurchaseModel
 				sb.append(separator);
 		}
 		return sb.toString();				
+	}
+
+	public boolean getPurchase(Integer receiptID) {
+		try
+		{	
+			ps = con.prepareStatement("SELECT * FROM Purchase WHERE receiptID = ?");
+
+			ps.setInt(1, receiptID.intValue());
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
+			{
+				return true; 
+			}
+			else
+			{
+				return false; 
+			}
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			return false; 
+		}
 	}
 }
