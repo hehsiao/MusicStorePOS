@@ -150,6 +150,43 @@ public class PurchaseModel
 			}
 		}
 	}
+	
+	/**
+	 * CustomerPayNow updates a customer purchase with receiptID to purchaseItem Table
+	 * @param cid
+	 * @param ccnumber
+	 * @param ccexpirydate
+	 * @return true if successful
+	 */
+	public boolean CustomerPayNowCredit(int cid, int ccnumber, int ccexpirydate){
+		try
+		{	  
+			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE cid = ?");
+			ps.setInt(1, ccnumber);
+			ps.setInt(2, ccexpirydate);
+			ps.setInt(3,  cid);
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
 
 	/*
 	 * Returns true if the item exists; false

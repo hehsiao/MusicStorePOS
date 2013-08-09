@@ -861,6 +861,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		private JTextField ccNumber = new JTextField(16);
 		private JTextField ccExpiry = new JTextField(4);
+		private JTextField cid = new JTextField(10);
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -928,7 +929,8 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("Submit Order"))
 			{
-
+				purchase.CustomerPayNowCredit(Integer.parseInt((String) cid.getSelectedText()), Integer.parseInt((String) ccNumber.getSelectedText()), Integer.parseInt((String) ccExpiry.getSelectedText()));
+				dispose();
 			}
 
 			if (actionCommand.equals("Continue"))
