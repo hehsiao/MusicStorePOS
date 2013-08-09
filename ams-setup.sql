@@ -19,7 +19,7 @@ drop TRIGGER purchase_trigger;
 create table Item
 	(upc number(10) not null, 
 	title varchar(30),
-	type varchar(10), 
+	type varchar(11), 
 	category varchar(10),
 	company varchar(20), 
 	year integer,
