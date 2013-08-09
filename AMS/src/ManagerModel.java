@@ -139,15 +139,16 @@ public class ManagerModel
 	}
 
 	
-	public ResultSet selectDSView(java.sql.Date date)
+	public ResultSet selectDSView(String date)
 	{
 		try
 		{	
 			
 			System.out.println(date);
-
+			String query = "create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='" +
+				date+ "' Group by i.category, i.upc, i.price";
 			//hardcoded matching date..
-			ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='2013-08-08' Group by i.category, i.upc, i.price");
+			ps = con.prepareStatement(query);
 //doesn't work:
 //ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.date,'YYYY-MM-DD')=to_char(?,'YYYY-MM-DD') Group by i.category, i.upc, i.price");
 //ps.setDate(1,date);

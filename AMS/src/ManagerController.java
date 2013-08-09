@@ -705,7 +705,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			});
 		}	
 
-		private void showDailySalesReport(java.sql.Date date)
+		private void showDailySalesReport(String date)
 		{
 			//ResultSet rs = manager.showResultSet(date);
 			ResultSet rs1 = manager.selectDSView(date);
@@ -781,10 +781,12 @@ public class ManagerController implements ActionListener, ExceptionListener
 			{
 				Date utilDate = new Date();
 				 java.sql.Date sqlDate;
-
+				String dateString;
+				
 				if (purchaseDate.getText().trim().length() != 0)
 				{
 					String pd = purchaseDate.getText().trim();
+					dateString = "20"+pd;
 					System.out.println(pd);
 
 					if (pd.length() != 8) {
@@ -817,7 +819,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}
 
 				AMS.updateStatusBar("Creating Daily Sales Report...");
-				showDailySalesReport(sqlDate);
+				showDailySalesReport(dateString);
 
 				return OPERATIONSUCCESS;
 
