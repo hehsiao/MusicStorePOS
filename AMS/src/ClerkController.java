@@ -126,6 +126,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 				AMS.updateStatusBar(ret.getReturnTotal(currRetID) + " are refunded in Cash.");
 			else
 				AMS.updateStatusBar(ret.getReturnTotal(currRetID) + " are refunded to Credit Card ending in " + purchase.getCreditCard(currReceiptID));
+			AMS.buttonPaneReturn.setVisible(false);
 			return;
 		}
 
@@ -1025,7 +1026,6 @@ public class ClerkController implements ActionListener, ExceptionListener
 			if(quantity > purchased){
 				quantity = purchased;
 				AMS.updateStatusBar("Exceeded original purchased amount.");
-				return;
 			}
 
 			// Add or Update the quantity to purchaseItem.
