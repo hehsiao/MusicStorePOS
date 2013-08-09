@@ -32,14 +32,20 @@ public class AMSView extends JFrame
 
 	// the debug menu
 	private JMenu debug;
+	
+	public JPanel southPane = new JPanel();
 
 	// command buttons for purchasing
 	GridLayout buttonLayout = new GridLayout(1,4);
 	public JPanel buttonPane = new JPanel();
-	private JButton searchItems = new JButton("Search for Items");
-	private JButton addToCart = new JButton("Add Item to Cart");
-	private JButton checkout = new JButton("Checkout");
-	private JButton cancelOrder = new JButton("Cancel Order");
+	
+	// Buttons for Returns
+	GridLayout buttonLayoutReturn = new GridLayout(1,4);
+	public JPanel buttonPaneReturn = new JPanel();
+//	private JButton searchItems = new JButton("Search for Items");
+//	private JButton addToCart = new JButton("Add Item to Cart");
+//	private JButton checkout = new JButton("Checkout");
+//	private JButton cancelOrder = new JButton("Cancel Order");
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -81,10 +87,13 @@ public class AMSView extends JFrame
 		statusField.setLineWrap(true);
 		statusField.setWrapStyleWord(true);
 
+		southPane.add(buttonPane, BorderLayout.CENTER);
+		southPane.add(buttonPaneReturn, BorderLayout.SOUTH);
+		
 		// add the panes to the content pane
 		contentPane.add(tableScrPane, BorderLayout.CENTER);
 		contentPane.add(statusScrPane, BorderLayout.NORTH);
-		contentPane.add(buttonPane, BorderLayout.SOUTH);
+		contentPane.add(southPane, BorderLayout.SOUTH);
 
 		// center the main window
 		Dimension screenSize = getToolkit().getScreenSize();
@@ -310,6 +319,15 @@ public class AMSView extends JFrame
 			menuItem = customer.getItem(i);
 			menuItem.addActionListener(customerControl);
 		}
+		
+		/**
+		 * Purchasing buttons
+		 */
+		// command buttons for purchasing
+		JButton searchItems = new JButton("Search for Items");
+		JButton addToCart = new JButton("Add Item to Cart");
+		JButton checkout = new JButton("Checkout");
+		JButton cancelOrder = new JButton("Cancel Order");
 
 		searchItems.addActionListener(customerControl);
 		searchItems.setActionCommand("SearchItems");
@@ -328,6 +346,31 @@ public class AMSView extends JFrame
 		buttonPane.add(cancelOrder);
 		buttonPane.setVisible(false);
 
+		/**
+		 * Return Transactions buttons
+		 */
+		// command buttons for purchasing
+		JButton displayPurchasedItem = new JButton("Display Purchases");
+		JButton addToReturn = new JButton("Return Item");
+		JButton checkoutReturn = new JButton("Checkout");
+		JButton cancelReturn = new JButton("Cancel Return");
+
+		displayPurchasedItem.addActionListener(clerkControl);
+		displayPurchasedItem.setActionCommand("displayItem");
+		addToReturn.addActionListener(clerkControl);
+		addToReturn.setActionCommand("addToReturn");
+		checkoutReturn.addActionListener(clerkControl);
+		checkoutReturn.setActionCommand("checkoutReturn");
+		cancelReturn.addActionListener(clerkControl);
+		cancelReturn.setActionCommand("cancelReturn");
+
+		// add the command buttons for purchasing and hide them until we need them
+		buttonPaneReturn.setLayout(buttonLayout);
+		buttonPaneReturn.add(displayPurchasedItem);
+		buttonPaneReturn.add(addToReturn);
+		buttonPaneReturn.add(checkoutReturn);
+		buttonPaneReturn.add(cancelReturn);
+		buttonPaneReturn.setVisible(false);
 		// CustomerController handles events on the Customer menu items (i.e. when they are clicked)
 		DebugController debugControl = new DebugController(this);
 

@@ -61,6 +61,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 		// you cannot use == for string comparisons
 		if (actionCommand.equals("Process Purchase"))
 		{
+			AMS.buttonPaneReturn.setVisible(false);
 			AMS.buttonPane.setVisible(false);
 			PurchaseDialog iDialog = new PurchaseDialog(AMS);
 			iDialog.pack();
@@ -72,10 +73,8 @@ public class ClerkController implements ActionListener, ExceptionListener
 		if (actionCommand.equals("Process Return"))
 		{
 			AMS.buttonPane.setVisible(false);
-			//BranchUpdateDialog uDialog = new BranchUpdateDialog(AMS);
-			//uDialog.pack();
-			//AMS.centerWindow(uDialog);
-			//uDialog.setVisible(true);
+			AMS.buttonPaneReturn.setVisible(true);
+			
 			return; 
 		}
 
