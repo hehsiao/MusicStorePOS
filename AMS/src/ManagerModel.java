@@ -138,32 +138,25 @@ public class ManagerModel
 		}
 	}
 
-
+	
 	public ResultSet selectDSView(java.sql.Date date)
 	{
 		try
-		{	 
+		{	
+			
+			System.out.println(date);
+
+			//hardcoded matching date..
 			ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='2013-08-08' Group by i.category, i.upc, i.price");
-			//			ps.setDate(1,date);
-			//query works:
-			//create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YY-MM-DD')='13-08-08' Group by i.category, i.upc, i.price;
-
-<<<<<<< HEAD
-			ps.executeQuery();
-
-			ps = con.prepareStatement("Select * from DSView");
-			//fix later TODO: put in another function to return the second rs	
-			ps = con.prepareStatement("select m.category,sum(m.unitssold)as unitsoldcategory,sum(m.totalvalue)as totalVcategory from dsview m group by m.category");
-=======
-			ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='?' Group by i.category, i.upc, i.price");
-			ps.setDate(1,date);
+//doesn't work:
+ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.date,'YYYY-MM-DD')=to_char(?,'YYYY-MM-DD') Group by i.category, i.upc, i.price");
+//ps.setDate(1,date);
 //query works:
 //create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YY-MM-DD')='13-08-08' Group by i.category, i.upc, i.price;
 			
 			ps.executeQuery();
 
 			ps = con.prepareStatement("Select * from DSView");
->>>>>>> 65724e1482714720ea9becf4c85af98001528247
 			ResultSet rs = ps.executeQuery();
 
 			
@@ -178,9 +171,6 @@ public class ManagerModel
 			return null; 
 		}
 	}
-<<<<<<< HEAD
-
-=======
 	
 	
 	//called after selectDSView
@@ -213,16 +203,15 @@ public class ManagerModel
 	
 	
 	
->>>>>>> 65724e1482714720ea9becf4c85af98001528247
 	//called after selected dailysales view
 	public ResultSet selectTOPView(int number)
 	{
 		try
 		{	 
 
-			ps = con.prepareStatement("select i.title, i.company, i.stock, ds.unitssold from item i, dsview ds where ds.upc=i.upc and rownum<=? order by (ds.unitssold) desc;");
+			ps = con.prepareStatement("select i.title, i.company, i.stock, ds.unitssold from item i, dsview ds where ds.upc=i.upc and rownum<=? order by (ds.unitssold) desc");
 			ps.setInt(1,number);
-			ResultSet rs = ps.executeQuery();
+		ResultSet rs = ps.executeQuery();
 
 
 			return rs; 
@@ -236,8 +225,8 @@ public class ManagerModel
 			return null; 
 		}
 	}
-
-
+	
+	
 	public ResultSet showResultSet(java.sql.Date date)
 	{
 		try
@@ -249,7 +238,7 @@ public class ManagerModel
 					ResultSet.CONCUR_READ_ONLY);
 
 			ps.setDate(1,date);
-			//	ps.setDate(2,date);
+		//	ps.setDate(2,date);
 			ResultSet rs = ps.executeQuery();
 
 
@@ -294,17 +283,17 @@ public class ManagerModel
 			}
 
 			if (info.equals("items")) {
-				ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
-						"FROM item i, purchase p, purchaseitem pi " +
-						"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
-				ps.setInt(1, rID);
-
-				ResultSet rs = ps.executeQuery();
-				String items = rs.getString("receiptID, upc, title, quantity, price");
-				if (!rs.next()){
-					return null;
-				}
-				return items;
+			ps = con.prepareStatement("SELECT p.receiptID, i.upc, i.title, pi.quantity, i.price " +
+			"FROM item i, purchase p, purchaseitem pi " +
+			"WHERE i.upc=pi.upc AND p.receiptID = pi.receiptID AND p.receiptID = ");
+			ps.setInt(1, rID);
+			
+			ResultSet rs = ps.executeQuery();
+			String items = rs.getString("receiptID, upc, title, quantity, price");
+			if (!rs.next()){
+				return null;
+			}
+			return items;
 			}
 			else return null;
 		}
@@ -419,9 +408,9 @@ public class ManagerModel
 		}
 	}
 
-
-
-
+	
+	
+	
 	/*
 	 * Returns the database connection used by this manager model
 	 */
