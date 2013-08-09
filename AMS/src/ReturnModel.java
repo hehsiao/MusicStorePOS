@@ -52,12 +52,14 @@ public class ReturnModel
 	 * creates a new return Order
 	 * @return true if successful
 	 */
-	public Integer createReturnOrder(Integer receiptID){
+	public Integer createReturnOrder(Integer retID, String retDate, Integer receiptID){
 		try
 		{	  
 			System.out.println("Creating Return Order");
-			ps = con.prepareStatement("INSERT INTO Return(retDate, receiptID) values(SYSDATE, ?)");
-			ps.setInt(1, receiptID.intValue());
+			ps = con.prepareStatement("INSERT INTO Return(retID, retDate, receiptID) values(SYSDATE, ?)");
+			ps.setInt(1, retID.intValue());
+//			ps.setInt(2,  (Integer retDate.parseInt()));
+			ps.setInt(3, receiptID.intValue());
 			ps.executeUpdate();
 			con.commit();
 			return getRetID();
