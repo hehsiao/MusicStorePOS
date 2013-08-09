@@ -299,13 +299,13 @@ public class AMSView extends JFrame
 		//		JAVA FILE
 
 		// ManagerController handles events on the Manager Admin menu items (i.e. when they are clicked)
-//		ManagerController managerControl = new ManagerController(this);
-//
-//		for (int i = 0; i < manager.getItemCount(); i++)
-//		{
-//			menuItem = manager.getItem(i);
-//			menuItem.addActionListener(managerControl);
-//		}
+		ManagerController managerControl = new ManagerController(this);
+
+		for (int i = 0; i < manager.getItemCount(); i++)
+		{
+			menuItem = manager.getItem(i);
+			menuItem.addActionListener(managerControl);
+		}
 
 		// ClerkController handles events on the Clerk menu items (i.e. when they are clicked)
 		ClerkController clerkControl = new ClerkController(this);
