@@ -544,11 +544,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 						currReceiptID = purchase.createOnlinePurchaseOrder(cid);
 						// Adds button after customer login
 						AMS.buttonPane.setVisible(true);
-						// calls describe item dialog
-						//						ItemSearchDialog iDialog = new ItemSearchDialog(AMS);
-						//						iDialog.pack();
-						//						AMS.centerWindow(iDialog);
-						//						iDialog.setVisible(true);
+						AMS.checkout.setEnabled(false);
 						return OPERATIONSUCCESS;
 					}
 					else {
@@ -936,10 +932,12 @@ public class CustomerController implements ActionListener, ExceptionListener
 					JOptionPane errorPopup = new JOptionPane();
 					errorPopup.showMessageDialog(this, "Invalid Expiry Date (MM/YY)", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				purchase.customerPayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim());
-				AMS.updateStatusBar("Received payment for Purchase ID " + currReceiptID + " from credit card ending in " + ccNumber.getText().trim().substring(12));
-				AMS.buttonPane.setVisible(false);
-				dispose();
+				else{
+					purchase.customerPayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim());
+					AMS.updateStatusBar("Received payment for Purchase ID " + currReceiptID + " from credit card ending in " + ccNumber.getText().trim().substring(12));
+					AMS.buttonPane.setVisible(false);
+					dispose();
+				}
 			}
 
 			if (actionCommand.equals("Continue"))
@@ -948,7 +946,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			}
 		}
 	}	// end CreditCardtDialog
-	
+
 	/*
 	 * This class creates a dialog box for adding an item to inventory.
 	 */
@@ -1118,7 +1116,6 @@ public class CustomerController implements ActionListener, ExceptionListener
 				}
 
 				addToCart(upc, quantity);
-				displayPurchaseDetail(currReceiptID);
 			}
 			catch (NumberFormatException ex)
 			{
@@ -1183,17 +1180,23 @@ public class CustomerController implements ActionListener, ExceptionListener
 		int currentStock = item.getStock(upc);
 
 		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
-		if(quantity > currentStock){
+		if(currentStock <= 0){
+			AMS.updateStatusBar("Sorry, the last item with upc "+ upc +" is purchased by another customer");
+			return;
+		}
+		else if (quantity > currentStock){
 			quantity = currentStock;
 			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
 		}
-
 		// Add or Update the quantity to purchaseItem.
 		if(!purchase.findItemInCart(upc,currReceiptID))
 			purchase.addItemToPurchase(upc, quantity, currReceiptID);
 		else
 			purchase.updateItemToPurchase(upc, quantity, currReceiptID);
 		item.sellItem(upc, quantity);
+		AMS.checkout.setEnabled(true);
+		displayPurchaseDetail(currReceiptID);
+		return;
 	}
 
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,

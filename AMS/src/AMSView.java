@@ -49,7 +49,7 @@ public class AMSView extends JFrame
 	public JButton addToReturn;
 	public JButton checkoutReturn;
 	public JButton cancelReturn;
-
+	public JButton checkout;
 
 	/*
 	 * Default constructor. Constructs the main window.
@@ -331,7 +331,7 @@ public class AMSView extends JFrame
 		// command buttons for purchasing
 		JButton searchItems = new JButton("Search for Items");
 		JButton addToCart = new JButton("Add Item to Cart");
-		JButton checkout = new JButton("Checkout");
+		checkout = new JButton("Checkout");
 		JButton cancelOrder = new JButton("Cancel Order");
 
 		searchItems.addActionListener(customerControl);

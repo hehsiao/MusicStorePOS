@@ -722,10 +722,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 					return VALIDATIONERROR; 
 				}
 
-				AMS.updateStatusBar("Your order has been updated.");
 				addToCart(upc, quantity);
-				displayPurchaseDetail(currReceiptID);
-				AMS.updateStatusBar("Total Price for current order: " + purchase.getPurchaseTotal(currReceiptID));
 			}
 			catch (NumberFormatException ex)
 			{
@@ -1028,6 +1025,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			if(quantity > purchased){
 				quantity = purchased;
 				AMS.updateStatusBar("Exceeded original purchased amount.");
+				return;
 			}
 
 			// Add or Update the quantity to purchaseItem.
@@ -1036,6 +1034,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			else
 				ret.updateItemToReturn(upc, quantity, currRetID);
 			item.restockItem(upc, quantity);
+			return;
 		}
 
 
@@ -1067,7 +1066,9 @@ public class ClerkController implements ActionListener, ExceptionListener
 	 */
 	private void displayPurchaseDetail(int receiptID)
 	{
-		System.out.println("Obtaining purchase items from " + receiptID);
+		AMS.updateStatusBar("Your order has been updated.");
+		AMS.updateStatusBar("Total Price for current order: " + purchase.getPurchaseTotal(currReceiptID));
+
 		ResultSet rs = purchase.getPurchaseItems(receiptID);
 
 		// CustomTableModel maintains the result set's data, e.g., if  
@@ -1089,20 +1090,27 @@ public class ClerkController implements ActionListener, ExceptionListener
 	 * This method adds the item upc and quantity into the virtualcart
 	 */
 	public void addToCart(Integer upc, Integer quantity){
+
 		int currentStock = item.getStock(upc);
 
 		// Check if we have enough stock, set currentStock as quantity if quantity wanted is more than currentStock
-		if(quantity > currentStock){
-			quantity = currentStock;
-			AMS.updateStatusBar(currReceiptID + ": We only have " + currentStock + " available and added those to your cart.");
+		if(currentStock <= 0){
+			AMS.updateStatusBar("Sorry, the last item with upc "+ upc +" is purchased by another customer");
+			return;
 		}
-
+		else if (quantity > currentStock){
+			quantity = currentStock;
+			AMS.updateStatusBar("We only have " + currentStock + " available and added those to your cart.");
+		}
 		// Add or Update the quantity to purchaseItem.
 		if(!purchase.findItemInCart(upc,currReceiptID))
 			purchase.addItemToPurchase(upc, quantity, currReceiptID);
 		else
 			purchase.updateItemToPurchase(upc, quantity, currReceiptID);
 		item.sellItem(upc, quantity);
+		AMS.checkout.setEnabled(true);
+		displayPurchaseDetail(currReceiptID);
+		return;
 	}
 
 	public void displayReturnItem(Integer retID) {
