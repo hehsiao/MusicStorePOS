@@ -992,22 +992,38 @@ public class ManagerController implements ActionListener, ExceptionListener
 			}
 		}
 		
-		private void showTopSalesItemsReport(int num)
+		private void showTopSalesItemsReport(int num, java.sql.Date date)
 		{
+			
+		//	ResultSet rs = manager.selectDSView(date);
 			ResultSet rs = manager.selectTOPView(num);
-			// CustomTableModel maintains the result set's data, e.g., if  
-			// the result set is updatable, it will update the database
-			// when the table's data is modified.  
-			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
-			CustomTable data = new CustomTable(model);
+	
+			
+			if (rs!=null) {
+				
+				// CustomTableModel maintains the result set's data, e.g., if  
+				// the result set is updatable, it will update the database
+				// when the table's data is modified.  
+				CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+				CustomTable data = new CustomTable(model);
+				//CustomTableModel model1 =  new CustomTableModel(manager.getConnection(), rs1);
+				//CustomTable data1 = new CustomTable(model1);
 
-			// register to be notified of any exceptions that occur in the model and table
-			//	model.addExceptionListener(this);
-			//	data.addExceptionListener(this);
+				// register to be notified of any exceptions that occur in the model and table
+				//	model.addExceptionListener(this);
+				//	data.addExceptionListener(this);
 
-			// Adds the table to the scrollpane.
-			// By default, a JTable does not have scroll bars.
-			AMS.addTable(data);
+				// Adds the table to the scrollpane.
+				// By default, a JTable does not have scroll bars.
+				AMS.addTable(data);
+				//AMS.addTable(data1);
+				}
+				else {
+					AMS.updateStatusBar("Unable to show top sales report..");
+					
+					
+				}
+			
 		}
 
 		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
@@ -1066,8 +1082,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 							}
 
 							AMS.updateStatusBar("Creating Top Sales Items Report...");
-							manager.selectDSView(sqlDate);
-							showTopSalesItemsReport(topnumber);
+					
+							showTopSalesItemsReport(topnumber,sqlDate);
 							return OPERATIONSUCCESS;
 
 

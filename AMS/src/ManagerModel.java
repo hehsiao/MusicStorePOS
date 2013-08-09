@@ -208,7 +208,7 @@ ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.pri
 	{
 		try
 		{	 
-
+			System.out.println(number);
 			ps = con.prepareStatement("select i.title, i.company, i.stock, ds.unitssold from item i, dsview ds where ds.upc=i.upc and rownum<=? order by (ds.unitssold) desc");
 			ps.setInt(1,number);
 		ResultSet rs = ps.executeQuery();
