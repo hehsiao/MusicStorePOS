@@ -19,6 +19,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 	private Integer currReceiptID = 0;		// Receipt ID
 	private Integer currRetID = 0;			// Return Receipt ID
 
+	private JButton cashButton;
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
 	public static final int OPERATIONFAILED = 1;
@@ -500,15 +501,19 @@ public class ClerkController implements ActionListener, ExceptionListener
 			submitButton.addActionListener(this);
 			submitButton.setActionCommand("Submit Order");
 
-			JButton continueButton = new JButton("Continue Shopping");
+			JButton continueButton = new JButton("Add more Item");
 			continueButton.setActionCommand("Continue");
 			continueButton.addActionListener(this);
 
+			cashButton = new JButton("Pay Cash");
+			cashButton.setActionCommand("cash");
+			cashButton.addActionListener(this);
+			cashButton.setVisible(false);
+			
 			// add the buttons to buttonPane
-			buttonPane.add(Box.createHorizontalGlue());
-			buttonPane.add(submitButton);
-			buttonPane.add(Box.createRigidArea(new Dimension(10,0)));
-			buttonPane.add(continueButton);
+			buttonPane.add(submitButton, BorderLayout.WEST);
+			buttonPane.add(continueButton, BorderLayout.EAST);
+			buttonPane.add(cashButton, BorderLayout.CENTER);
 
 			contentPane.add(inputPane, BorderLayout.CENTER);
 			contentPane.add(buttonPane, BorderLayout.SOUTH);
@@ -528,19 +533,13 @@ public class ClerkController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("Submit Order"))
 			{
-				if(ccNumber.getText().trim().length() != 16){
+				if(ccNumber.getText().trim().length() != 16 && ccExpiry.getText().trim().length() != 5){
 					Toolkit.getDefaultToolkit().beep();
 
 					// display a popup to inform the user of the validation error
 					JOptionPane errorPopup = new JOptionPane();
-					errorPopup.showMessageDialog(this, "Invalid CreditCard Number (16 digits)", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				if(ccExpiry.getText().trim().length() != 5){
-					Toolkit.getDefaultToolkit().beep();
-
-					// display a popup to inform the user of the validation error
-					JOptionPane errorPopup = new JOptionPane();
-					errorPopup.showMessageDialog(this, "Invalid Expiry Date (MM/YY)", "Error", JOptionPane.ERROR_MESSAGE);
+					errorPopup.showMessageDialog(this, "Invalid CreditCard Number (16 digits) & Expiry Date (MM/YY). Try again or please pay by Cash", "Error", JOptionPane.ERROR_MESSAGE);
+					cashButton.setVisible(true);
 				}
 				else{
 					purchase.customerPayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim());
@@ -551,6 +550,15 @@ public class ClerkController implements ActionListener, ExceptionListener
 				}
 			}
 
+			if (actionCommand.equals("cash"))
+			{
+				dispose();
+				// TODO: add printout on screen
+				AMS.updateStatusBar("Please pay " + purchase.getPurchaseTotal(currReceiptID) + " in cash. Thank you for Shopping with us.");
+				AMS.buttonPaneStore.setVisible(false);
+				return; 
+			}
+			
 			if (actionCommand.equals("Continue"))
 			{
 				dispose();

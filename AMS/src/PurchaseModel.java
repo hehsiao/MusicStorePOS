@@ -1,5 +1,8 @@
 
+
 import java.sql.*; 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +37,29 @@ public class PurchaseModel
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
 	}
+	
+	public int getOutstandingOrder(){
+		try
+		{	
+			ps = con.prepareStatement("select count(*) from purchase where expecteddate IS NOT NULL and delivereddate IS NULL");
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+			{
+				System.out.println("Outstanding orders " + rs.getInt(1));
+				return rs.getInt(1);
+			}
+			return 0; // return negative number if error
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
 
+			return 0; 
+		}
+		
+	}
+	
 	/**
 	 * Checks and return the last ReceiptID in the Purchase table.
 	 * Returns -1 if error.
@@ -213,6 +238,42 @@ public class PurchaseModel
 		}
 	}
 
+	
+
+	public boolean customerOnlinePayNowCredit(int receiptID, String ccNumber, String ccExpiry, String date) throws ParseException {
+		try
+		{	  
+			 SimpleDateFormat fm = new SimpleDateFormat("yy/MM/dd");
+			  java.util.Date utilDate = fm.parse(date);
+			  java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+			ps = con.prepareStatement("UPDATE Purchase SET cardnum = ?, expiryDate = ?, expectedDate = ? WHERE receiptId = ?");
+			ps.setString(1, ccNumber);
+			ps.setString(2, ccExpiry);
+			ps.setInt(4,  receiptID);
+			ps.setDate(3, sqlDate);
+
+			ps.executeUpdate();
+			con.commit();
+			return true;
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+
+			try
+			{
+				con.rollback();
+				return false; 
+			}
+			catch (SQLException ex2)
+			{
+				event = new ExceptionEvent(this, ex2.getMessage());
+				fireExceptionGenerated(event);
+				return false; 
+			}
+		}
+	}
 	/*
 	 * Returns true if the item exists; false
 	 * otherwise.
@@ -674,4 +735,5 @@ public class PurchaseModel
 			return false; 
 		}
 	}
+
 }

@@ -319,14 +319,14 @@ public class ManagerModel
 			List<String> resultList = new ArrayList<String>();
 			if (what.equals("RIDwithoutDD")){
 
-				ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.deliveredDate IS NULL)");
+				ps = con.prepareStatement("SELECT p.receiptID FROM Purchase p where (p.expectedDate is NOT NULL AND p.deliveredDate IS NULL) ORDER BY p.receiptID asc");
 
 				ResultSet rs = ps.executeQuery();
 
 				while (rs.next()){
 
 					String em = rs.getString("receiptID");  
-					System.out.println(em);
+//					System.out.println(em);
 					resultList.add(em);
 				}
 
@@ -382,6 +382,7 @@ public class ManagerModel
 			return false; 
 		}
 	}
+	
 	public boolean findDate(java.sql.Date date)
 	{
 		try

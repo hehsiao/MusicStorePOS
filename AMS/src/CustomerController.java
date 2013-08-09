@@ -6,7 +6,10 @@ import javax.swing.*;
 import javax.swing.border.*; 
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class CustomerController implements ActionListener, ExceptionListener
 {
@@ -16,11 +19,13 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private PurchaseModel purchase = null;
 
 	private Integer currReceiptID = 0;
+	private Integer outstandingDelivery = 0;
 
 	// constants used for describing the outcome of an operation
 	public static final int OPERATIONSUCCESS = 0;
 	public static final int OPERATIONFAILED = 1;
-	public static final int VALIDATIONERROR = 2; 
+	public static final int VALIDATIONERROR = 2;
+	public static final int MAXPURCHASEPERDAY = 5; 
 
 	public CustomerController(AMSView AMS)
 	{
@@ -43,8 +48,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		String actionCommand = e.getActionCommand();
 
-		if (actionCommand.equals("Register Account"))
-		{
+		if (actionCommand.equals("Register Account")){
 			AMS.buttonPane.setVisible(false);
 			RegisterAccountInsertDialog iDialog = new RegisterAccountInsertDialog(AMS);
 			iDialog.pack();
@@ -53,8 +57,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			return; 
 		}
 
-		if (actionCommand.equals("Purchase Items"))
-		{
+		if (actionCommand.equals("Purchase Items")){
 			CustomerLoginDialog iDialog = new CustomerLoginDialog(AMS);
 			iDialog.pack();
 			AMS.centerWindow(iDialog);
@@ -551,9 +554,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 						Toolkit.getDefaultToolkit().beep();
 						AMS.updateStatusBar("Customer " + cid + " might have a wrong id/password combinations!");
 						return OPERATIONFAILED; 
-
 					}
-
 				}
 
 
@@ -924,6 +925,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 					// display a popup to inform the user of the validation error
 					JOptionPane errorPopup = new JOptionPane();
 					errorPopup.showMessageDialog(this, "Invalid CreditCard Number (16 digits)", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				if(ccExpiry.getText().trim().length() != 5){
 					Toolkit.getDefaultToolkit().beep();
@@ -931,13 +933,25 @@ public class CustomerController implements ActionListener, ExceptionListener
 					// display a popup to inform the user of the validation error
 					JOptionPane errorPopup = new JOptionPane();
 					errorPopup.showMessageDialog(this, "Invalid Expiry Date (MM/YY)", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
-				else{
-					purchase.customerPayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim());
-					AMS.updateStatusBar("Received payment for Purchase ID " + currReceiptID + " from credit card ending in " + ccNumber.getText().trim().substring(12));
-					AMS.buttonPane.setVisible(false);
-					dispose();
+				AMS.updateStatusBar("Received payment for Purchase ID " + currReceiptID + " from credit card ending in " + ccNumber.getText().trim().substring(12));
+				int expectedDeliveryDay = purchase.getOutstandingOrder() / 5;
+				System.out.println("date " + expectedDeliveryDay);
+				Calendar dDay = Calendar.getInstance();
+				dDay.add(Calendar.DAY_OF_YEAR, expectedDeliveryDay);
+
+				String date = new SimpleDateFormat("yy/MM/dd").format(dDay.getTime());
+				AMS.updateStatusBar("Expected date " + date);
+				AMS.buttonPane.setVisible(false);
+
+				try {
+					purchase.customerOnlinePayNowCredit(currReceiptID, ccNumber.getText().trim(), ccExpiry.getText().trim(), date);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
+				dispose();
 			}
 
 			if (actionCommand.equals("Continue"))

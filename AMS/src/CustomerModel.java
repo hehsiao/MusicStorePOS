@@ -26,9 +26,7 @@ public class CustomerModel
 			ps = con.prepareStatement("INSERT INTO customer VALUES (?,?,?,?,?)");
 
 			ps.setString(1, cid);
-
 			ps.setString(2, password);
-
 			ps.setString(3, name);
 
 			if (address != null)
@@ -80,10 +78,8 @@ public class CustomerModel
 	 */ 
 	public boolean findCustomer(String cid)
 	{
-		try
-		{	
+		try	{	
 			ps = con.prepareStatement("SELECT cid FROM customer WHERE cid = ?");
-
 			ps.setString(1, cid);
 
 			ResultSet rs = ps.executeQuery();
@@ -112,10 +108,8 @@ public class CustomerModel
 	 */ 
 	public String authenticateCustomer(String cid, String pwd)
 	{
-		try
-		{	
+		try	{	
 			ps = con.prepareStatement("SELECT name FROM customer WHERE cid = ? AND password = ?");
-
 			ps.setString(1, cid);
 			ps.setString(2, pwd);
 
