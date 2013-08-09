@@ -158,13 +158,13 @@ public class PurchaseModel
 	 * @param ccexpirydate
 	 * @return true if successful
 	 */
-	public boolean CustomerPayNowCredit(int cid, int ccnumber, int ccexpirydate){
+	public boolean CustomerPayNowCredit(int receiptID, int ccnumber, int ccexpirydate){
 		try
 		{	  
-			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE cid = ?");
+			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE receiptId = ?");
 			ps.setInt(1, ccnumber);
 			ps.setInt(2, ccexpirydate);
-			ps.setInt(3,  cid);
+			ps.setInt(3,  receiptID);
 			ps.executeUpdate();
 			con.commit();
 			return true;
