@@ -708,7 +708,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 		private void showDailySalesReport(java.sql.Date date)
 		{
 			//ResultSet rs = manager.showResultSet(date);
-			ResultSet rs = manager.showResultSet(date);
+			manager.selectDSView(date);
+			ResultSet rs = manager.selectTotalCategoryView();
+			
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
 			// when the table's data is modified.  
@@ -781,7 +783,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					
 					//date=DATE.fromText(arg0, arg1, arg2);
 
-					DateFormat format = new SimpleDateFormat("yy-mm-dd");
+					DateFormat format = new SimpleDateFormat("YY-MM-DD");
 					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 					System.out.println("Current Time: "+utilDate);
 				    utilDate = format.parse(pd);//if wrong format, "invalid format"
@@ -979,10 +981,10 @@ public class ManagerController implements ActionListener, ExceptionListener
 			}
 		}
 		
-		private void showTopSalesItemsReport(java.sql.Date date)
+		private void showTopSalesItemsReport(int num)
 		{
 			
-			ResultSet rs = manager.showResultSet(date);
+			ResultSet rs = manager.selectTOPView(num);
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
 			// when the table's data is modified.  
@@ -1010,7 +1012,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 						try
 						{
 							Date utilDate = new Date();
-							 java.sql.Date sqlDate;
+							 java.sql.Date sqlDate = null;
+							 int topnumber;
 
 							if (purchaseDate.getText().trim().length() != 0)
 							{
@@ -1024,7 +1027,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 								
 								//date=DATE.fromText(arg0, arg1, arg2);
 
-								DateFormat format = new SimpleDateFormat("yy-mm-dd");
+								DateFormat format = new SimpleDateFormat("YY-MM-DD");
 								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 								System.out.println("Current Time: "+utilDate);
 							    utilDate = format.parse(pd);//if wrong format, "invalid format"
@@ -1041,27 +1044,23 @@ public class ManagerController implements ActionListener, ExceptionListener
 									System.out.println("BYE");
 								}
 							}
+							
+							if (topSalesItem.getText().trim().length()!=0)
+							{
+								topnumber = Integer.parseInt(topSalesItem.getText());
+							}
+							
 							else
 							{
 								return VALIDATIONERROR; 
 							}
 
 							AMS.updateStatusBar("Creating Top Sales Items Report...");
-							showTopSalesItemsReport(sqlDate);
+							manager.selectDSView(sqlDate);
+							showTopSalesItemsReport(topnumber);
 							return OPERATIONSUCCESS;
 
 
-							//						if (manager.findRID(1))//stub
-							//						{
-							//							AMS.updateStatusBar("Operation successful.");
-							//							return OPERATIONSUCCESS; 
-							//						}
-							//						else
-							//						{
-							//							Toolkit.getDefaultToolkit().beep();
-							//							AMS.updateStatusBar("Operation failed.");
-							//							return OPERATIONFAILED; 
-							//						}
 
 						}
 						catch (NumberFormatException ex)

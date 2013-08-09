@@ -152,9 +152,31 @@ public class ManagerModel
 			ps.executeQuery();
 
 			ps = con.prepareStatement("Select * from DSView");
-	//fix later TODO: put in another function to return the second rs	
+			ResultSet rs = ps.executeQuery();
+
+			
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
+	
+	//called after selectDSView
+	public ResultSet selectTotalCategoryView()
+	{
+		try
+		{	 
+
 			ps = con.prepareStatement("select m.category,sum(m.unitssold)as unitsoldcategory,sum(m.totalvalue)as totalVcategory from dsview m group by m.category;");
 			ResultSet rs = ps.executeQuery();
+
 
 			return rs; 
 		}
@@ -167,6 +189,14 @@ public class ManagerModel
 			return null; 
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//called after selected dailysales view
 	public ResultSet selectTOPView(int number)
