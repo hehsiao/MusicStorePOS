@@ -482,7 +482,7 @@ public class PurchaseController implements ActionListener, ExceptionListener
 			{
 				if (validateInsert() != VALIDATIONERROR)
 				{
-					//dispose();
+					dispose();
 				}
 				else
 				{
@@ -738,7 +738,8 @@ public class PurchaseController implements ActionListener, ExceptionListener
 						// this exception is thrown when a string 
 						// cannot be converted to a number
 						return VALIDATIONERROR; 
-					} catch (SQLException e) {
+					} 
+					catch (SQLException e) {
 						e.printStackTrace();
 					return VALIDATIONERROR;
 					}
@@ -768,7 +769,6 @@ public class PurchaseController implements ActionListener, ExceptionListener
 				// cannot be converted to a number
 				return VALIDATIONERROR; 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return VALIDATIONERROR;
 			}
@@ -788,6 +788,12 @@ public class PurchaseController implements ActionListener, ExceptionListener
 		// Given the purchase date and number of top sales items this field automatically retrieves all the information for the sales report
 		private JTextArea topSalesItemReport = new JTextArea(25, 50);
 
+		JTextField itemUPC = new JTextField(10);
+		JTextField itemQuantity = new JTextField(10);
+		JTextField itemPrice = new JTextField(10);
+		JTextField itemType = new JTextField(10);
+		JTextField itemCategory = new JTextField(10);
+		
 		/*
 		 * Constructor. Creates the dialog's GUI.
 		 */
@@ -918,27 +924,27 @@ public class PurchaseController implements ActionListener, ExceptionListener
 		}
 
 		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
-		//		/*
-		//		 * Validates the text fields in AddItemsDialog and then
-		//		 * calls purchase.addItem() if the fields are valid.
-		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
-		//		 * OPERATIONFAILED, VALIDATIONERROR.
-		//		 */ 
-		//		private int validateInsert()
-		//		{
-		//			try
-		//			{
-		//				Integer cid;
-		//				String password;
-		//				String name;
-		//				String address;
-		//				Integer phone;
-		//
-		//				if (itemUPC.getText().trim().length() != 0)
-		//				{
-		//					cid = Integer.valueOf(itemUPC.getText().trim());
-		//
-		//					// check for duplicates
+				/*
+				 * Validates the text fields in AddItemsDialog and then
+				 * calls purchase.addItem() if the fields are valid.
+				 * Returns the operation status, which is one of OPERATIONSUCCESS, 
+				 * OPERATIONFAILED, VALIDATIONERROR.
+				 */ 
+				private int validateInsert()
+				{
+					try
+					{
+						Integer cid;
+						String password;
+						String name;
+						String address;
+						Integer phone;
+		
+						if (itemUPC.getText().trim().length() != 0)
+						{
+							cid = Integer.valueOf(itemUPC.getText().trim());
+		
+							// check for duplicates
 		//					if (purchase.findItem(cid.intValue()))
 		//					{
 		//						Toolkit.getDefaultToolkit().beep();
