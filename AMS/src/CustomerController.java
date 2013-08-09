@@ -318,7 +318,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 				String address;
 				Integer phone;
 
-				if (customerID.getText().trim().length() == 0 && customerID.getText().trim().length() <= 8)
+				if (customerID.getText().trim().length() > 0 && customerID.getText().trim().length() <= 8)
 				{
 					cid = customerID.getText().trim();
 
@@ -400,7 +400,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	 */
 	class CustomerLoginDialog extends JDialog implements ActionListener
 	{
-		private JTextField customerID = new JTextField(4);
+		private JTextField customerID = new JTextField(8);
 		private JPasswordField customerPW = new JPasswordField(15);
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -1193,6 +1193,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			purchase.addItemToPurchase(upc, quantity, currReceiptID);
 		else
 			purchase.updateItemToPurchase(upc, quantity, currReceiptID);
+		item.sellItem(upc, quantity);
 	}
 
 	private void labelTextField(String labelName, JTextField fieldName, JLabel label,  JPanel inputPane, GridBagLayout gb,
