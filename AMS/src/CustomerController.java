@@ -15,7 +15,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	private ItemModel item = null;
 	private PurchaseModel purchase = null;
 
-	private int currReceiptID = 0;
+	private Integer currReceiptID = 0;
 	private JScrollPane shoppingCart;
 	// Virtual Cart
 	class CartItem{
@@ -850,6 +850,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 			if (actionCommand.equals("Continue"))
 			{
 				dispose();
+				AMS.updateStatusBar(null);
 			}
 		}
 	}	// end CheckoutDialog
@@ -861,7 +862,7 @@ public class CustomerController implements ActionListener, ExceptionListener
 	{
 		private JTextField ccNumber = new JTextField(16);
 		private JTextField ccExpiry = new JTextField(4);
-		private JTextField cid = new JTextField(10);
+		private JTextField receiptID = new JTextField(10);
 
 		/*
 		 * Constructor. Creates the dialog's GUI.
@@ -929,13 +930,14 @@ public class CustomerController implements ActionListener, ExceptionListener
 
 			if (actionCommand.equals("Submit Order"))
 			{
-				purchase.CustomerPayNowCredit(Integer.parseInt((String) cid.getSelectedText()), Integer.parseInt((String) ccNumber.getSelectedText()), Integer.parseInt((String) ccExpiry.getSelectedText()));
+				purchase.CustomerPayNowCredit(Integer.parseInt((String) receiptID.getSelectedText()), Integer.parseInt((String) ccNumber.getSelectedText()), Integer.parseInt((String) ccExpiry.getSelectedText()));
 				dispose();
 			}
 
 			if (actionCommand.equals("Continue"))
 			{
 				dispose();
+				AMS.updateStatusBar(null);
 			}
 		}
 	}	// end CreditCardtDialog
@@ -1214,15 +1216,5 @@ public class CustomerController implements ActionListener, ExceptionListener
 		shoppingCart.setViewportView(data);
 	}
 
-	public void test(){
-		addToCart(1,2);
-		addToCart(2,3);
 
-		displayPurchaseDetail(19);
-		AMS.clearStatusBar();
-		displayPurchaseDetail(17);
-		int receiptID = purchase.createPurchaseOrder().intValue();
-
-		System.out.println(purchase.addMultipleItemToPurchase(vCart, receiptID));
-	}
 }

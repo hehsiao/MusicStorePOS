@@ -33,8 +33,6 @@ public class PurchaseModel
 	public PurchaseModel()
 	{
 		con = AMSOracleConnection.getInstance().getConnection();
-		System.out.println(getPurchaseTotal(17));
-		System.out.println(getPurchaseTotal(19));
 	}
 
 	/**
@@ -49,16 +47,18 @@ public class PurchaseModel
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
 			{
+				// TODO: remove
+				System.out.println("Current Order: " + rs.getInt(1));
 				return rs.getInt(1);
 			}
-			return -1; // return negative number if error
+			return null; // return negative number if error
 		}
 		catch (SQLException ex)
 		{
 			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
 			fireExceptionGenerated(event);
 
-			return -1; 
+			return null; 
 		}
 	}
 
@@ -108,7 +108,7 @@ public class PurchaseModel
 			try
 			{
 				con.rollback();
-				return -1; 
+				return null; 
 			}
 			catch (SQLException ex2)
 			{
@@ -140,7 +140,7 @@ public class PurchaseModel
 			try
 			{
 				con.rollback();
-				return -1; 
+				return null; 
 			}
 			catch (SQLException ex2)
 			{
@@ -158,13 +158,13 @@ public class PurchaseModel
 	 * @param ccexpirydate
 	 * @return true if successful
 	 */
-	public boolean CustomerPayNowCredit(int cid, int ccnumber, int ccexpirydate){
+	public boolean CustomerPayNowCredit(int receiptID, int ccnumber, int ccexpirydate){
 		try
 		{	  
-			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE cid = ?");
+			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE receiptId = ?");
 			ps.setInt(1, ccnumber);
 			ps.setInt(2, ccexpirydate);
-			ps.setInt(3,  cid);
+			ps.setInt(3,  receiptID);
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -295,46 +295,6 @@ public class PurchaseModel
 	}
 
 
-	/**
-	 * addItemToPurchase adds items with receiptID to purchaseItem Table
-	 * @param ArrayList vCart containing the items requested
-	 * @param receiptID
-	 * @return true if successful
-	 */
-	public boolean addMultipleItemToPurchase(ArrayList<CustomerController.CartItem> vCart, int receiptID){
-		try
-		{	 
-			for(CustomerController.CartItem item: vCart){
-				ps = con.prepareStatement("INSERT INTO PurchaseItem(receiptID, upc, quantity) values(?,?,?)");
-				ps.setInt(1, receiptID);
-
-				ps.setInt(2, item.upc);
-				ps.setInt(3, item.quantity);
-				System.out.println("table for " + item.upc + " Q:" + item.quantity );
-
-				ps.executeUpdate();
-			}
-			con.commit();
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
-			fireExceptionGenerated(event);
-
-			try
-			{
-				con.rollback();
-				return false; 
-			}
-			catch (SQLException ex2)
-			{
-				event = new ExceptionEvent(this, ex2.getMessage());
-				fireExceptionGenerated(event);
-				return false; 
-			}
-		}
-	}
 
 	/**
 	 * getPurchaseDetail returns the items purchased in the receiptID provided

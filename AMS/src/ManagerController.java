@@ -641,7 +641,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(yy-MM-dd): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -707,6 +707,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		private void showDailySalesReport(java.sql.Date date) throws SQLException
 		{
+<<<<<<< HEAD
 			ResultSet rs = manager.selectDSView(date);
 			while (rs.next())
 			{
@@ -732,8 +733,33 @@ public class ManagerController implements ActionListener, ExceptionListener
 //			// Adds the table to the scrollpane.
 //			// By default, a JTable does not have scroll bars.
 //			AMS.addTable(data);
+=======
+			//ResultSet rs = manager.showResultSet(date);
+			manager.selectDSView(date);
+			ResultSet rs = manager.selectTotalCategoryView();
+			
+			if (rs!=null) {
+			
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+>>>>>>> 65724e1482714720ea9becf4c85af98001528247
 
 
+<<<<<<< HEAD
+=======
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
+			}
+			else {
+				AMS.updateStatusBar("Unable to show daily sales report..");
+				
+				
+			}
+>>>>>>> 65724e1482714720ea9becf4c85af98001528247
 		}
 
 		/*
@@ -819,7 +845,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				AMS.updateStatusBar("Creating Daily Sales Report...");
 				showDailySalesReport(sqlDate);
-				System.out.println("YO");
+
 				return OPERATIONSUCCESS;
 
 
@@ -992,11 +1018,19 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}	
 			}
 		}
+<<<<<<< HEAD
 
 		private void showTopSalesItemsReport(java.sql.Date date)
 		{
 
 			ResultSet rs = manager.showResultSet(date);
+=======
+		
+		private void showTopSalesItemsReport(int num)
+		{
+			
+			ResultSet rs = manager.selectTOPView(num);
+>>>>>>> 65724e1482714720ea9becf4c85af98001528247
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
 			// when the table's data is modified.  
@@ -1028,6 +1062,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				if (purchaseDate.getText().trim().length() != 0)
 				{
+<<<<<<< HEAD
 					String pd = purchaseDate.getText().trim();
 					System.out.println(pd);
 
@@ -1054,6 +1089,70 @@ public class ManagerController implements ActionListener, ExceptionListener
 					{
 						System.out.println("BYE");
 					}
+=======
+						try
+						{
+							Date utilDate = new Date();
+							 java.sql.Date sqlDate = null;
+							 int topnumber;
+
+							if (purchaseDate.getText().trim().length() != 0)
+							{
+								String pd = purchaseDate.getText().trim();
+								System.out.println(pd);
+
+								if (pd.length() != 8) {
+									return VALIDATIONERROR;
+								}
+								
+								
+								//date=DATE.fromText(arg0, arg1, arg2);
+
+								DateFormat format = new SimpleDateFormat("yy-MM-dd");
+								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+								System.out.println("Current Time: "+utilDate);
+							    utilDate = format.parse(pd);//if wrong format, "invalid format"
+								System.out.println("Current Time: "+utilDate);
+							  			
+							
+							    sqlDate= new java.sql.Date(utilDate.getTime());
+							    System.out.println("utilDate:" + utilDate);
+							    System.out.println("sqlDate:" + sqlDate);
+							   
+								// check for duplicates
+								if (manager.findDate(sqlDate))
+								{
+									System.out.println("BYE");
+								}
+							}
+							
+							if (topSalesItem.getText().trim().length()!=0)
+							{
+								topnumber = Integer.parseInt(topSalesItem.getText());
+							}
+							
+							else
+							{
+								return VALIDATIONERROR; 
+							}
+
+							AMS.updateStatusBar("Creating Top Sales Items Report...");
+							manager.selectDSView(sqlDate);
+							showTopSalesItemsReport(topnumber);
+							return OPERATIONSUCCESS;
+
+
+
+						}
+						catch (NumberFormatException ex)
+						{
+							// this exception is thrown when a string 
+							// cannot be converted to a number
+							return VALIDATIONERROR; 
+						}
+
+				
+>>>>>>> 65724e1482714720ea9becf4c85af98001528247
 				}
 				else
 				{
