@@ -6,6 +6,7 @@ INSERT into Item values (2, 'Random Access Memories', 'CD', 'Electric', 'Daft Li
 INSERT into LeadSinger values (2, 'Daft Punk');
 INSERT into HasSong values (2, 'Get Lucky');
 INSERT into HasSong values (2, 'Instant Crush');
+INSERT into HasSong values (2, 'Contact');
 INSERT into Customer(cid,password,name,address,phone) values (1,'1234', 'Matthew', '100 Hastings', '6045551234' );
 INSERT into Customer(cid,password,name,address,phone) values (2, '2345', 'Risa', '100 Main', '6045551235' );
 INSERT into Customer(cid,password,name,address,phone) values (3, '1334', 'Henry', '100 Vancouver', '6045551254' );
@@ -50,3 +51,9 @@ INSERT into LeadSinger values (7, 'Baz Luhrmann');
 INSERT into HasSong values (7, 'Your Song');
 INSERT into HasSong values (7, 'Come What May');
 INSERT into HasSong values (7, 'Hindi Sad Diamonds');
+INSERT into ReturnItem values (1, 1, 3);
+INSERT into ReturnItem values (2, 2, 3);
+INSERT into ReturnItem values (3, 3, 3);
+INSERT into Return values (1, '900809', 1);
+INSERT into Return values (2, '880704', 2);
+INSERT into Return values (3, '130808', 3);
