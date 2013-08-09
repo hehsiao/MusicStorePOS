@@ -139,19 +139,19 @@ public class CustomerModel
 	}
 	
 	/**
-	 * CustomerPayNow updates item with receiptID to purchaseItem Table
-	 * @param upc
-	 * @param quantity
-	 * @param receiptID
+	 * CustomerPayNow updates a customer purchase with receiptID to purchaseItem Table
+	 * @param cid
+	 * @param ccnumber
+	 * @param ccexpirydate
 	 * @return true if successful
 	 */
-	public boolean CustomerPayNow(int upc, int quantity, int receiptID){
+	public boolean CustomerPayNowCredit(int cid, int ccnumber, int ccexpirydate){
 		try
 		{	  
-			ps = con.prepareStatement("UPDATE PurchaseItem SET quantity = ? WHERE receiptID = ? AND upc = ?");
-			ps.setInt(2, receiptID);
-			ps.setInt(3, upc);
-			ps.setInt(1, quantity);
+			ps = con.prepareStatement("UPDATE PurchaseItem SET card# = ?, expiryDate =? WHERE cid = ?");
+			ps.setInt(1, ccnumber);
+			ps.setInt(2, ccexpirydate);
+			ps.setInt(3,  cid);
 			ps.executeUpdate();
 			con.commit();
 			return true;
@@ -175,6 +175,7 @@ public class CustomerModel
 		}
 	}
 
+	
 	/*
 	 * Returns the database connection used by this customer model
 	 */
