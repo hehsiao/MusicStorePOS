@@ -641,7 +641,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 			inputPane.setLayout(gb);
 
 			// create and place purchase date label
-			JLabel label = new JLabel("Sales Date(YY-MM-DD): ", SwingConstants.RIGHT);	    
+			JLabel label = new JLabel("Sales Date(yy-MM-dd): ", SwingConstants.RIGHT);	    
 			c.gridwidth = GridBagConstraints.RELATIVE;
 			c.insets = new Insets(0, 0, 0, 5);
 			c.anchor = GridBagConstraints.EAST;
@@ -783,7 +783,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 					
 					//date=DATE.fromText(arg0, arg1, arg2);
 
-					DateFormat format = new SimpleDateFormat("YY-MM-DD");
+					DateFormat format = new SimpleDateFormat("yy-MM-dd");
 					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 					System.out.println("Current Time: "+utilDate);
 				    utilDate = format.parse(pd);//if wrong format, "invalid format"
@@ -1027,7 +1027,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 								
 								//date=DATE.fromText(arg0, arg1, arg2);
 
-								DateFormat format = new SimpleDateFormat("YY-MM-DD");
+								DateFormat format = new SimpleDateFormat("yy-MM-dd");
 								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 								System.out.println("Current Time: "+utilDate);
 							    utilDate = format.parse(pd);//if wrong format, "invalid format"
