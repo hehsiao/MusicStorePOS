@@ -586,7 +586,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 					String itemlist = manager.findInfo(Integer.valueOf(id), "items");
 					purchaseItem.setText(itemlist);
-					
+
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -705,23 +705,35 @@ public class ManagerController implements ActionListener, ExceptionListener
 			});
 		}	
 
-		private void showDailySalesReport(java.sql.Date date)
+		private void showDailySalesReport(java.sql.Date date) throws SQLException
 		{
-			//ResultSet rs = manager.showResultSet(date);
-			ResultSet rs = manager.showResultSet(date);
-			// CustomTableModel maintains the result set's data, e.g., if  
-			// the result set is updatable, it will update the database
-			// when the table's data is modified.  
-			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
-			CustomTable data = new CustomTable(model);
+			ResultSet rs = manager.selectDSView(date);
+			while (rs.next())
+			{
+				String upc = rs.getString(1);
+				String category = rs.getString(2);
+				float price = rs.getFloat(3);
+//				int sales = rs.getInt(4);
+//				float total = rs.getFloat(5);
+//				
+//				System.out.println("results" + upc + "\t" + category + "\t" + price + "\t" + sales + "\t" + total);
+				System.out.println("results" + upc + "\t" + category + "\t" + price);
+			}
+//			// CustomTableModel maintains the result set's data, e.g., if  
+//			// the result set is updatable, it will update the database
+//			// when the table's data is modified.  
+//			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+//			CustomTable data = new CustomTable(model);
+//
+//			// register to be notified of any exceptions that occur in the model and table
+//			//	model.addExceptionListener(this);
+//			//	data.addExceptionListener(this);
+//
+//			// Adds the table to the scrollpane.
+//			// By default, a JTable does not have scroll bars.
+//			AMS.addTable(data);
 
-			// register to be notified of any exceptions that occur in the model and table
-			//	model.addExceptionListener(this);
-			//	data.addExceptionListener(this);
 
-			// Adds the table to the scrollpane.
-			// By default, a JTable does not have scroll bars.
-			AMS.addTable(data);
 		}
 
 		/*
@@ -750,6 +762,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 					e1.printStackTrace();
 				} catch (ParseException e1) {
 					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}	
 			}
 		}
@@ -762,12 +777,12 @@ public class ManagerController implements ActionListener, ExceptionListener
 		 * OPERATIONFAILED, VALIDATIONERROR.
 		 */ 
 		@SuppressWarnings("deprecation")
-		private int validateInsert() throws ParseException
+		private int validateInsert() throws ParseException, SQLException
 		{
 			try
 			{
 				Date utilDate = new Date();
-				 java.sql.Date sqlDate;
+				java.sql.Date sqlDate;
 
 				if (purchaseDate.getText().trim().length() != 0)
 				{
@@ -777,21 +792,20 @@ public class ManagerController implements ActionListener, ExceptionListener
 					if (pd.length() != 8) {
 						return VALIDATIONERROR;
 					}
-					
-					
+
+
 					//date=DATE.fromText(arg0, arg1, arg2);
 
-					DateFormat format = new SimpleDateFormat("yy-mm-dd");
+					DateFormat format = new SimpleDateFormat("yy-MM-dd");
 					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 					System.out.println("Current Time: "+utilDate);
-				    utilDate = format.parse(pd);//if wrong format, "invalid format"
+					utilDate = format.parse(pd);//if wrong format, "invalid format"
 					System.out.println("Current Time: "+utilDate);
-				  			
-				
-				    sqlDate= new java.sql.Date(utilDate.getTime());
-				    System.out.println("utilDate:" + utilDate);
-				    System.out.println("sqlDate:" + sqlDate);
-				   
+
+					sqlDate= new java.sql.Date(utilDate.getTime());
+					System.out.println("utilDate:" + utilDate);
+					System.out.println("sqlDate:" + sqlDate);
+
 					// check for duplicates
 					if (manager.findDate(sqlDate))
 					{
@@ -978,10 +992,10 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}	
 			}
 		}
-		
+
 		private void showTopSalesItemsReport(java.sql.Date date)
 		{
-			
+
 			ResultSet rs = manager.showResultSet(date);
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
@@ -1005,74 +1019,74 @@ public class ManagerController implements ActionListener, ExceptionListener
 		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		//		 * OPERATIONFAILED, VALIDATIONERROR.
 		//		 */ 
-				private int validateInsert() throws ParseException
+		private int validateInsert() throws ParseException
+		{
+			try
+			{
+				Date utilDate = new Date();
+				java.sql.Date sqlDate;
+
+				if (purchaseDate.getText().trim().length() != 0)
 				{
-						try
-						{
-							Date utilDate = new Date();
-							 java.sql.Date sqlDate;
+					String pd = purchaseDate.getText().trim();
+					System.out.println(pd);
 
-							if (purchaseDate.getText().trim().length() != 0)
-							{
-								String pd = purchaseDate.getText().trim();
-								System.out.println(pd);
-
-								if (pd.length() != 8) {
-									return VALIDATIONERROR;
-								}
-								
-								
-								//date=DATE.fromText(arg0, arg1, arg2);
-
-								DateFormat format = new SimpleDateFormat("yy-mm-dd");
-								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
-								System.out.println("Current Time: "+utilDate);
-							    utilDate = format.parse(pd);//if wrong format, "invalid format"
-								System.out.println("Current Time: "+utilDate);
-							  			
-							
-							    sqlDate= new java.sql.Date(utilDate.getTime());
-							    System.out.println("utilDate:" + utilDate);
-							    System.out.println("sqlDate:" + sqlDate);
-							   
-								// check for duplicates
-								if (manager.findDate(sqlDate))
-								{
-									System.out.println("BYE");
-								}
-							}
-							else
-							{
-								return VALIDATIONERROR; 
-							}
-
-							AMS.updateStatusBar("Creating Top Sales Items Report...");
-							showTopSalesItemsReport(sqlDate);
-							return OPERATIONSUCCESS;
+					if (pd.length() != 8) {
+						return VALIDATIONERROR;
+					}
 
 
-							//						if (manager.findRID(1))//stub
-							//						{
-							//							AMS.updateStatusBar("Operation successful.");
-							//							return OPERATIONSUCCESS; 
-							//						}
-							//						else
-							//						{
-							//							Toolkit.getDefaultToolkit().beep();
-							//							AMS.updateStatusBar("Operation failed.");
-							//							return OPERATIONFAILED; 
-							//						}
+					//date=DATE.fromText(arg0, arg1, arg2);
 
-						}
-						catch (NumberFormatException ex)
-						{
-							// this exception is thrown when a string 
-							// cannot be converted to a number
-							return VALIDATIONERROR; 
-						}
+					DateFormat format = new SimpleDateFormat("yy-mm-dd");
+					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+					System.out.println("Current Time: "+utilDate);
+					utilDate = format.parse(pd);//if wrong format, "invalid format"
+					System.out.println("Current Time: "+utilDate);
 
-				
+
+					sqlDate= new java.sql.Date(utilDate.getTime());
+					System.out.println("utilDate:" + utilDate);
+					System.out.println("sqlDate:" + sqlDate);
+
+					// check for duplicates
+					if (manager.findDate(sqlDate))
+					{
+						System.out.println("BYE");
+					}
 				}
+				else
+				{
+					return VALIDATIONERROR; 
+				}
+
+				AMS.updateStatusBar("Creating Top Sales Items Report...");
+				showTopSalesItemsReport(sqlDate);
+				return OPERATIONSUCCESS;
+
+
+				//						if (manager.findRID(1))//stub
+				//						{
+				//							AMS.updateStatusBar("Operation successful.");
+				//							return OPERATIONSUCCESS; 
+				//						}
+				//						else
+				//						{
+				//							Toolkit.getDefaultToolkit().beep();
+				//							AMS.updateStatusBar("Operation failed.");
+				//							return OPERATIONFAILED; 
+				//						}
+
+			}
+			catch (NumberFormatException ex)
+			{
+				// this exception is thrown when a string 
+				// cannot be converted to a number
+				return VALIDATIONERROR; 
+			}
+
+
+		}
 	}	// end TopSalesItemsReportDialog
 }
 
