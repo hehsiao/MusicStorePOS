@@ -711,6 +711,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 			manager.selectDSView(date);
 			ResultSet rs = manager.selectTotalCategoryView();
 			
+			if (rs!=null) {
+			
 			// CustomTableModel maintains the result set's data, e.g., if  
 			// the result set is updatable, it will update the database
 			// when the table's data is modified.  
@@ -724,6 +726,12 @@ public class ManagerController implements ActionListener, ExceptionListener
 			// Adds the table to the scrollpane.
 			// By default, a JTable does not have scroll bars.
 			AMS.addTable(data);
+			}
+			else {
+				AMS.updateStatusBar("Unable to show daily sales report..");
+				
+				
+			}
 		}
 
 		/*
@@ -807,7 +815,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				AMS.updateStatusBar("Creating Daily Sales Report...");
 				showDailySalesReport(sqlDate);
-				System.out.println("YO");
+
 				return OPERATIONSUCCESS;
 
 
