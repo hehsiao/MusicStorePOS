@@ -1,5 +1,4 @@
 # AMS Music Store Point of Sale System
-===============
 
 ## Project Summary
 
