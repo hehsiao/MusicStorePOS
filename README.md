@@ -1,7 +1,11 @@
-AMS Music Store Point of Sale System
+# AMS Music Store Point of Sale System
 ===============
 
-Project Description
+## Project Summary
+
+Design and implement a database system using Java and SQL database to allow Allegro Music Store to sell products, manage their inventory, and produce reports.  
+
+## Project Description
 
 The database system that you are to implement in this project is for a large music retail company with multiple stores and an on-line outlet (like Virgin or Music World), called herein Allegro Music Store (or AMS), or simply "the company". The rest of this section provides a detailed description of the basic operations which the users of the database system expect to perform. 
 
