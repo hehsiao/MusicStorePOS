@@ -139,6 +139,37 @@ public class ManagerModel
 	}
 
 	
+
+	public ResultSet selectDailyView(String date)
+	{
+		try
+		{	
+			String query1 = "drop view Dsview";
+			ps = con.prepareStatement(query1);
+			ps.executeQuery();
+			System.out.println(date);
+			String query = "create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='" +
+				date+ "' Group by i.category, i.upc, i.price";
+			ps = con.prepareStatement(query);
+
+			ps.executeQuery();
+
+			ps = con.prepareStatement("select * from ((Select * from DSView order by category) JOIN (select m.category,sum(m.unitssold) as unitsoldcategory,sum(m.totalvalue)as totalVcategory from dsview m group by m.category) on 1=1) ");
+			ResultSet rs = ps.executeQuery();
+
+			
+			return rs; 
+		}
+		catch (SQLException ex)
+		{
+			ExceptionEvent event = new ExceptionEvent(this, ex.getMessage());
+			fireExceptionGenerated(event);
+			// no need to commit or rollback since it is only a query
+
+			return null; 
+		}
+	}
+	
 	public ResultSet selectDSView(String date)
 	{
 		try
@@ -149,17 +180,12 @@ public class ManagerModel
 			System.out.println(date);
 			String query = "create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YYYY-MM-DD')='" +
 				date+ "' Group by i.category, i.upc, i.price";
-			//hardcoded matching date..
 			ps = con.prepareStatement(query);
-//doesn't work:
-//ps = con.prepareStatement("create view DSview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.date,'YYYY-MM-DD')=to_char(?,'YYYY-MM-DD') Group by i.category, i.upc, i.price");
-//ps.setDate(1,date);
-//query works:
-//create view managerview as select i.upc, i.category, i.price as UnitPrice, sum(pi.quantity) as UnitsSold, sum((pi.quantity)*(i.price))as TotalValue from Item i, purchase p, purchaseitem pi WHERE pi.upc=i.upc and pi.receiptID=p.receiptID and to_char(p.pdate, 'YY-MM-DD')='13-08-08' Group by i.category, i.upc, i.price;
-			
+
 			ps.executeQuery();
 
-			ps = con.prepareStatement("Select * from DSView");
+			ps = con.prepareStatement("Select * from DSView order by category");
+
 			ResultSet rs = ps.executeQuery();
 
 			
@@ -176,7 +202,11 @@ public class ManagerModel
 	}
 	
 	
-	//called after selectDSView
+	
+	
+	
+	
+	//called after selectDSView // can delete after
 	public ResultSet selectTotalCategoryView()
 	{
 		try

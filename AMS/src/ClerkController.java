@@ -52,7 +52,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			AMS.buttonPane.setVisible(false);
 			AMS.buttonPaneStore.setVisible(true);
 			currReceiptID  = purchase.createPurchaseOrder();
-			AMS.updateStatusBar("");
+			AMS.clearStatusBar();
 			AMS.updateStatusBar("Hi Clerk, What would your customer like to purchase today?");
 			return; 
 		}
@@ -65,7 +65,7 @@ public class ClerkController implements ActionListener, ExceptionListener
 			// ENABLE BUTTONS AFTER RECEIPT ID IS ENTERED
 			AMS.addToReturn.setEnabled(false);
 			AMS.checkoutReturn.setEnabled(false);
-			AMS.updateStatusBar("");
+			AMS.clearStatusBar();
 			AMS.updateStatusBar("Please enter Reciept ID for return by pressing Search Return");
 			return; 
 		}

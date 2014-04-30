@@ -29,7 +29,6 @@ public class DebugModel
 	{
 		try
 		{	 
-			System.out.println(table);
 			query = "SELECT * FROM " + table;
 			ps = con.prepareStatement(query, 
 					ResultSet.TYPE_SCROLL_INSENSITIVE,

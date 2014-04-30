@@ -110,6 +110,7 @@ public class LoginWindow extends JDialog implements ActionListener
 		{
 			// if the username and password are valid, 
 			// get rid of the login window
+
 			dispose();     
 		}
 		else

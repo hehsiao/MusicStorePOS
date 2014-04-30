@@ -435,60 +435,6 @@ public class ManagerController implements ActionListener, ExceptionListener
 			gb.setConstraints(purchaseReceiptID, c);
 			inputPane.add(purchaseReceiptID);
 
-
-//
-//			// create and place purchase date label
-//			label = new JLabel("Date of Purchase: ", SwingConstants.RIGHT);
-//			c.gridwidth = GridBagConstraints.RELATIVE;
-//			c.insets = new Insets(5, 0, 0, 5);
-//			c.anchor = GridBagConstraints.EAST;
-//			gb.setConstraints(label, c);
-//			inputPane.add(label);
-//
-//			// place purchase date field
-//			c.gridwidth = GridBagConstraints.REMAINDER;
-//			c.insets = new Insets(5, 0, 0, 0);
-//			c.anchor = GridBagConstraints.WEST;
-//			purchaseDate.setEditable(false);
-//			purchaseDate.setBackground(Color.lightGray);
-//			gb.setConstraints(purchaseDate, c);
-//			inputPane.add(purchaseDate);
-//
-//			// create and place customer name label
-//			label = new JLabel("Customer Name: ", SwingConstants.RIGHT);
-//			c.gridwidth = GridBagConstraints.RELATIVE;
-//			c.insets = new Insets(5, 0, 0, 5);
-//			c.anchor = GridBagConstraints.EAST;
-//			gb.setConstraints(label, c);
-//			inputPane.add(label);
-//
-//			// place customer name field
-//			c.gridwidth = GridBagConstraints.REMAINDER;
-//			c.insets = new Insets(5, 0, 0, 0);
-//			c.anchor = GridBagConstraints.WEST;
-//			customerName.setBackground(Color.lightGray);
-//			customerName.setEditable(false);
-//			gb.setConstraints(customerName, c);
-//			inputPane.add(customerName);
-//
-//			// create and place purchase item label
-//			label = new JLabel("Item(s) Purchased: ", SwingConstants.RIGHT);
-//			c.gridwidth = GridBagConstraints.RELATIVE;
-//			c.insets = new Insets(5, 0, 0, 5);
-//			c.anchor = GridBagConstraints.EAST;
-//			gb.setConstraints(label, c);
-//			inputPane.add(label);
-//
-//			// place purchase item field
-//			c.gridwidth = GridBagConstraints.REMAINDER;
-//			c.insets = new Insets(5, 0, 0, 0);
-//			c.anchor = GridBagConstraints.WEST;
-//			purchaseItem.setBackground(Color.lightGray);
-//			purchaseItem.setEditable(false);
-//			gb.setConstraints(purchaseItem, c);
-//			inputPane.add(purchaseItem);
-//
-
 			// panel for the OK and cancel buttons
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
@@ -554,9 +500,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 			try
 			{
 				int id= Integer.parseInt((String)purchaseReceiptID.getSelectedItem());
-//
-//
-//
+
+
+
 //				// check for duplicates
 //				if (manager.findRID(id))
 //				{								
@@ -564,7 +510,7 @@ public class ManagerController implements ActionListener, ExceptionListener
 //					//	Toolkit.getDefaultToolkit().beep();
 //					//	return OPERATIONFAILED; 
 //				}
-
+//
 //
 //				else
 //				{
@@ -576,17 +522,8 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 				if (manager.setDeliveryDate( Integer.valueOf(id)))
 				{
-					AMS.updateStatusBar("ID " + Integer.valueOf(id) + " has been set as delivered");
-//
-//					String dateOfPurchase = manager.findInfo(Integer.valueOf(id), "dop");
-//					purchaseDate.setText(dateOfPurchase);
-//
-//					String cname = manager.findInfo(Integer.valueOf(id), "cname");
-//					customerName.setText(cname);
-//
-//					String itemlist = manager.findInfo(Integer.valueOf(id), "items");
-//					purchaseItem.setText(itemlist);
-
+					AMS.updateStatusBar("Purchase ID " + Integer.valueOf(id) + " is set to delivered");
+					
 					return OPERATIONSUCCESS; 
 				}
 				else
@@ -707,33 +644,33 @@ public class ManagerController implements ActionListener, ExceptionListener
 
 		private void showDailySalesReport(String date)
 		{
-			//ResultSet rs = manager.showResultSet(date);
-			ResultSet rs1 = manager.selectDSView(date);
-			ResultSet rs = manager.selectTotalCategoryView();
-
+			ResultSet rs = manager.selectDailyView(date);
+			//ResultSet rs1 = manager.selectDSView(date);
+			//ResultSet rs = manager.selectTotalCategoryView();
+			
 			if (rs!=null) {
+			
+			// CustomTableModel maintains the result set's data, e.g., if  
+			// the result set is updatable, it will update the database
+			// when the table's data is modified.  
+			CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
+			CustomTable data = new CustomTable(model);
+			//CustomTableModel model1 =  new CustomTableModel(manager.getConnection(), rs1);
+			//CustomTable data1 = new CustomTable(model1);
 
-				// CustomTableModel maintains the result set's data, e.g., if  
-				// the result set is updatable, it will update the database
-				// when the table's data is modified.  
-				CustomTableModel model = new CustomTableModel(manager.getConnection(), rs);
-				CustomTable data = new CustomTable(model);
-				CustomTableModel model1 =  new CustomTableModel(manager.getConnection(), rs1);
-				CustomTable data1 = new CustomTable(model1);
+			// register to be notified of any exceptions that occur in the model and table
+			//	model.addExceptionListener(this);
+			//	data.addExceptionListener(this);
 
-				// register to be notified of any exceptions that occur in the model and table
-				//	model.addExceptionListener(this);
-				//	data.addExceptionListener(this);
-
-				// Adds the table to the scrollpane.
-				// By default, a JTable does not have scroll bars.
-				AMS.addTable(data);
-				AMS.addTable(data1);
+			// Adds the table to the scrollpane.
+			// By default, a JTable does not have scroll bars.
+			AMS.addTable(data);
+			//AMS.addTable(data1);
 			}
 			else {
 				AMS.updateStatusBar("Unable to show daily sales report..");
-
-
+				
+				
 			}
 		}
 
@@ -780,9 +717,9 @@ public class ManagerController implements ActionListener, ExceptionListener
 			try
 			{
 				Date utilDate = new Date();
-				java.sql.Date sqlDate;
+				 java.sql.Date sqlDate;
 				String dateString;
-
+				
 				if (purchaseDate.getText().trim().length() != 0)
 				{
 					String pd = purchaseDate.getText().trim();
@@ -792,21 +729,21 @@ public class ManagerController implements ActionListener, ExceptionListener
 					if (pd.length() != 8) {
 						return VALIDATIONERROR;
 					}
-
-
+					
+					
 					//date=DATE.fromText(arg0, arg1, arg2);
 
 					DateFormat format = new SimpleDateFormat("yy-MM-dd");
 					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
 					System.out.println("Current Time: "+utilDate);
-					utilDate = format.parse(pd);//if wrong format, "invalid format"
+				    utilDate = format.parse(pd);//if wrong format, "invalid format"
 					System.out.println("Current Time: "+utilDate);
-
-
-					sqlDate= new java.sql.Date(utilDate.getTime());
-					System.out.println("utilDate:" + utilDate);
-					System.out.println("sqlDate:" + sqlDate);
-
+				  			
+				
+				    sqlDate= new java.sql.Date(utilDate.getTime());
+				    System.out.println("utilDate:" + utilDate);
+				    System.out.println("sqlDate:" + sqlDate);
+				   
 					// check for duplicates
 					if (manager.findDate(sqlDate))
 					{
@@ -993,16 +930,16 @@ public class ManagerController implements ActionListener, ExceptionListener
 				}	
 			}
 		}
-
+		
 		private void showTopSalesItemsReport(int num, java.sql.Date date)
 		{
-
-			//	ResultSet rs = manager.selectDSView(date);
+			
+		//	ResultSet rs = manager.selectDSView(date);
 			ResultSet rs = manager.selectTOPView(num);
-
-
+	
+			
 			if (rs!=null) {
-
+				
 				// CustomTableModel maintains the result set's data, e.g., if  
 				// the result set is updatable, it will update the database
 				// when the table's data is modified.  
@@ -1019,13 +956,13 @@ public class ManagerController implements ActionListener, ExceptionListener
 				// By default, a JTable does not have scroll bars.
 				AMS.addTable(data);
 				//AMS.addTable(data1);
-			}
-			else {
-				AMS.updateStatusBar("Unable to show top sales report..");
-
-
-			}
-
+				}
+				else {
+					AMS.updateStatusBar("Unable to show top sales report..");
+					
+					
+				}
+			
 		}
 
 		/** VALIDATION REQUIRED: SETTING UP UI FIRST **/
@@ -1035,71 +972,71 @@ public class ManagerController implements ActionListener, ExceptionListener
 		//		 * Returns the operation status, which is one of OPERATIONSUCCESS, 
 		//		 * OPERATIONFAILED, VALIDATIONERROR.
 		//		 */ 
-		private int validateInsert() throws ParseException
-		{
-			try
-			{
-				Date utilDate = new Date();
-				java.sql.Date sqlDate = null;
-				int topnumber;
-
-				if (purchaseDate.getText().trim().length() != 0)
+				private int validateInsert() throws ParseException
 				{
-					String pd = purchaseDate.getText().trim();
-					System.out.println(pd);
+						try
+						{
+							Date utilDate = new Date();
+							 java.sql.Date sqlDate = null;
+							 int topnumber;
 
-					if (pd.length() != 8) {
-						return VALIDATIONERROR;
-					}
+							if (purchaseDate.getText().trim().length() != 0)
+							{
+								String pd = purchaseDate.getText().trim();
+								System.out.println(pd);
+
+								if (pd.length() != 8) {
+									return VALIDATIONERROR;
+								}
+								
+								
+								//date=DATE.fromText(arg0, arg1, arg2);
+
+								DateFormat format = new SimpleDateFormat("yy-MM-dd");
+								format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+								System.out.println("Current Time: "+utilDate);
+							    utilDate = format.parse(pd);//if wrong format, "invalid format"
+								System.out.println("Current Time: "+utilDate);
+							  			
+							
+							    sqlDate= new java.sql.Date(utilDate.getTime());
+							    System.out.println("utilDate:" + utilDate);
+							    System.out.println("sqlDate:" + sqlDate);
+							   
+								// check for duplicates
+								if (manager.findDate(sqlDate))
+								{
+									System.out.println("BYE");
+								}
+							}
+							
+							if (topSalesItem.getText().trim().length()!=0)
+							{
+								topnumber = Integer.parseInt(topSalesItem.getText());
+							}
+							
+							else
+							{
+								return VALIDATIONERROR; 
+							}
+
+							AMS.updateStatusBar("Creating Top Sales Items Report...");
+					
+							showTopSalesItemsReport(topnumber,sqlDate);
+							return OPERATIONSUCCESS;
 
 
-					//date=DATE.fromText(arg0, arg1, arg2);
 
-					DateFormat format = new SimpleDateFormat("yy-MM-dd");
-					format.setTimeZone(TimeZone.getTimeZone("GMT-7"));
-					System.out.println("Current Time: "+utilDate);
-					utilDate = format.parse(pd);//if wrong format, "invalid format"
-					System.out.println("Current Time: "+utilDate);
+						}
+						catch (NumberFormatException ex)
+						{
+							// this exception is thrown when a string 
+							// cannot be converted to a number
+							return VALIDATIONERROR; 
+						}
 
-
-					sqlDate= new java.sql.Date(utilDate.getTime());
-					System.out.println("utilDate:" + utilDate);
-					System.out.println("sqlDate:" + sqlDate);
-
-					// check for duplicates
-					if (manager.findDate(sqlDate))
-					{
-						System.out.println("BYE");
-					}
+				
 				}
-
-				if (topSalesItem.getText().trim().length()!=0)
-				{
-					topnumber = Integer.parseInt(topSalesItem.getText());
-				}
-
-				else
-				{
-					return VALIDATIONERROR; 
-				}
-
-				AMS.updateStatusBar("Creating Top Sales Items Report...");
-
-				showTopSalesItemsReport(topnumber,sqlDate);
-				return OPERATIONSUCCESS;
-
-
-
-			}
-			catch (NumberFormatException ex)
-			{
-				// this exception is thrown when a string 
-				// cannot be converted to a number
-				return VALIDATIONERROR; 
-			}
-
-
-		}
 	}	// end TopSalesItemsReportDialog
 }
 

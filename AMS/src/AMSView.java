@@ -434,6 +434,7 @@ public class AMSView extends JFrame
 		AMS.centerWindow(lw);
 
 		lw.setVisible(true); 
+		
 	}
 }
 

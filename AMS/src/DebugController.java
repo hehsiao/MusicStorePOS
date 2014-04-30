@@ -31,7 +31,7 @@ public class DebugController implements ActionListener, ExceptionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		String actionCommand = e.getActionCommand();
-
+		AMS.clearStatusBar();
 		if (actionCommand.equals("Item"))
 		{
 			AMS.updateStatusBar("Displaying Item Table");
