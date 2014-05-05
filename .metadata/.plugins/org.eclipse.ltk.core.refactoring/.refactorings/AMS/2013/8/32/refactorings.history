@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete 2 elements from project &apos;AMS&apos;&#x0A;- Original project: &apos;AMS&apos;&#x0A;- Original elements:&#x0A;     BranchController.java&#x0A;     BranchModel.java" description="Delete elements" element1="/src&lt;{BranchModel.java" element2="/src&lt;{BranchController.java" elements="2" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1376090744182" subPackages="false" version="1.0"/>
-</session>
